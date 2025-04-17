@@ -1,9 +1,9 @@
 "use client";
 import React, { useRef } from "react";
-
+import { useRouter } from "next/navigation";
 export default function NewSection() {
   const scrollRef = useRef(null);
-
+  const router = useRouter();
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
       left: -300,
@@ -18,6 +18,11 @@ export default function NewSection() {
     });
   };
 
+  const productClick = (e, index) => {
+    e.preventDefault();
+    console.log(index);
+    router.push(`/${index}`);
+  };
   return (
     <div className="relative ">
       <h1 className="xl:p-4 xl:text-6xl font-extrabold">New Arrival</h1>
@@ -45,7 +50,8 @@ export default function NewSection() {
       >
         {/* 🔁 Cardগুলো এখানেই থাকবে – নিচে দেখানো হয়েছে */}
         {[...Array(10)].map((_, index) => (
-          <div
+          <button
+            onClick={(e) => productClick(e, index)}
             key={index}
             className="card bg-base-100 w-40 md:w-96 shadow-sm shrink-0 "
           >
@@ -65,7 +71,7 @@ export default function NewSection() {
               </h2>
               <p className="text-[10px] md:text-xl">BDT 3999 TK</p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
