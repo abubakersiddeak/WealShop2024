@@ -3,7 +3,7 @@ import React from "react";
 
 export default function MainSection() {
   return (
-    <div className=" h-[40vh] md:h-[90vh] w-full flex relative mt-3">
+    <div className="mt-6  h-[40vh] md:h-[90vh] w-full flex relative ">
       <div className="relative w-[60vw] h-[full]">
         <Image
           src={"/grand-sports-collage-soccer-basketball-600nw-1087921157.webp"}

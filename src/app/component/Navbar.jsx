@@ -34,7 +34,7 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a>
+                <a href="/1">
                   <p>Half Sleeve Jersey</p>
                 </a>
               </li>
@@ -351,7 +351,7 @@ export default function Navbar() {
                       <a href="#">Trouser</a>
                     </li>
                     <li>
-                      <a href="#">Other</a>
+                      <a href="/#">Other</a>
                     </li>
                   </ul>
                 )}

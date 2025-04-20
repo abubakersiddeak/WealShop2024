@@ -1,4 +1,5 @@
 "use client";
+import { productData } from "../db/db";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
 export default function NewSection() {
@@ -23,8 +24,9 @@ export default function NewSection() {
     console.log(index);
     router.push(`/${index}`);
   };
+  console.log(productData);
   return (
-    <div className="relative ">
+    <div className="relative p-4  ">
       <h1 className="xl:p-4 xl:text-6xl font-extrabold">New Arrival</h1>
 
       {/* Left arrow */}
@@ -46,31 +48,39 @@ export default function NewSection() {
       {/* Cards */}
       <div
         ref={scrollRef}
-        className="flex xl:gap-6 gap-2 overflow-x-hidden scroll-smooth "
+        className="flex xl:gap-6 gap-2 overflow-x-hidden scroll-smooth md:p-2"
       >
         {/* 🔁 Cardগুলো এখানেই থাকবে – নিচে দেখানো হয়েছে */}
-        {[...Array(10)].map((_, index) => (
+        {productData.map((p, index) => (
           <button
             onClick={(e) => productClick(e, index)}
             key={index}
-            className="card bg-base-100 w-40 md:w-96 shadow-sm shrink-0 "
+            className="relative w-52 md:w-80 bg-white rounded-2xl overflow-hidden   hover:scale-[1.02] transition-all duration-500"
           >
-            <figure className="md:px-3 md:pt-3 px-1 pt-1 ">
+            {/* Soft Border Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6a5bff] to-[#bb82f4] opacity-15 blur-xl z-0"></div>
+
+            {/* Product Image */}
+            <div className="relative z-10 flex items-center justify-center bg-gray-100 h-60 md:h-80">
               <img
                 src="/-473Wx593H-700089869-black-MODEL.avif"
-                alt="Shoes"
-                className="rounded-xl h-[150px] md:h-[400px]"
+                alt={p.name}
+                className="h-full object-cover transition-all duration-500 ease-in-out group-hover:scale-105"
               />
-            </figure>
-            <p className="md:mt-6 mt-2 ml-2 absolute md:ml-6 font-extrabold text-[10px] md:text-xl border px-[3px] py-[2px] md:py-1 md:px-2 rounded-xl bg-black text-white">
-              New
-            </p>
-            <div className="card-body p-3">
-              <h2 className="card-title text-xs md:text-2xl">
-                Nike Sports Shoe
-              </h2>
-              <p className="text-[10px] md:text-xl">BDT 3999 TK</p>
             </div>
+
+            {/* Product Info */}
+            <div className="relative z-10 p-4 text-black text-left">
+              <h2 className="text-lg md:text-2xl font-semibold">{p.name}</h2>
+              <p className="text-sm md:text-base opacity-80 mt-1">
+                {p.price} TK
+              </p>
+            </div>
+
+            {/* "New" Tag */}
+            <span className="absolute top-3 left-3 z-10 text-[10px] md:text-xs bg-gradient-to-r from-pink-500 to-indigo-500 text-white px-2 py-[2px] md:px-3 md:py-1 rounded-full shadow-md tracking-wider">
+              NEW
+            </span>
           </button>
         ))}
       </div>
