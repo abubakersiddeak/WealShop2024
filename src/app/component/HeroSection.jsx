@@ -46,7 +46,7 @@ export default function HeroSection() {
               alt={`Slide ${index + 1}`}
             />
             <div className="absolute inset-0 flex flex-col lg:gap-7 items-center justify-center">
-              <h1 className="lg:text-7xl text-center font-extrabold text-white font-sans">
+              <h1 className="lg:text-7xl text-center font-extrabold text-gray-400 stroke-orange-50 font-sans">
                 We are committed to giving <br /> our customers the best
                 quality.
               </h1>

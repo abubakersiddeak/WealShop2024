@@ -18,7 +18,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="h-[8vh] bg-white text-black border-b border-black flex justify-between items-center md:px-9 ">
+    <nav className="h-[80px] bg-white text-black border-b border-black flex justify-between items-center md:px-9 ">
       <div className="md:flex gap-2 md:gap-8  w-[40%] font-extrabold hidden">
         <button className="cursor-pointer">
           <div className="dropdown dropdown-hover">

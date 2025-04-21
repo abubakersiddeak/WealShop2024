@@ -243,6 +243,7 @@ export default function EcomarsDashboard() {
           </button>
         </form>
       </div>
+      {/* Add Product end */}
     </div>
   );
 }

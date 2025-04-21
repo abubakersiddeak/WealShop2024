@@ -50,3 +50,9 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET() {
+  await connectMongodb();
+  const products = await Product.find();
+  return NextResponse.json({ products });
+}
