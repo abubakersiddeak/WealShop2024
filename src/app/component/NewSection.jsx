@@ -10,7 +10,7 @@ export default function NewSection() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/Product");
+        const res = await fetch("/api/Product");
         if (!res.ok) {
           throw new Error("Product fetching failed from API in GET method");
         }
