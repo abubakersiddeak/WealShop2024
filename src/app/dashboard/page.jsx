@@ -79,10 +79,13 @@ export default function EcomarsDashboard() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://localhost:3000/api/cloudinary", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/cloudinary`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     const data = await res.json();
     if (data.url) {
@@ -100,11 +103,14 @@ export default function EcomarsDashboard() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/Product", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(inputValue), // Send image URL along with product data
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(inputValue), // Send image URL along with product data
+        }
+      );
 
       if (res.ok) {
         // Reset form
