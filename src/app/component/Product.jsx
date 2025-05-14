@@ -87,7 +87,7 @@ export default function Product({ product }) {
             inStock ? "text-green-600" : "text-red-600"
           }`}
         >
-          Availability: {inStock ? "In Stock ✅" : "Out of Stock ❌"}
+          Availability: {inStock ? "In Stock " : "Out of Stock "}
         </p>
 
         {/* Size Selector & Quantity */}

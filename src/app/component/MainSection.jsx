@@ -28,7 +28,7 @@ export default function MainSection() {
           <span className="md:text-7xl font-extrabold text-gray-400">BD</span>
         </div>
         <button className="bg-gray-500 text-black lg:px-12 lg:py-3 py-1 px-1 rounded-2xl shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-sm lg:text-xl">
-          Shop Now
+          <a href="/allProduct">Shop Now</a>
         </button>
       </div>
     </div>

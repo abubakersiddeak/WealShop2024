@@ -49,7 +49,7 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/trouser">
                   <p>Trouser</p>
                 </a>
               </li>
@@ -113,7 +113,7 @@ export default function Navbar() {
             </div>
             <ul className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5">
               <li>
-                <a>
+                <a href="/daynamicShowproduct/Shoe">
                   <p>Cricker</p>
                 </a>
               </li>

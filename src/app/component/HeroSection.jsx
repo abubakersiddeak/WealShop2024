@@ -46,12 +46,12 @@ export default function HeroSection() {
               alt={`Slide ${index + 1}`}
             />
             <div className="absolute inset-0 flex flex-col lg:gap-7 items-center justify-center">
-              <h1 className="lg:text-7xl text-center font-extrabold text-gray-400 stroke-orange-50 font-sans">
+              <h1 className="lg:text-7xl font-serif  text-center  text-white  text-shadow-lg font-light">
                 We are committed to giving <br /> our customers the best
                 quality.
               </h1>
               <button className="bg-white text-black lg:px-6 lg:py-3 py-1 px-1 rounded shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-sm lg:text-xl">
-                Shop Now
+                <a href="/allProduct">Shop Now</a>
               </button>
             </div>
           </div>
