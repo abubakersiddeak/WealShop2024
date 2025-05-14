@@ -34,7 +34,7 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a href="/1">
+                <a href="/daynamicShowproduct/jersey">
                   <p>Half Sleeve Jersey</p>
                 </a>
               </li>
@@ -366,7 +366,7 @@ export default function Navbar() {
                 {openSections.accessories && (
                   <ul className="text-gray-800 text-xs">
                     <li>
-                      <a href="#">Cricker</a>
+                      <a href="/daynamicShowproduct/Shoe">Cricker</a>
                     </li>
                     <li>
                       <a href="#">Football</a>
