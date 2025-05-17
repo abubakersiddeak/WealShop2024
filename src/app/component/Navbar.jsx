@@ -34,27 +34,27 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a href="/daynamicShowproduct/Half Sleeve Jersey">
+                <a href="/daynamicShowproduct/Men-Half-Sleeve-Jersey">
                   <p>Half Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a href="/daynamicShowproduct/Full Sleeve Jersey">
+                <a href="/daynamicShowproduct/Men-Full-Sleeve-Jersey">
                   <p>Full Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a href="/daynamicShowproduct/Shorts">
+                <a href="/daynamicShowproduct/Men-Shorts">
                   <p>Shorts</p>
                 </a>
               </li>
               <li>
-                <a href="/daynamicShowproduct/trouser">
+                <a href="/daynamicShowproduct/Men-Trouser">
                   <p>Trouser</p>
                 </a>
               </li>
               <li>
-                <a href="/daynamicShowproduct">
+                <a href="/daynamicShowproduct/Men-Others">
                   <p>Others</p>
                 </a>
               </li>
@@ -75,27 +75,27 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Half Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Full Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Shorts</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Trouser</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Others</p>
                 </a>
               </li>
@@ -113,23 +113,28 @@ export default function Navbar() {
             </div>
             <ul className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5">
               <li>
-                <a href="/daynamicShowproduct/Shoe">
+                <a href="/daynamicShowproduct/Accessories-Cricket">
                   <p>Cricker</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Football</p>
                 </a>
               </li>
               <li>
-                <a>
-                  <p>Badimintion</p>
+                <a href="/daynamicShowproduct/">
+                  <p>Badmintion</p>
+                </a>
+              </li>
+              <li>
+                <a href="/daynamicShowproduct/">
+                  <p>Volleyball</p>
                 </a>
               </li>
 
               <li>
-                <a>
+                <a href="/daynamicShowproduct/">
                   <p>Others</p>
                 </a>
               </li>
@@ -312,19 +317,23 @@ export default function Navbar() {
                 {openSections.man && (
                   <ul className="text-gray-800 text-xs">
                     <li>
-                      <a href="#">Full Sleeve Jersey </a>
+                      <a href="/daynamicShowproduct/Men-Full-Sleeve-Jersey">
+                        Full Sleeve Jersey{" "}
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Half Sleeve Jersey </a>
+                      <a href="/daynamicShowproduct/Men-Half-Sleeve-Jersey">
+                        Half Sleeve Jersey{" "}
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Shorts</a>
+                      <a href="/daynamicShowproduct/Men-Shorts">Shorts</a>
                     </li>
                     <li>
-                      <a href="#">Trouser</a>
+                      <a href="/daynamicShowproduct/Men-Trouser">Trouser</a>
                     </li>
                     <li>
-                      <a href="#">Other</a>
+                      <a href="/daynamicShowproduct/Men-Others">Other</a>
                     </li>
                   </ul>
                 )}
@@ -339,19 +348,23 @@ export default function Navbar() {
                 {openSections.kids && (
                   <ul className="text-gray-800 text-xs">
                     <li>
-                      <a href="#">Full Sleeve Jersey </a>
+                      <a href="/daynamicShowproduct/Kids-Full-Sleeve-Jersey">
+                        Full Sleeve Jersey{" "}
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Half Sleeve Jersey </a>
+                      <a href="/daynamicShowproduct/Kids-Half-Sleeve-Jersey">
+                        Half Sleeve Jersey{" "}
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Shorts</a>
+                      <a href="/daynamicShowproduct/Kids-Shorts">Shorts</a>
                     </li>
                     <li>
-                      <a href="#">Trouser</a>
+                      <a href="/daynamicShowproduct/Kids-Trouser">Trouser</a>
                     </li>
                     <li>
-                      <a href="/#">Other</a>
+                      <a href="/daynamicShowproduct/Kids-Others">Other</a>
                     </li>
                   </ul>
                 )}
@@ -366,16 +379,30 @@ export default function Navbar() {
                 {openSections.accessories && (
                   <ul className="text-gray-800 text-xs">
                     <li>
-                      <a href="/daynamicShowproduct/Shoe">Cricker</a>
+                      <a href="/daynamicShowproduct/Accessories-Cricket">
+                        Cricker
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Football</a>
+                      <a href="/daynamicShowproduct/Accessories-Football">
+                        Football
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Batminton</a>
+                      <a href="/daynamicShowproduct/Accessories-Badmintion">
+                        Batminton
+                      </a>
                     </li>
                     <li>
-                      <a href="#">Other</a>
+                      <a href="/daynamicShowproduct/Accessories-Volleyball">
+                        Volleyball
+                      </a>
+                    </li>
+
+                    <li>
+                      <a href="/daynamicShowproduct/Accessories-Others">
+                        Other
+                      </a>
                     </li>
                   </ul>
                 )}

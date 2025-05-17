@@ -14,8 +14,6 @@ export default function Product({ product }) {
     images = [],
     rating,
     reviewsCount,
-    isFeatured,
-    sizeGuide,
   } = product;
 
   const containerRef = useRef(null);
@@ -74,7 +72,20 @@ export default function Product({ product }) {
         {/* Extra Details (Optional) */}
         {brand && <p className="text-sm text-gray-600">Brand: {brand}</p>}
         {category && (
-          <p className="text-sm text-gray-600">Category: {category}</p>
+          <p className="text-sm text-gray-600">
+            Category: {category.gender} {category.type}
+          </p>
+        )}
+        {colors && (
+          <span className="text-sm text-gray-600">
+            {"  "}
+            Colour:{"  "}
+            {colors.map((c, index) => (
+              <span key={index} className="text-sm text-gray-600">
+                {`${c} `}
+              </span>
+            ))}
+          </span>
         )}
         {rating && <p className="text-sm text-gray-600">Rating: {rating} ⭐</p>}
         {reviewsCount && (

@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { FiUpload, FiImage, FiCheck, FiX } from "react-icons/fi";
 import generateSlug from "../utils/generateSlug";
+import Select from "react-select";
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -228,6 +229,31 @@ export default function AddProduct() {
     { id: "shipping", label: "Shipping" },
   ];
 
+  const collectionoptions = [
+    { value: "Men-Full-Sleeve-Jersey", label: "Men-Full-Sleeve-Jersey" },
+    { value: "Men-Half-Sleeve-Jersey", label: "Men-Half-Sleeve-Jersey" },
+    { value: "Men-Shorts", label: "Men-Shorts" },
+    { value: "Men-Trouser", label: "Men-Trouser" },
+    { value: "Men-Others", label: "Men-Others" },
+    // { value: "Men-Full-Sleeve-Jersey", label: "Men-Full-Sleeve-Jersey" },
+    // { value: "Men-Half-Sleeve-Jersey", label: "Men-Half-Sleeve-Jersey" },
+    // { value: "Men-Shorts", label: "Men-Shorts" },
+    // { value: "Men-Trouser", label: "Men-Trouser" },
+    // { value: "Men-Others", label: "Men-Others" },
+    { value: "Kids-Full-Sleeve-Jersey", label: "Kids-Full-Sleeve-Jersey" },
+    { value: "Kids-Half-Sleeve-Jersey", label: "Kids-Half-Sleeve-Jersey" },
+    { value: "Kids-Shorts", label: "Kids-Shorts" },
+    { value: "Kids-Trouser", label: "Kids-Trouser" },
+    { value: "Kids-Others", label: "Kids-Others" },
+
+    { value: "Accessories-Cricket", label: "Accessories-Cricket" },
+    { value: "Accessories-Football", label: "Accessories-Football" },
+    { value: "Accessories-Badmintion", label: "Accessories-Badmintion" },
+    { value: "Accessories-Volleyball", label: "Accessories-Volleyball" },
+
+    { value: "Accessories-Others", label: "Accessories-Others" },
+  ]; // search collection option
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-md">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Add New Product</h1>
@@ -392,7 +418,7 @@ export default function AddProduct() {
                   <option value="">Select Gender</option>
                   <option value="men">Men</option>
                   <option value="women">Women</option>
-                  <option value="unisex">Unisex</option>
+
                   <option value="kids">Kids</option>
                 </select>
               </div>
@@ -411,19 +437,22 @@ export default function AddProduct() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Collection*
-                </label>
-                <input
-                  type="text"
-                  name="category.collection"
-                  value={formData.category.collection}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <Select
+                options={collectionoptions}
+                value={collectionoptions.find(
+                  (option) => option.value === formData.category.collection
+                )}
+                onChange={(selectedOption) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    category: {
+                      ...prev.category,
+                      collection: selectedOption ? selectedOption.value : "",
+                    },
+                  }));
+                }}
+                placeholder="Select Collection"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -18,7 +18,9 @@ export async function GET(request, { params }) {
     }
 
     // ক্যাটাগরি অনুযায়ী প্রোডাক্ট খুঁজে বের করো
-    const products = await Product.find({ category });
+    const products = await Product.find({
+      "category.collection": `${category}`,
+    });
 
     return NextResponse.json(products);
   } catch (error) {
