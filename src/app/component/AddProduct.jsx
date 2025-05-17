@@ -54,7 +54,7 @@ export default function AddProduct() {
       setFormData((prev) => ({
         ...prev,
         name: value,
-        slug: prev.slug === "" ? generateSlug(value) : prev.slug,
+        slug: prev.slug === "" ? value : prev.slug,
       }));
     } else if (name.includes(".")) {
       const [parent, child] = name.split(".");
