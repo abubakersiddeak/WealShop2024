@@ -34,27 +34,27 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a href="/daynamicShowproduct/jersey">
+                <a href="/daynamicShowproduct/Half Sleeve Jersey">
                   <p>Half Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/Full Sleeve Jersey">
                   <p>Full Sleeve Jersey</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct/Shorts">
                   <p>Shorts</p>
                 </a>
               </li>
               <li>
-                <a href="/trouser">
+                <a href="/daynamicShowproduct/trouser">
                   <p>Trouser</p>
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/daynamicShowproduct">
                   <p>Others</p>
                 </a>
               </li>
