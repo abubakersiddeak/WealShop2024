@@ -46,11 +46,11 @@ export default function Allproduct() {
 
   return (
     <div className="relative p-4">
-      <h2 className="text-2xl mb-4 xl:p-4 xl:text-6xl font-serif">
+      <h2 className="text-5xl mb-4 xl:p-4 xl:text-8xl font-serif">
         All Products
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {selectedProducts.map((product) => (
           <button
             onClick={(e) => productClick(e, product)}
@@ -60,7 +60,7 @@ export default function Allproduct() {
             <img
               src={product.images[0]}
               alt={product.name}
-              className="w-full h-48 md:h-90 xl:h-100 object-cover "
+              className="w-full h-110 border border-gray-300 md:h-90 xl:h-110 object-cover "
             />
             <h3 className="md:text-xl font-semibold text-start mt-3">
               {product.name}

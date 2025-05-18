@@ -23,7 +23,7 @@ export default function HeroSection() {
 
   return (
     <div>
-      <div className="carousel w-full lg:h-[90vh] relative">
+      <div className="carousel w-full h-[70vh] lg:h-[90vh] relative">
         {slides.map((slideId, index) => (
           <div
             key={slideId}
@@ -42,15 +42,15 @@ export default function HeroSection() {
                   ? "/action-activity-adult-athlete-262506-scaled.jpg"
                   : "/12721210_2023-wabc-NewApp-SPORTS.jpg"
               }
-              className="w-full lg:h-[90vh] object-cover"
+              className="w-full h-[70vh] lg:h-[90vh] object-cover"
               alt={`Slide ${index + 1}`}
             />
             <div className="absolute inset-0 flex flex-col lg:gap-7 items-center justify-center">
-              <h1 className="lg:text-7xl font-serif  text-center  text-white  text-shadow-lg font-light">
+              <h1 className="text-xl lg:text-7xl font-serif  text-center  text-white  text-shadow-lg font-light">
                 We are committed to giving <br /> our customers the best
                 quality.
               </h1>
-              <button className="bg-white text-black lg:px-6 lg:py-3 py-1 px-1 rounded shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-sm lg:text-xl">
+              <button className="bg-white text-black lg:px-6 lg:py-3 py-1 px-1 rounded shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-2xl lg:text-3xl mt-7">
                 <a href="/allProduct">Shop Now</a>
               </button>
             </div>
@@ -60,7 +60,7 @@ export default function HeroSection() {
         {/* Previous Button */}
         <button
           onClick={goToPrev}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2  bg-opacity-50 text-white px-4 py-2 rounded"
+          className="absolute text-shadow-lg left-1 top-1/2 transform -translate-y-1/2 text-2xl bg-opacity-50 text-white px-1 py-2 rounded"
         >
           {" "}
           ❮
@@ -69,7 +69,7 @@ export default function HeroSection() {
         {/* Next Button */}
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2  bg-opacity-50 text-white px-4 py-2 rounded"
+          className="absolute text-shadow-lg right-1 top-1/2 transform -translate-y-1/2 text-2xl bg-opacity-50 text-white px-1 py-2 rounded"
         >
           ❯
         </button>
