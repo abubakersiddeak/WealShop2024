@@ -304,24 +304,37 @@ export default function Navbar() {
 
             <div className="menu bg-base-200 text-base-content min-h-full w-60 p-4">
               {/* Sidebar content here */}
-              <label className="input">
-                <svg
-                  className="h-[1em] opacity-50"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
+              <label className="input flex items-center gap-2 border rounded-lg p-2">
+                <button
+                  onClick={handleSearch}
+                  className="cursor-pointer text-gray-500 hover:text-black"
+                  type="button"
                 >
-                  <g
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                    fill="none"
-                    stroke="currentColor"
+                  <svg
+                    className="h-5 w-5 opacity-50"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
                   >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                  </g>
-                </svg>
-                <input type="search" required placeholder="Search" />
+                    <g
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                      strokeWidth="2.5"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                  </svg>
+                </button>
+                <input
+                  type="search"
+                  required
+                  placeholder="Search"
+                  className="flex-1 outline-none"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
               </label>
               <div className="mt-7 p-2 flex flex-col gap-6 text-xl">
                 {/* Man */}
