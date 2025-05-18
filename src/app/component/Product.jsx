@@ -77,7 +77,7 @@ export default function Product({ product }) {
           </p>
         )}
         {colors && (
-          <span className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600">
             {"  "}
             Colour:{"  "}
             {colors.map((c, index) => (
@@ -85,12 +85,10 @@ export default function Product({ product }) {
                 {`${c} `}
               </span>
             ))}
-          </span>
+          </p>
         )}
-        {rating && <p className="text-sm text-gray-600">Rating: {rating} ⭐</p>}
-        {reviewsCount && (
-          <p className="text-sm text-gray-600">Reviews: {reviewsCount}</p>
-        )}
+        {<p className="text-sm text-gray-600">Rating: {rating} ⭐</p>}
+        {<p className="text-sm text-gray-600">Reviews: {reviewsCount}</p>}
 
         {/* Availability */}
         <p
