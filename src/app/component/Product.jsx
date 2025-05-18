@@ -21,6 +21,9 @@ export default function Product({ product }) {
   const [backgroundPosition, setBackgroundPosition] = useState("center");
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
+  const [activeImage, setActiveImage] = useState(
+    images[0] || "/placeholder.jpg"
+  );
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } =
@@ -43,17 +46,38 @@ export default function Product({ product }) {
   return (
     <div className="relative w-full max-w-[90vw] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
       {/* Left: Image */}
-      <div
-        ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="w-full h-[300px] sm:h-[400px] md:h-[80vh] rounded-2xl overflow-hidden bg-no-repeat bg-cover transition duration-300 ease-in-out"
-        style={{
-          backgroundImage: `url(${images[0] || "/placeholder.jpg"})`,
-          backgroundSize: zoomed ? "200%" : "contain",
-          backgroundPosition: backgroundPosition,
-        }}
-      />
+      <div className="flex flex-col items-center space-y-4">
+        <div
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className="w-[90vw] h-[60vh] sm:w-[300px] sm:h-[400px] md:w-[400px] md:h-[500px]  overflow-hidden bg-no-repeat bg-cover transition duration-300 ease-in-out"
+          style={{
+            backgroundImage: `url(${activeImage})`,
+            backgroundSize: zoomed ? "200%" : "contain",
+            backgroundPosition: backgroundPosition,
+          }}
+        />
+
+        {/* Thumbnails */}
+        <div className="flex gap-2 overflow-x-auto max-w-full px-2">
+          {images.map((img, index) => (
+            <img
+              key={index}
+              src={img}
+              alt={`Thumbnail ${index}`}
+              className={`w-16 h-16 object-cover  cursor-pointer border ${
+                activeImage === img ? "border-black" : "border-gray-300"
+              }`}
+              onClick={() => {
+                setActiveImage(img);
+                setZoomed(false);
+                setBackgroundPosition("center");
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* Right: Info */}
       <div className="mt-4 md:mt-6 space-y-4">
@@ -69,28 +93,25 @@ export default function Product({ product }) {
           </div>
         )}
 
-        {/* Extra Details (Optional) */}
         {brand && <p className="text-sm text-gray-600">Brand: {brand}</p>}
         {category && (
           <p className="text-sm text-gray-600">
             Category: {category.gender} {category.type}
           </p>
         )}
-        {colors && (
+        {colors && colors.length > 0 && (
           <p className="text-sm text-gray-600">
-            {"  "}
-            Colour:{"  "}
+            Colour:{" "}
             {colors.map((c, index) => (
               <span key={index} className="text-sm text-gray-600">
-                {`${c} `}
+                {`${c}${index < colors.length - 1 ? ", " : ""}`}
               </span>
             ))}
           </p>
         )}
-        {<p className="text-sm text-gray-600">Rating: {rating} ⭐</p>}
-        {<p className="text-sm text-gray-600">Reviews: {reviewsCount}</p>}
+        <p className="text-sm text-gray-600">Rating: {rating} ⭐</p>
+        <p className="text-sm text-gray-600">Reviews: {reviewsCount}</p>
 
-        {/* Availability */}
         <p
           className={`font-semibold ${
             inStock ? "text-green-600" : "text-red-600"
@@ -119,7 +140,6 @@ export default function Product({ product }) {
             </div>
           )}
 
-          {/* Quantity Selector */}
           <div className="flex items-center border border-gray-300 rounded mt-4">
             <button onClick={decreaseQuantity} className="px-3 py-1 text-lg">
               -
@@ -135,7 +155,6 @@ export default function Product({ product }) {
             </button>
           </div>
 
-          {/* Add to Cart Button */}
           <button className="bg-black text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition">
             ADD TO CART
           </button>

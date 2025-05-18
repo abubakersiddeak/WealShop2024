@@ -23,7 +23,7 @@ export default function ShowProductCard({ products, id }) {
             <img
               src={p.images[0]}
               alt={p.name}
-              className="w-full h-48 md:h-90 xl:h-100 object-cover "
+              className="w-full  h-48 md:h-90 xl:h-100 object-cover "
             />
             <h3 className="md:text-xl font-semibold text-start mt-3">
               {p.name}

@@ -75,6 +75,6 @@ export async function POST(request) {
 
 export async function GET() {
   await connectMongodb();
-  const products = await Product.find();
+  const products = await Product.find().sort({ createdAt: -1 }); // sort by newest first
   return NextResponse.json({ products });
 }

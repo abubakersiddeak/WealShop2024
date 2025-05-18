@@ -71,23 +71,25 @@ export default function Allproduct() {
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center items-center gap-4 mt-8">
+      <div className="flex justify-center items-center gap-2 mt-10">
         <button
           onClick={handlePrev}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Prev
+          ⬅ Prev
         </button>
-        <span className="font-medium">
+
+        <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold shadow">
           Page {currentPage} of {totalPages}
         </span>
+
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Next
+          Next ➡
         </button>
       </div>
     </div>
