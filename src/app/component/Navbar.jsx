@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 export default function Navbar() {
   const [openSections, setOpenSections] = useState({
     man: false,
@@ -9,7 +9,19 @@ export default function Navbar() {
     accessories: false,
     offer: false,
   });
+  const [query, setQuery] = useState("");
 
+  const router = useRouter();
+
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+
+    try {
+      router.push(`/searchproduct/${encodeURIComponent(query)}`);
+    } catch (error) {
+      console.error("Search error:", error);
+    }
+  };
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -175,20 +187,25 @@ export default function Navbar() {
       </div>
 
       <div className="md:flex hidden   w-[40%] cursor-pointer justify-end gap-2 md:gap-6 ">
-        <div className="flex  gap-2  items-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border border-gray-400 rounded-xl px-2 h-8 lg:h-9 md:w-30 lg:w-34 xl:w-56"
-          />
-          <button className="cursor-pointer">
-            <Image
-              src={"/search-svgrepo-com.svg"}
-              alt="iconimage"
-              height={20}
-              width={20}
-            />{" "}
-          </button>
+        <div className="relative">
+          {/* Search bar */}
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="border border-gray-400 rounded-xl px-2 h-8 lg:h-9 md:w-30 lg:w-34 xl:w-56"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button onClick={handleSearch} className="cursor-pointer">
+              <Image
+                src={"/search-svgrepo-com.svg"}
+                alt="iconimage"
+                height={20}
+                width={20}
+              />
+            </button>
+          </div>
         </div>
         <button className="cursor-pointer">
           <Image

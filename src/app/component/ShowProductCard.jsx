@@ -9,6 +9,7 @@ export default function ShowProductCard({ products, id }) {
     e.preventDefault();
     router.push(`/dynamic/${p._id}`);
   };
+
   return (
     <div className="relative p-2">
       <h2 className="text-2xl  xl:p-4 xl:text-6xl font-serif">{catagory}</h2>

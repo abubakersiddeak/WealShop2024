@@ -4,8 +4,10 @@ import ShowProductCard from "@/app/component/ShowProductCard";
 import React from "react";
 
 export default async function page({ params }) {
-  const { id } = params; // this id could be productt catagory or product name
+  const { id } = params; // this id could be product catagory or product name
+
   console.log(id);
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/findproductbyCatagory/${id}`,
     {
@@ -16,7 +18,7 @@ export default async function page({ params }) {
   return (
     <div>
       <Navbar />
-      <ShowProductCard products={products} id={id} />
+      <ShowProductCard products={products} id={id} r />
       <Footer />
     </div>
   );
