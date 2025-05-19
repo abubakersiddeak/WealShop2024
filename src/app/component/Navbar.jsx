@@ -245,7 +245,7 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a>
+                <a href="/createUser">
                   <Image
                     src={"/register-svgrepo-com.svg"}
                     alt="Registerimage"
@@ -259,12 +259,14 @@ export default function Navbar() {
           </div>
         </button>
         <button className="cursor-pointer">
-          <Image
-            src={"/cart-shopping-svgrepo-com.svg"}
-            alt="weal image"
-            height={20}
-            width={20}
-          />
+          <a href="/cart">
+            <Image
+              src={"/cart-shopping-svgrepo-com.svg"}
+              alt="weal image"
+              height={20}
+              width={20}
+            />
+          </a>
         </button>
       </div>
       {/* movile device responsive start */}

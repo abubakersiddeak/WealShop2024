@@ -1,7 +1,10 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useCart } from "@/context/cartContext";
 
 export default function Product({ product }) {
+  const { addToCart } = useCart();
+  const [showNotification, setShowNotification] = useState(false);
   const {
     name,
     description,
@@ -24,8 +27,53 @@ export default function Product({ product }) {
   const [activeImage, setActiveImage] = useState(
     images[0] || "/placeholder.jpg"
   );
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const hasTouch =
+      typeof window !== "undefined" &&
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    setIsTouchDevice(hasTouch);
+  }, []);
+  const handleAddToCart = async () => {
+    try {
+      console.log(product, quantity, selectedSize);
+      addToCart(product, quantity, selectedSize);
+
+      // const res = await fetch(
+      //   `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       userId: user._id,
+      //       items: cartItems,
+      //       totalAmount: total,
+      //       shippingAddress: {
+      //         name: "Abubakar",
+      //         address: "Chattogram",
+      //         city: "Chattogram",
+      //         phone: "017XXXXXXXX",
+      //       },
+      //     }),
+      //   }
+      // );
+
+      // if (!res.ok) {
+      //   const errorData = await res.json();
+      //   console.error("Order failed:", errorData.message || "Unknown error");
+      //   return;
+      // }
+
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 2000);
+    } catch (error) {
+      console.error("Something went wrong:", error);
+    }
+  };
 
   const handleMouseMove = (e) => {
+    if (isTouchDevice) return;
     const { left, top, width, height } =
       containerRef.current.getBoundingClientRect();
     const x = ((e.pageX - left) / width) * 100;
@@ -35,6 +83,7 @@ export default function Product({ product }) {
   };
 
   const handleMouseLeave = () => {
+    if (isTouchDevice) return;
     setBackgroundPosition("center");
     setZoomed(false);
   };
@@ -51,7 +100,7 @@ export default function Product({ product }) {
           ref={containerRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="w-[90vw] h-[60vh] sm:w-[300px] sm:h-[400px] md:w-[400px] md:h-[500px]  overflow-hidden bg-no-repeat bg-cover transition duration-300 ease-in-out"
+          className="w-[90vw] h-[60vh] sm:w-[300px] sm:h-[400px] md:w-[400px] md:h-[500px] overflow-hidden bg-no-repeat bg-cover transition duration-300 ease-in-out"
           style={{
             backgroundImage: `url(${activeImage})`,
             backgroundSize: zoomed ? "200%" : "contain",
@@ -66,7 +115,7 @@ export default function Product({ product }) {
               key={index}
               src={img}
               alt={`Thumbnail ${index}`}
-              className={`w-16 h-16 object-cover  cursor-pointer border ${
+              className={`w-16 h-16 object-cover cursor-pointer border ${
                 activeImage === img ? "border-black" : "border-gray-300"
               }`}
               onClick={() => {
@@ -99,7 +148,7 @@ export default function Product({ product }) {
             Category: {category.gender} {category.type}
           </p>
         )}
-        {colors && colors.length > 0 && (
+        {colors.length > 0 && (
           <p className="text-sm text-gray-600">
             Colour:{" "}
             {colors.map((c, index) => (
@@ -155,9 +204,17 @@ export default function Product({ product }) {
             </button>
           </div>
 
-          <button className="bg-black text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition">
+          <button
+            onClick={handleAddToCart} // <-- এখানে ফাংশন ব্যবহার করা হলো
+            className="bg-black text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
+          >
             ADD TO CART
           </button>
+          {showNotification && (
+            <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-md z-50">
+              Product added to cart!
+            </div>
+          )}
         </div>
       </div>
     </div>
