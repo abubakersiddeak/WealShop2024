@@ -2,7 +2,11 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/context/cartContext";
+import Link from "next/link";
 export default function Navbar() {
+  const { cartItems } = useCart();
+
   const [openSections, setOpenSections] = useState({
     man: false,
     kids: false,
@@ -12,6 +16,7 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
 
   const router = useRouter();
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -258,27 +263,39 @@ export default function Navbar() {
             </ul>
           </div>
         </button>
-        <button className="cursor-pointer">
+        <button className="relative inline-block cursor-pointer">
           <a href="/cart">
             <Image
-              src={"/cart-shopping-svgrepo-com.svg"}
-              alt="weal image"
-              height={20}
-              width={20}
+              src="/cart-shopping-svgrepo-com.svg"
+              alt="Cart"
+              height={24}
+              width={24}
+              className="hover:scale-110 transition-transform duration-200"
             />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-3 bg-red-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
           </a>
         </button>
       </div>
       {/* movile device responsive start */}
       <div className=" md:hidden md:gap-7 gap-1 flex z-50">
-        <button>
-          {" "}
-          <Image
-            src={"/cart-shopping-svgrepo-com.svg"}
-            alt="weal image"
-            height={30}
-            width={30}
-          />
+        <button className="relative inline-block cursor-pointer pr-3">
+          <a href="/cart">
+            <Image
+              src="/cart-shopping-svgrepo-com.svg"
+              alt="Cart"
+              height={35}
+              width={35}
+            />
+            {totalItems > 0 && (
+              <span className="absolute -top-[1px] -right-[1px] bg-red-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </a>
         </button>
         <div className="drawer">
           <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -458,13 +475,18 @@ export default function Navbar() {
               <hr />
               <div className="mt-5 text-2xl">
                 <select
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      window.location.href = e.target.value;
+                    }
+                  }}
                   className="bg-white border border-gray-300 text-gray-700 text-base rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   name=""
                   id=""
                 >
                   <option value="">My Account</option>
                   <option value="">Login</option>
-                  <option value="">Register</option>
+                  <option value="/createUser">Register</option>
                 </select>
               </div>
             </div>

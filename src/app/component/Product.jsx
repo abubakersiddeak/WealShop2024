@@ -37,7 +37,6 @@ export default function Product({ product }) {
   }, []);
   const handleAddToCart = async () => {
     try {
-      console.log(product, quantity, selectedSize);
       addToCart(product, quantity, selectedSize);
 
       // const res = await fetch(
