@@ -181,12 +181,15 @@ export default function Navbar() {
       </div>
       <div className="flex justify-center items-center gap-2 ">
         <div className="relative font-bold cursor-pointer  h-[50px] w-[50px] xl:h-[70px] xl:w-[70px] ">
-          <Image
-            src="/weal.jpg"
-            alt="weal image"
-            fill
-            style={{ objectFit: "contain" }}
-          />
+          <Link href={"/"}>
+            {" "}
+            <Image
+              src="/weal.jpg"
+              alt="weal image"
+              fill
+              style={{ objectFit: "contain" }}
+            />
+          </Link>
         </div>
         <p className="text-3xl lg:text-5xl font-extrabold">WEAL</p>
       </div>

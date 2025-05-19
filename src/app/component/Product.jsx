@@ -4,7 +4,7 @@ import { useCart } from "@/context/cartContext";
 
 export default function Product({ product }) {
   const { addToCart } = useCart();
-  const [showNotification, setShowNotification] = useState(false);
+  const [buttonText, setButtonText] = useState("ADD TO CART");
   const {
     name,
     description,
@@ -38,7 +38,7 @@ export default function Product({ product }) {
   const handleAddToCart = async () => {
     try {
       addToCart(product, quantity, selectedSize);
-
+      setButtonText("SUCCESS");
       // const res = await fetch(
       //   `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
       //   {
@@ -64,8 +64,9 @@ export default function Product({ product }) {
       //   return;
       // }
 
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 2000);
+      setTimeout(() => {
+        setButtonText("ADD TO CART");
+      }, 1000);
     } catch (error) {
       console.error("Something went wrong:", error);
     }
@@ -204,16 +205,11 @@ export default function Product({ product }) {
           </div>
 
           <button
-            onClick={handleAddToCart} // <-- এখানে ফাংশন ব্যবহার করা হলো
+            onClick={handleAddToCart}
             className="bg-black text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
           >
-            ADD TO CART
+            {buttonText}
           </button>
-          {showNotification && (
-            <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-md z-50">
-              Product added to cart!
-            </div>
-          )}
         </div>
       </div>
     </div>
