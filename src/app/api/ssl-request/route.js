@@ -1,37 +1,56 @@
-export async function POST(req) {
-  const body = await req.json();
+import sslcz from "sslcommerz-lts";
 
-  const transactionId = "TXN_" + Date.now();
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    try {
+      const data = req.body;
 
-  const paymentData = {
-    store_id: process.env.SSL_STORE_ID,
-    store_passwd: process.env.SSL_STORE_PASS,
-    total_amount: body.amount,
-    currency: "BDT",
-    tran_id: transactionId,
-    success_url: "http://localhost:3000/success",
-    fail_url: "http://localhost:3000/fail",
-    cancel_url: "http://localhost:3000/cancel",
-    cus_name: body.name,
-    cus_email: body.email,
-    cus_add1: body.address,
-    cus_city: "Dhaka",
-    cus_country: "Bangladesh",
-    shipping_method: "NO",
-    product_name: "Ecomars Order",
-    product_category: "Ecommerce",
-    product_profile: "general",
-  };
+      const transactionId = Math.floor(Math.random() * 1000000000).toString();
 
-  const sslRes = await fetch(
-    "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(paymentData),
+      const paymentData = {
+        total_amount: data.amount,
+        currency: "BDT",
+        tran_id: transactionId,
+        success_url: "http://localhost:3000/success",
+        fail_url: "http://localhost:3000/fail",
+        cancel_url: "http://localhost:3000/cancel",
+        ipn_url: "http://localhost:3000/ipn",
+        shipping_method: "Courier",
+        product_name: "Weal Store Order",
+        product_category: "Ecommerce",
+        product_profile: "general",
+        cus_name: data.name,
+        cus_email: data.email,
+        cus_add1: data.address,
+        cus_city: data.city,
+        cus_postcode: "0000",
+        cus_country: "Bangladesh",
+        cus_phone: data.phone,
+      };
+
+      const store_id = process.env.SSLCOMMERZ_STORE_ID;
+      const store_passwd = process.env.SSLCOMMERZ_STORE_PASS;
+      const is_live = false;
+
+      const sslcommerz = new sslcz(store_id, store_passwd, is_live);
+      const apiResponse = await sslcommerz.init(paymentData);
+
+      if (apiResponse?.GatewayPageURL) {
+        res.status(200).json(apiResponse);
+      } else {
+        res
+          .status(500)
+          .json({ message: "GatewayPageURL not found", error: true });
+      }
+    } catch (err) {
+      console.error("SSLCommerz error:", err);
+      res.status(500).json({
+        message: "Payment API Error",
+        error: true,
+        details: err.message,
+      });
     }
-  );
-
-  const data = await sslRes.json();
-  return new Response(JSON.stringify(data), { status: 200 });
+  } else {
+    res.status(405).json({ message: "Method Not Allowed" });
+  }
 }
