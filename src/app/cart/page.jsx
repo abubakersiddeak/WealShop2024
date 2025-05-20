@@ -102,9 +102,22 @@ export default function CartPage() {
                 🛍️ Shop More
               </Link>
 
-              <button className="bg-gray-900 text-white px-6 py-2 rounded hover:bg-gray-700 transition">
+              <Link
+                href="/checkout"
+                onClick={() => {
+                  localStorage.setItem(
+                    "checkoutCart",
+                    JSON.stringify(cartItems)
+                  );
+                  localStorage.setItem(
+                    "checkoutAmount",
+                    JSON.stringify(getTotal())
+                  );
+                }}
+                className="bg-gray-900 text-white px-6 py-2 rounded hover:bg-gray-700 transition"
+              >
                 Proceed to Checkout
-              </button>
+              </Link>
             </div>
           </div>
         )}

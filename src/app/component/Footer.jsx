@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="w-full h-[60vh] mt-4 relative">
+    <footer className="w-full h-[60vh]  relative">
       <div className="w-full h-[10vh] bg-gray-900 text-white flex justify-center items-center gap-12 md:gap-24 lg:gap-40">
         <a href="https://www.facebook.com/wealbd2024">
           <img

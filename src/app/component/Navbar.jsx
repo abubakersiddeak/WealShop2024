@@ -215,7 +215,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-        <button className="cursor-pointer">
+        <button className="cursor-pointer hidden">
           <Image
             src={"/favorite-svgrepo-com.svg"}
             alt="weal image"
@@ -242,7 +242,7 @@ export default function Navbar() {
               className="dropdown-content menu bg-white rounded-box z-50 w-52 p-3 shadow-sm mr-5"
             >
               <li>
-                <a>
+                <a href="/login">
                   <Image
                     src={"/login-2-svgrepo-com.svg"}
                     alt="Loginimage"
@@ -488,7 +488,7 @@ export default function Navbar() {
                   id=""
                 >
                   <option value="">My Account</option>
-                  <option value="">Login</option>
+                  <option value="/login">Login</option>
                   <option value="/createUser">Register</option>
                 </select>
               </div>
