@@ -19,6 +19,7 @@ export default function CheckoutPage() {
     phone: "",
     city: "",
     amount: 0,
+    postcode: "",
   });
 
   const [cartItems, setCartItems] = useState([]);
@@ -38,10 +39,11 @@ export default function CheckoutPage() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  console.log(form);
+  console.log(cartItems);
   const validateForm = () => {
-    const { name, email, address, phone, city } = form;
-    if (!name || !email || !address || !phone || !city) {
+    const { name, email, address, phone, city, postcode } = form;
+    if (!name || !email || !address || !phone || !city || !postcode) {
       setError("সব ফিল্ড পূরণ করা বাধ্যতামূলক!");
       return false;
     }
@@ -62,17 +64,30 @@ export default function CheckoutPage() {
 
     if (!validateForm()) return;
 
-    const res = await fetch("/api/ssl-request", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
-    const data = await res.json();
-    if (data?.GatewayPageURL) {
-      window.location.href = data.GatewayPageURL;
-    } else {
-      alert("পেমেন্ট লিঙ্ক তৈরি হয়নি। আবার চেষ্টা করুন।");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Payment request failed");
+      }
+
+      if (data?.GatewayPageURL) {
+        window.location.href = data.GatewayPageURL;
+      } else {
+        alert("পেমেন্ট লিঙ্ক তৈরি হয়নি। আবার চেষ্টা করুন।");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setError(err.message || "An error occurred during checkout");
     }
   };
 
@@ -123,6 +138,13 @@ export default function CheckoutPage() {
               placeholder="City"
               name="city"
               value={form.city}
+              onChange={handleChange}
+            />
+            <InputWithIcon
+              icon={<FaMapMarkerAlt />}
+              placeholder="Postcode"
+              name="postcode"
+              value={form.postcode}
               onChange={handleChange}
             />
           </div>
