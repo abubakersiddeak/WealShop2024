@@ -1,45 +1,29 @@
 import mongoose from "mongoose";
 
-const orderSchema = new mongoose.Schema(
+const OrderSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    items: [
+    invoiceId: String,
+    name: String,
+    email: String,
+    address: String,
+    phone: String,
+    city: String,
+    postcode: String,
+    totalAmount: Number,
+    orderItems: [
       {
-        product: {
+        productId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
-          required: true,
         },
-        quantity: {
-          type: Number,
-          required: true,
-          default: 1,
-        },
-        size: {
-          type: String,
-        },
+        name: String,
+        price: Number,
+        quantity: Number,
+        size: String,
       },
     ],
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-    shippingAddress: {
-      name: String,
-      address: String,
-      city: String,
-      phone: String,
-    },
-    status: {
-      type: String,
-      default: "pending", // pending, confirmed, shipped, delivered
-    },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Order || mongoose.model("Order", orderSchema);
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema);

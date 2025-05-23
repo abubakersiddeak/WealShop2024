@@ -73,6 +73,8 @@ export default function CheckoutPage() {
           body: JSON.stringify(form),
         }
       );
+      console.log(form);
+      localStorage.setItem("checkoutData", JSON.stringify(form));
 
       const data = await res.json();
 
