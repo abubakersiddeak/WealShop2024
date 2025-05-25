@@ -39,8 +39,8 @@ export default function CheckoutPage() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  console.log(form);
-  console.log(cartItems);
+  console.log(form, "form");
+  console.log(cartItems, "cartitem");
   const validateForm = () => {
     const { name, email, address, phone, city, postcode } = form;
     if (!name || !email || !address || !phone || !city || !postcode) {
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
           body: JSON.stringify(form),
         }
       );
-      console.log(form);
+
       localStorage.setItem("checkoutData", JSON.stringify(form));
 
       const data = await res.json();
