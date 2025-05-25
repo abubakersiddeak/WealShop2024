@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useCart } from "@/context/cartContext";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
@@ -11,7 +11,10 @@ import {
   FiShoppingBag,
   FiCheckCircle,
   FiAlertCircle,
+  FiDownload,
 } from "react-icons/fi";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
@@ -20,8 +23,8 @@ export default function SuccessPage() {
   const { cartItems, clearCart } = useCart();
 
   const [customerData, setCustomerData] = useState(null);
-  const [orderData, setOrderData] = useState(null);
-  const [showorder, setShoworder] = useState(null);
+  const [orderData, setOrderData] = useState(null); // This holds the order saved to DB
+  const [displayOrder, setDisplayOrder] = useState(null); // This holds the order fetched for display
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [pageState, setPageState] = useState({
     loading: true,
@@ -29,22 +32,42 @@ export default function SuccessPage() {
     success: false,
   });
 
-  const isSaving = useRef(false);
+  const isSavingOrder = useRef(false); // Flag to prevent multiple order saves
+  const invoiceRef = useRef(null); // Ref for the invoice section for PDF generation
 
-  // Track window size for Confetti
+  // --- Utility Functions ---
+  const formatDate = useCallback((dateStr) => {
+    if (!dateStr) return "-";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-BD", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, []);
+
+  const calculateGrandTotal = useCallback((items) => {
+    return (
+      items?.reduce((total, item) => total + item.price * item.quantity, 0) || 0
+    );
+  }, []);
+
+  // --- Effects ---
+
+  // 1. Track window size for Confetti
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const updateSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
-    updateSize();
+    updateSize(); // Set initial size
 
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  // Load customer data from localStorage once
+  // 2. Load customer data from localStorage once
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -56,17 +79,28 @@ export default function SuccessPage() {
       }
     } catch (err) {
       console.error("Failed to parse checkoutData from localStorage", err);
+      // Optionally, set an error state here if crucial for flow
     }
   }, []);
 
-  // Save order if tran_id, customerData and cartItems exist & only once (isSaving flag)
+  // 3. Save order to the database if `tran_id`, `customerData`, and `cartItems` exist
+  //    This effect runs only once per transaction ID to prevent duplicate order saving.
   useEffect(() => {
-    if (!tran_id || !customerData || !cartItems?.length || isSaving.current)
+    // Ensure all prerequisites are met and order hasn't been saved yet
+    if (
+      !tran_id ||
+      !customerData ||
+      !cartItems?.length ||
+      isSavingOrder.current
+    ) {
+      // console.log("Skipping saveOrder:", { tran_id, customerData, cartItemsLength: cartItems?.length, isSavingOrder: isSavingOrder.current });
       return;
+    }
 
-    isSaving.current = true;
+    isSavingOrder.current = true; // Set flag to true to prevent re-execution
 
     const saveOrder = async () => {
+      setPageState((prev) => ({ ...prev, loading: true }));
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${tran_id}`,
@@ -91,9 +125,11 @@ export default function SuccessPage() {
                 name: item.product.name,
                 price: item.product.price,
                 quantity: item.quantity,
-                size: item.size,
+                size: item.size || "N/A", // Ensure size is always defined
               })),
               payment_status: "PAID",
+              // Add a total amount for easier database querying/validation
+              total_amount: calculateGrandTotal(cartItems),
             }),
           }
         );
@@ -101,64 +137,121 @@ export default function SuccessPage() {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          setOrderData(data.order);
+          setOrderData(data.order); // Store the saved order details
           setPageState({ loading: false, error: null, success: true });
-          clearCart();
+          clearCart(); // Clear cart only on successful order save
+          localStorage.removeItem("checkoutData"); // Clear checkout data after successful order
         } else {
+          // Log server-side error for debugging
+          console.error("Server responded with an error:", data.message);
           setPageState({
             loading: false,
-            error: data.message || "Update failed",
+            error:
+              data.message ||
+              "Failed to finalize your order. Please contact support.",
             success: false,
           });
         }
       } catch (error) {
-        console.error("Save order error:", error);
+        console.error("Error saving order:", error);
         setPageState({
           loading: false,
-          error: "অর্ডার সংরক্ষণে সমস্যা হয়েছে।",
+          error:
+            "An unexpected error occurred while saving your order. Please check your internet connection or contact support.",
           success: false,
         });
+      } finally {
+        isSavingOrder.current = false; // Reset flag after operation attempt
       }
     };
 
     saveOrder();
-  }, [tran_id, customerData, cartItems, clearCart]);
+  }, [tran_id, customerData, cartItems, clearCart, calculateGrandTotal]);
 
-  // Fetch order details when tran_id changes
+  // 4. Fetch order details for display using `tran_id`
+  //    This runs independently to populate the invoice, even if `saveOrder` had issues.
   useEffect(() => {
-    if (!tran_id) return;
+    if (!tran_id) {
+      setPageState((prev) => ({ ...prev, loading: false })); // Stop loading if no tran_id
+      return;
+    }
 
-    const fetchOrder = async () => {
+    const fetchOrderForDisplay = async () => {
+      setPageState((prev) => ({ ...prev, loading: true }));
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchorders/invoice/${tran_id}`
         );
-        if (!res.ok) throw new Error("Failed to fetch order details");
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(
+            errorData.message || "Failed to retrieve order details for display."
+          );
+        }
         const orderDetails = await res.json();
-        setShoworder(orderDetails);
+        setDisplayOrder(orderDetails.order); // Assuming the API returns { order: ... }
+        setPageState((prev) => ({
+          ...prev,
+          loading: false,
+          success: prev.success || true,
+        })); // Mark as success if fetched, or keep existing success state
       } catch (err) {
-        console.error("Order fetch error:", err);
+        console.error("Order fetch error for display:", err);
+        setPageState((prev) => ({
+          ...prev,
+          loading: false,
+          error: prev.error || `Could not load order details: ${err.message}`, // Keep existing error if more specific
+          success: false,
+        }));
       }
     };
 
-    fetchOrder();
+    fetchOrderForDisplay();
   }, [tran_id]);
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "-";
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("bn-BD", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
+  // --- Handlers ---
   const handlePrint = () => {
     if (typeof window !== "undefined") {
       window.print();
     }
   };
+
+  const handleDownloadPdf = async () => {
+    if (!invoiceRef.current) return;
+
+    try {
+      const canvas = await html2canvas(invoiceRef.current, { scale: 2 }); // Scale for better resolution
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
+        // If content exceeds one page, handle pagination
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        let position = 0;
+
+        while (position < pdfHeight) {
+          pdf.addImage(imgData, "PNG", 0, position * -1, pdfWidth, pdfHeight);
+          position += pageHeight;
+          if (position < pdfHeight) {
+            pdf.addPage();
+          }
+        }
+      } else {
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      }
+
+      pdf.save(`invoice_${tran_id || "Weal"}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again or print the page.");
+    }
+  };
+
+  // Determine which order data to display (prefer `orderData` if available, otherwise `displayOrder`)
+  const orderToDisplay = orderData || displayOrder;
 
   return (
     <>
@@ -170,7 +263,9 @@ export default function SuccessPage() {
               width={windowSize.width}
               height={windowSize.height}
               recycle={false}
-              numberOfPieces={500}
+              numberOfPieces={300} // Slightly reduced for performance
+              initialVelocityX={{ min: -10, max: 10 }}
+              initialVelocityY={{ min: 10, max: 20 }}
             />
           )}
 
@@ -194,15 +289,27 @@ export default function SuccessPage() {
                 <p className="text-lg text-red-600">{pageState.error}</p>
               </>
             ) : (
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-2">
-                Processing Your Order
-              </h1>
+              // This state will primarily be visible during the initial fetch/save
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-2">
+                  Processing Your Order...
+                </h1>
+                <p className="text-lg text-gray-600">
+                  Please wait while we finalize your transaction.
+                </p>
+              </>
             )}
           </div>
 
-          {pageState.loading && <p>Loading...</p>}
+          {pageState.loading && (
+            <p className="text-gray-500 text-lg">
+              {pageState.success
+                ? "Loading order details..."
+                : "Finalizing order..."}
+            </p>
+          )}
 
-          {pageState.success && showorder?.order && (
+          {pageState.success && orderToDisplay && (
             <>
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <button
@@ -211,6 +318,13 @@ export default function SuccessPage() {
                 >
                   <FiPrinter className="h-5 w-5" />
                   Print Invoice
+                </button>
+                <button
+                  onClick={handleDownloadPdf}
+                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
+                >
+                  <FiDownload className="h-5 w-5" />
+                  Download Invoice (PDF)
                 </button>
                 <a
                   href="/allProduct"
@@ -223,7 +337,8 @@ export default function SuccessPage() {
 
               <div
                 id="invoice"
-                className="text-left mt-6 bg-white p-6 md:p-8 rounded-lg shadow-inner border border-gray-200"
+                ref={invoiceRef} // Assign ref here for PDF generation
+                className="text-left mt-6 bg-white p-6 md:p-8 rounded-lg shadow-inner border border-gray-200 print:shadow-none print:border-none" // Add print styles
               >
                 <header className="border-b border-gray-300 pb-4 mb-6">
                   <h2 className="text-3xl font-bold text-gray-800">Weal</h2>
@@ -231,11 +346,11 @@ export default function SuccessPage() {
                   <div className="mt-2 text-sm text-gray-700">
                     <p>
                       <span className="font-semibold">Invoice ID:</span>{" "}
-                      {showorder.order._id || tran_id}
+                      {orderToDisplay._id || tran_id}
                     </p>
                     <p>
                       <span className="font-semibold">Date:</span>{" "}
-                      {formatDate(showorder.order.createdAt)}
+                      {formatDate(orderToDisplay.createdAt)}
                     </p>
                   </div>
                 </header>
@@ -246,62 +361,74 @@ export default function SuccessPage() {
                   </h3>
                   <p>
                     <span className="font-semibold">Name:</span>{" "}
-                    {showorder.order.customer?.name || "-"}
+                    {orderToDisplay.customer?.name || "-"}
                   </p>
                   <p>
                     <span className="font-semibold">Email:</span>{" "}
-                    {showorder.order.customer?.email || "-"}
+                    {orderToDisplay.customer?.email || "-"}
                   </p>
                   <p>
                     <span className="font-semibold">Phone:</span>{" "}
-                    {showorder.order.customer?.phone || "-"}
+                    {orderToDisplay.customer?.phone || "-"}
                   </p>
                   <p>
                     <span className="font-semibold">Address:</span>{" "}
-                    {showorder.order.shipping?.address},{" "}
-                    {showorder.order.shipping?.city} -{" "}
-                    {showorder.order.shipping?.postal_code}
+                    {orderToDisplay.shipping?.address},{" "}
+                    {orderToDisplay.shipping?.city} -{" "}
+                    {orderToDisplay.shipping?.postal_code}
                   </p>
                 </section>
 
                 <section className="mb-6">
                   <h3 className="font-semibold text-lg mb-2">Order Summary</h3>
-                  <table className="w-full text-left border-collapse border border-gray-300">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="border px-4 py-2">Product</th>
-                        <th className="border px-4 py-2">Size</th>
-                        <th className="border px-4 py-2">Qty</th>
-                        <th className="border px-4 py-2">Unit Price</th>
-                        <th className="border px-4 py-2">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showorder.order.items?.map((item, index) => (
-                        <tr key={index}>
-                          <td className="border px-4 py-2">{item.name}</td>
-                          <td className="border px-4 py-2">
-                            {item.size || "-"}
-                          </td>
-                          <td className="border px-4 py-2">{item.quantity}</td>
-                          <td className="border px-4 py-2">
-                            ৳{item.price.toFixed(2)}
-                          </td>
-                          <td className="border px-4 py-2">
-                            ৳{(item.price * item.quantity).toFixed(2)}
-                          </td>
+                  <div className="overflow-x-auto">
+                    {" "}
+                    {/* Added for small screens */}
+                    <table className="w-full text-left border-collapse border border-gray-300">
+                      <thead className="bg-gray-200">
+                        <tr>
+                          <th className="border px-4 py-2">Product</th>
+                          <th className="border px-4 py-2">Size</th>
+                          <th className="border px-4 py-2">Qty</th>
+                          <th className="border px-4 py-2">Unit Price</th>
+                          <th className="border px-4 py-2">Total</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {orderToDisplay.items?.length > 0 ? (
+                          orderToDisplay.items.map((item, index) => (
+                            <tr key={index}>
+                              <td className="border px-4 py-2">{item.name}</td>
+                              <td className="border px-4 py-2">
+                                {item.size || "N/A"}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {item.quantity}
+                              </td>
+                              <td className="border px-4 py-2">
+                                ৳{item.price.toFixed(2)}
+                              </td>
+                              <td className="border px-4 py-2">
+                                ৳{(item.price * item.quantity).toFixed(2)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              className="border px-4 py-2 text-center text-gray-500"
+                            >
+                              No items found in this order.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                   <div className="mt-4 text-right font-semibold text-lg">
                     Grand Total: ৳
-                    {showorder.order.items
-                      ?.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
-                      .toFixed(2)}
+                    {calculateGrandTotal(orderToDisplay.items).toFixed(2)}
                   </div>
                 </section>
 
@@ -311,23 +438,20 @@ export default function SuccessPage() {
                   </h3>
                   <p>
                     <span className="font-semibold">Transaction ID:</span>{" "}
-                    {tran_id}
+                    {tran_id || "-"}
                   </p>
                   <p>
-                    <span className="font-semibold">Status:</span> VALID
+                    <span className="font-semibold">Status:</span>{" "}
+                    {orderToDisplay.payment_status || "N/A"}
                   </p>
                   <p>
                     <span className="font-semibold">Amount Paid:</span> ৳
-                    {showorder.order.items
-                      ?.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
-                      .toFixed(2)}
+                    {calculateGrandTotal(orderToDisplay.items).toFixed(2)}
                   </p>
                   <p>
-                    <span className="font-semibold">Card Type:</span>{" "}
-                    BKASH-BKash
+                    <span className="font-semibold">Payment Method:</span>{" "}
+                    {orderToDisplay.payment_method || "BKASH-BKash"}{" "}
+                    {/* Default if not stored */}
                   </p>
                 </section>
               </div>
