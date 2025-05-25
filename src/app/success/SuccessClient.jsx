@@ -18,9 +18,10 @@ export default function SuccessPage() {
   const tran_id = searchParams.get("tran_id");
 
   const { cartItems, clearCart } = useCart();
-  const [showorder, setShoworder] = useState(null);
+
   const [customerData, setCustomerData] = useState(null);
   const [orderData, setOrderData] = useState(null);
+  const [showorder, setShoworder] = useState(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [pageState, setPageState] = useState({
     loading: true,
@@ -32,36 +33,40 @@ export default function SuccessPage() {
 
   // Track window size for Confetti
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window === "undefined") return;
+
+    const updateSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-      const handleResize = () => {
-        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-      };
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
+    };
+    updateSize();
+
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  // Load customer data from localStorage
+  // Load customer data from localStorage once
   useEffect(() => {
-    const storedCustomer = localStorage.getItem("checkoutData");
-    if (storedCustomer) {
-      try {
+    if (typeof window === "undefined") return;
+
+    try {
+      const storedCustomer = localStorage.getItem("checkoutData");
+      if (storedCustomer) {
         const parsed = JSON.parse(storedCustomer);
         setCustomerData(parsed);
-      } catch {
-        console.error("Failed to parse checkoutData from localStorage");
       }
+    } catch (err) {
+      console.error("Failed to parse checkoutData from localStorage", err);
     }
   }, []);
 
-  // Save order if customerData and tran_id is available
+  // Save order if tran_id, customerData and cartItems exist & only once (isSaving flag)
   useEffect(() => {
+    if (!tran_id || !customerData || !cartItems?.length || isSaving.current)
+      return;
+
+    isSaving.current = true;
+
     const saveOrder = async () => {
-      if (!tran_id || !customerData || cartItems.length === 0) return;
-
-      isSaving.current = true;
-
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${tran_id}`,
@@ -77,16 +82,16 @@ export default function SuccessPage() {
                 phone: customerData.phone,
               },
               shipping: {
-                address: customerData.shipping,
+                address: customerData.address,
                 city: customerData.city,
                 postal_code: customerData.postcode,
                 country: "Bangladesh",
               },
-              items: cartItems.map((i) => ({
-                name: i.product.name,
-                price: i.product.price,
-                quantity: i.quantity,
-                size: i.size,
+              items: cartItems.map((item) => ({
+                name: item.product.name,
+                price: item.product.price,
+                quantity: item.quantity,
+                size: item.size,
               })),
               payment_status: "PAID",
             }),
@@ -98,7 +103,7 @@ export default function SuccessPage() {
         if (res.ok && data.success) {
           setOrderData(data.order);
           setPageState({ loading: false, error: null, success: true });
-          clearCart(); // Optional: অর্ডার সফল হলে কার্ট ক্লিয়ার করো
+          clearCart();
         } else {
           setPageState({
             loading: false,
@@ -107,7 +112,7 @@ export default function SuccessPage() {
           });
         }
       } catch (error) {
-        console.error("Save order error:", error.message);
+        console.error("Save order error:", error);
         setPageState({
           loading: false,
           error: "অর্ডার সংরক্ষণে সমস্যা হয়েছে।",
@@ -116,19 +121,19 @@ export default function SuccessPage() {
       }
     };
 
-    if (tran_id && customerData) {
-      saveOrder();
-    }
-  }, [tran_id, customerData]);
+    saveOrder();
+  }, [tran_id, customerData, cartItems, clearCart]);
 
-  // Fetch order details
+  // Fetch order details when tran_id changes
   useEffect(() => {
+    if (!tran_id) return;
+
     const fetchOrder = async () => {
-      if (!tran_id) return;
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchorders/invoice/${tran_id}`
         );
+        if (!res.ok) throw new Error("Failed to fetch order details");
         const orderDetails = await res.json();
         setShoworder(orderDetails);
       } catch (err) {
@@ -149,25 +154,11 @@ export default function SuccessPage() {
     });
   };
 
-  const getOrderItems = () => {
-    if (!orderData?.items) return [];
-    return orderData.items.map((item) => ({
-      name: item.name || "-",
-      size: item.size || "-",
-      quantity: item.qty || item.quantity || 1,
-      price: item.price || 0,
-    }));
-  };
-
   const handlePrint = () => {
     if (typeof window !== "undefined") {
       window.print();
     }
   };
-
-  const invoiceId = orderData?._id || tran_id || "-";
-  console.log(showorder);
-  console.log(cartItems);
 
   return (
     <>
@@ -211,7 +202,7 @@ export default function SuccessPage() {
 
           {pageState.loading && <p>Loading...</p>}
 
-          {pageState.success && orderData && customerData && (
+          {pageState.success && showorder?.order && (
             <>
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <button
@@ -230,95 +221,116 @@ export default function SuccessPage() {
                 </a>
               </div>
 
-              {showorder?.order && (
-                <>
-                  <div
-                    id="invoice"
-                    className="text-left mt-6 bg-gray-50 p-6 md:p-8 rounded-lg shadow-inner border border-gray-200"
-                  >
-                    <header className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-gray-300 pb-4 mb-6">
-                      <div className="mb-4 md:mb-0">
-                        <h2 className="text-2xl font-bold text-gray-800 tracking-wide">
-                          Weal
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Chattogram, Bangladesh
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Phone: 01937370777
-                        </p>
-                      </div>
-                      <div className="text-sm text-gray-700">
-                        <p>
-                          <span className="font-semibold">Invoice ID:</span>{" "}
-                          {showorder.order._id || tran_id}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Date:</span>{" "}
-                          {formatDate(showorder.order.createdAt)}
-                        </p>
-                      </div>
-                    </header>
-
-                    <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">
-                          Customer Info
-                        </h3>
-                        <p>{showorder.order.customer?.name}</p>
-                        <p>{showorder.order.customer?.email}</p>
-                        <p>{showorder.order.customer?.phone}</p>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">
-                          Shipping Address
-                        </h3>
-                        <p>{showorder.order.shipping?.address}</p>
-                        <p>{showorder.order.shipping?.city}</p>
-                        <p>{showorder.order.shipping?.postal_code}</p>
-                        <p>Bangladesh</p>
-                      </div>
-                    </section>
-
-                    <table className="w-full text-left border-collapse border border-gray-300">
-                      <thead className="bg-gray-200">
-                        <tr>
-                          <th className="border border-gray-300 px-4 py-2">
-                            Name
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2">
-                            Size
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2">
-                            Qty
-                          </th>
-                          <th className="border border-gray-300 px-4 py-2">
-                            Price
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {showorder.order.items?.map((item, idx) => (
-                          <tr key={idx}>
-                            <td className="border border-gray-300 px-4 py-2">
-                              {item.name}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                              {item.size || "-"}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                              {item.quantity}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                              ৳{item.price}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <div
+                id="invoice"
+                className="text-left mt-6 bg-white p-6 md:p-8 rounded-lg shadow-inner border border-gray-200"
+              >
+                <header className="border-b border-gray-300 pb-4 mb-6">
+                  <h2 className="text-3xl font-bold text-gray-800">Weal</h2>
+                  <p className="text-sm text-gray-600">www.wealshop.com</p>
+                  <div className="mt-2 text-sm text-gray-700">
+                    <p>
+                      <span className="font-semibold">Invoice ID:</span>{" "}
+                      {showorder.order._id || tran_id}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Date:</span>{" "}
+                      {formatDate(showorder.order.createdAt)}
+                    </p>
                   </div>
-                </>
-              )}
+                </header>
+
+                <section className="mb-6">
+                  <h3 className="font-semibold text-lg mb-2">
+                    Customer Information
+                  </h3>
+                  <p>
+                    <span className="font-semibold">Name:</span>{" "}
+                    {showorder.order.customer?.name || "-"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Email:</span>{" "}
+                    {showorder.order.customer?.email || "-"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Phone:</span>{" "}
+                    {showorder.order.customer?.phone || "-"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Address:</span>{" "}
+                    {showorder.order.shipping?.address},{" "}
+                    {showorder.order.shipping?.city} -{" "}
+                    {showorder.order.shipping?.postal_code}
+                  </p>
+                </section>
+
+                <section className="mb-6">
+                  <h3 className="font-semibold text-lg mb-2">Order Summary</h3>
+                  <table className="w-full text-left border-collapse border border-gray-300">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th className="border px-4 py-2">Product</th>
+                        <th className="border px-4 py-2">Size</th>
+                        <th className="border px-4 py-2">Qty</th>
+                        <th className="border px-4 py-2">Unit Price</th>
+                        <th className="border px-4 py-2">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {showorder.order.items?.map((item, index) => (
+                        <tr key={index}>
+                          <td className="border px-4 py-2">{item.name}</td>
+                          <td className="border px-4 py-2">
+                            {item.size || "-"}
+                          </td>
+                          <td className="border px-4 py-2">{item.quantity}</td>
+                          <td className="border px-4 py-2">
+                            ৳{item.price.toFixed(2)}
+                          </td>
+                          <td className="border px-4 py-2">
+                            ৳{(item.price * item.quantity).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="mt-4 text-right font-semibold text-lg">
+                    Grand Total: ৳
+                    {showorder.order.items
+                      ?.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                      .toFixed(2)}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold text-lg mb-2">
+                    Payment Details
+                  </h3>
+                  <p>
+                    <span className="font-semibold">Transaction ID:</span>{" "}
+                    {tran_id}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Status:</span> VALID
+                  </p>
+                  <p>
+                    <span className="font-semibold">Amount Paid:</span> ৳
+                    {showorder.order.items
+                      ?.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                      .toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Card Type:</span>{" "}
+                    BKASH-BKash
+                  </p>
+                </section>
+              </div>
             </>
           )}
         </section>
