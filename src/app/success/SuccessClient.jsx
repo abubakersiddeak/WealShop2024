@@ -13,8 +13,10 @@ import {
   FiAlertCircle,
   FiDownload,
 } from "react-icons/fi";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+
+// Import from react-pdf
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePdf from "../component/InvoicePdf";
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
@@ -33,7 +35,7 @@ export default function SuccessPage() {
   });
 
   const isSavingOrder = useRef(false); // Flag to prevent multiple order saves
-  const invoiceRef = useRef(null); // Ref for the invoice section for PDF generation
+  // const invoiceRef = useRef(null); // No longer needed for PDF generation with react-pdf
 
   // --- Utility Functions ---
   const formatDate = useCallback((dateStr) => {
@@ -216,40 +218,6 @@ export default function SuccessPage() {
     }
   };
 
-  const handleDownloadPdf = async () => {
-    if (!invoiceRef.current) return;
-
-    try {
-      const canvas = await html2canvas(invoiceRef.current, { scale: 2 }); // Scale for better resolution
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
-        // If content exceeds one page, handle pagination
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        let position = 0;
-
-        while (position < pdfHeight) {
-          pdf.addImage(imgData, "PNG", 0, position * -1, pdfWidth, pdfHeight);
-          position += pageHeight;
-          if (position < pdfHeight) {
-            pdf.addPage();
-          }
-        }
-      } else {
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      }
-
-      pdf.save(`invoice_${tran_id || "Weal"}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to generate PDF. Please try again or print the page.");
-    }
-  };
-
   // Determine which order data to display (prefer `orderData` if available, otherwise `displayOrder`)
   const orderToDisplay = orderData || displayOrder;
 
@@ -319,13 +287,30 @@ export default function SuccessPage() {
                   <FiPrinter className="h-5 w-5" />
                   Print Invoice
                 </button>
-                <button
-                  onClick={handleDownloadPdf}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
+
+                {/* PDFDownloadLink replaces the old handleDownloadPdf function */}
+                <PDFDownloadLink
+                  document={
+                    <InvoicePdf
+                      order={orderToDisplay}
+                      tran_id={tran_id}
+                      calculateGrandTotal={calculateGrandTotal}
+                      formatDate={formatDate}
+                    />
+                  }
+                  fileName={`invoice_${tran_id || "Weal"}.pdf`}
                 >
-                  <FiDownload className="h-5 w-5" />
-                  Download Invoice (PDF)
-                </button>
+                  {({ loading }) => (
+                    <button
+                      className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
+                      disabled={loading}
+                    >
+                      <FiDownload className="h-5 w-5" />
+                      {loading ? "Generating PDF..." : "Download Invoice (PDF)"}
+                    </button>
+                  )}
+                </PDFDownloadLink>
+
                 <a
                   href="/allProduct"
                   className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
@@ -335,9 +320,10 @@ export default function SuccessPage() {
                 </a>
               </div>
 
+              {/* Keep the existing HTML invoice for display on the page */}
               <div
                 id="invoice"
-                ref={invoiceRef} // Assign ref here for PDF generation
+                // ref={invoiceRef} // No longer needed for PDF generation with react-pdf
                 className="text-left mt-6 bg-white p-6 md:p-8 rounded-lg shadow-inner border border-gray-200 print:shadow-none print:border-none" // Add print styles
               >
                 <header className="border-b border-gray-300 pb-4 mb-6">
