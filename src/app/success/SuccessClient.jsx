@@ -421,7 +421,7 @@ export default function SuccessPage() {
                   </p>
                   <p>
                     <span className="font-semibold">Payment Method:</span>{" "}
-                    {orderToDisplay.payment_method || "BKASH-BKash"}{" "}
+                    {orderToDisplay.card_type || " "}{" "}
                     {/* Default if not stored */}
                   </p>
                 </section>
