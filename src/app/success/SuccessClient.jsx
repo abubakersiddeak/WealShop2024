@@ -13,8 +13,9 @@ import {
   FiAlertCircle,
   FiDownload,
 } from "react-icons/fi";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
+import Invoicepdf from "../component/InvoicePdf";
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
@@ -216,40 +217,6 @@ export default function SuccessPage() {
     }
   };
 
-  const handleDownloadPdf = async () => {
-    if (!invoiceRef.current) return;
-
-    try {
-      const canvas = await html2canvas(invoiceRef.current, { scale: 2 }); // Scale for better resolution
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
-        // If content exceeds one page, handle pagination
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        let position = 0;
-
-        while (position < pdfHeight) {
-          pdf.addImage(imgData, "PNG", 0, position * -1, pdfWidth, pdfHeight);
-          position += pageHeight;
-          if (position < pdfHeight) {
-            pdf.addPage();
-          }
-        }
-      } else {
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      }
-
-      pdf.save(`invoice_${tran_id || "Weal"}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to generate PDF. Please try again or print the page.");
-    }
-  };
-
   // Determine which order data to display (prefer `orderData` if available, otherwise `displayOrder`)
   const orderToDisplay = orderData || displayOrder;
 
@@ -319,13 +286,17 @@ export default function SuccessPage() {
                   <FiPrinter className="h-5 w-5" />
                   Print Invoice
                 </button>
-                <button
-                  onClick={handleDownloadPdf}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
-                >
-                  <FiDownload className="h-5 w-5" />
-                  Download Invoice (PDF)
-                </button>
+                {orderToDisplay && (
+                  <PDFDownloadLink
+                    document={<Invoicepdf order={orderToDisplay} />}
+                    fileName={`invoice_${tran_id || "Weal"}.pdf`}
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
+                  >
+                    {({ loading }) =>
+                      loading ? "Generating PDF..." : "Download Invoice (PDF)"
+                    }
+                  </PDFDownloadLink>
+                )}
                 <a
                   href="/allProduct"
                   className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-300"
