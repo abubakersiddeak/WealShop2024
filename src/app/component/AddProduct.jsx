@@ -4,8 +4,9 @@ import { useState, useRef } from "react";
 import { FiUpload, FiImage, FiCheck, FiX } from "react-icons/fi";
 import generateSlug from "../utils/generateSlug";
 import Select from "react-select";
+import { EyeOff } from "lucide-react";
 
-export default function AddProduct() {
+export default function AddProduct({ setOpenAddproduct }) {
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -256,7 +257,21 @@ export default function AddProduct() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Add New Product</h1>
+      <div className="flex justify-between">
+        {" "}
+        <span className="text-3xl font-bold text-gray-800 mb-6 ">
+          Add New Product
+        </span>
+        <span className="text-3xl font-bold text-gray-800 mb-6 hover:text-gray-600">
+          <button
+            onClick={() => {
+              setOpenAddproduct(false);
+            }}
+          >
+            <EyeOff />
+          </button>
+        </span>
+      </div>
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-gray-200 mb-6">

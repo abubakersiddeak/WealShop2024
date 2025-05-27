@@ -11,7 +11,9 @@ export default function Allproduct() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/Product");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
+        );
         if (!res.ok) {
           throw new Error("Product fetching failed from API in GET method");
         }
