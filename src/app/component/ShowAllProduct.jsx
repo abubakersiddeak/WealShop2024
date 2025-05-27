@@ -103,21 +103,19 @@ const ShowAllProduct = () => {
       }
     }
   };
-  const handleUpdate = async (productId, updatedProduct) => {
+  const handleUpdate = async (id, updatedProduct) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/${productId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedProduct),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedProduct),
+      });
       const data = await res.json();
       if (data.success) {
         alert("Product updated successfully");
         // Optionally update state
       }
+      console.log(data);
     } catch (error) {
       console.error("Update failed:", error);
     }

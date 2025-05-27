@@ -4,7 +4,7 @@ const categorySchema = new Schema(
   {
     gender: { type: String, required: true },
     type: { type: String, required: true },
-    collection: { type: String, required: true },
+    scollection: { type: String, required: true },
   },
   { _id: false }
 );

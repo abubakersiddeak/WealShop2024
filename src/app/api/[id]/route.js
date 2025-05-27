@@ -51,7 +51,7 @@ export async function DELETE(request, { params }) {
 export async function PUT(request, { params }) {
   await connectMongodb();
 
-  const { id } = params;
+  const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });

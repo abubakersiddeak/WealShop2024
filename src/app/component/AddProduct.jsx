@@ -14,7 +14,7 @@ export default function AddProduct({ setOpenAddproduct }) {
     category: {
       gender: "",
       type: "",
-      collection: "",
+      scollection: "",
     },
     price: "",
     discountPrice: "",
@@ -183,7 +183,7 @@ export default function AddProduct({ setOpenAddproduct }) {
           category: {
             gender: "",
             type: "",
-            collection: "",
+            scollection: "",
           },
           price: "",
           discountPrice: "",
@@ -455,14 +455,14 @@ export default function AddProduct({ setOpenAddproduct }) {
               <Select
                 options={collectionoptions}
                 value={collectionoptions.find(
-                  (option) => option.value === formData.category.collection
+                  (option) => option.value === formData.category.scollection
                 )}
                 onChange={(selectedOption) => {
                   setFormData((prev) => ({
                     ...prev,
                     category: {
                       ...prev.category,
-                      collection: selectedOption ? selectedOption.value : "",
+                      scollection: selectedOption ? selectedOption.value : "",
                     },
                   }));
                 }}
