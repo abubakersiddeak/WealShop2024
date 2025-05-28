@@ -121,8 +121,8 @@ const ShowAllProduct = () => {
     }
   };
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+    <div className="p-6 from-gray-800 to-gray-900 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-300">
         Available Products ({filteredProducts.length})
       </h1>
 
