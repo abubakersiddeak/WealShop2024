@@ -489,7 +489,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
                   {selectedOrder.items.map((item) => (
                     <li key={item._id}>
                       {item.name} (Size: {item.size}, Units: {item.quantity},
-                      Unit Price: ৳{item.price})
+                      Unit salePrice: ৳{item.salePrice})
                     </li>
                   ))}
                 </ul>

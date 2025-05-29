@@ -43,8 +43,12 @@ const OrderSchema = new mongoose.Schema(
         product_id: String,
         name: String,
         quantity: Number,
-        price: Number,
+        salePrice: Number,
         size: String,
+        buyPrice: {
+          type: Number,
+          default: null,
+        },
       },
     ],
   },

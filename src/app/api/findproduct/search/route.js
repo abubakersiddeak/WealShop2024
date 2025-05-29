@@ -12,7 +12,7 @@ export async function GET(req) {
 
   const regex = new RegExp(query, "i"); // case-insensitive search
   const products = await Product.find({ name: regex }).select(
-    "name slug images price"
+    "name slug images salePrice"
   );
 
   return Response.json({ products });

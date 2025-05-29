@@ -16,8 +16,8 @@ export default function AddProduct({ setOpenAddproduct }) {
       type: "",
       scollection: "",
     },
-    price: "",
-    discountPrice: "",
+    salePrice: "",
+    discountsalePrice: "",
     brand: "",
     sizes: [],
     colors: [],
@@ -128,7 +128,7 @@ export default function AddProduct({ setOpenAddproduct }) {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.name || !formData.price || formData.images.length === 0) {
+    if (!formData.name || !formData.salePrice || formData.images.length === 0) {
       alert("Please fill in all required fields and upload at least one image");
       return;
     }
@@ -137,9 +137,9 @@ export default function AddProduct({ setOpenAddproduct }) {
       // Prepare the data to send
       const productData = {
         ...formData,
-        price: Number(formData.price),
-        discountPrice: formData.discountPrice
-          ? Number(formData.discountPrice)
+        salePrice: Number(formData.salePrice),
+        discountsalePrice: formData.discountsalePrice
+          ? Number(formData.discountsalePrice)
           : undefined,
         quantity: Number(formData.quantity) || 0,
         weight: formData.weight ? Number(formData.weight) : undefined,
@@ -185,8 +185,8 @@ export default function AddProduct({ setOpenAddproduct }) {
             type: "",
             scollection: "",
           },
-          price: "",
-          discountPrice: "",
+          salePrice: "",
+          discountsalePrice: "",
           brand: "",
           sizes: [],
           colors: [],
@@ -373,14 +373,14 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Price*
+                  Sale Price
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2">$</span>
                   <input
                     type="number"
-                    name="price"
-                    value={formData.price}
+                    name="salePrice"
+                    value={formData.salePrice}
                     onChange={handleChange}
                     min="0"
                     step="0.01"
@@ -392,14 +392,14 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Discount Price
+                  Buy Price
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2">$</span>
                   <input
                     type="number"
-                    name="discountPrice"
-                    value={formData.discountPrice}
+                    name="discountsalePrice"
+                    value={formData.discountsalePrice}
                     onChange={handleChange}
                     min="0"
                     step="0.01"

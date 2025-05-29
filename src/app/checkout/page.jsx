@@ -177,7 +177,7 @@ export default function CheckoutPage() {
                   <span>
                     {item.product.name} (x{item.quantity})
                   </span>
-                  <span>৳{item.product.price * item.quantity}</span>
+                  <span>৳{item.product.salePrice * item.quantity}</span>
                 </div>
               ))}
               <hr className="border-gray-200" />

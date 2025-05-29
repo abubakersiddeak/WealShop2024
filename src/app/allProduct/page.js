@@ -71,7 +71,7 @@ export default function Allproduct() {
                 {product.name}
               </h3>
               <p className="text-gray-600 text-start mt-1">
-                {product.price} TK
+                {product.salePrice} TK
               </p>
             </button>
           ))}

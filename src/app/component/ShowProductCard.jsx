@@ -28,7 +28,7 @@ export default function ShowProductCard({ products, id }) {
             <h3 className="md:text-xl font-semibold text-start mt-3">
               {p.name}
             </h3>
-            <p className="text-gray-600 text-start mt-1">{p.price} TK</p>
+            <p className="text-gray-600 text-start mt-1">{p.salePrice} TK</p>
           </button>
         ))}
       </div>

@@ -167,7 +167,7 @@ const Invoicepdf = ({ order }) => (
               <Text style={styles.tableCell}>Qty</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>Unit Price</Text>
+              <Text style={styles.tableCell}>Unit salePrice</Text>
             </View>
           </View>
           {order.items.map((item, index) => (
@@ -189,7 +189,7 @@ const Invoicepdf = ({ order }) => (
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellBody}>
-                  TK {item.price.toFixed(2)}
+                  TK {item.salePrice.toFixed(2)}
                 </Text>
               </View>
             </View>
@@ -201,7 +201,7 @@ const Invoicepdf = ({ order }) => (
         <Text style={styles.totalText}>
           Grand Total: TK{" "}
           {order.items
-            .reduce((total, item) => total + item.price * item.quantity, 0)
+            .reduce((total, item) => total + item.salePrice * item.quantity, 0)
             .toFixed(2)}
         </Text>
       </View>
@@ -215,7 +215,7 @@ const Invoicepdf = ({ order }) => (
         <Text style={styles.paymentText}>
           Amount Paid: TK{" "}
           {order.items
-            .reduce((total, item) => total + item.price * item.quantity, 0)
+            .reduce((total, item) => total + item.salePrice * item.quantity, 0)
             .toFixed(2)}
         </Text>
         <Text style={styles.paymentText}>

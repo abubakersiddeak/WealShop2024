@@ -131,7 +131,7 @@ export default function NewSection() {
             <div className="relative z-10 p-4 text-black text-left">
               <h2 className="text-xs md:text-xl font-serif">{p.name}</h2>
               <p className="text-sm md:text-base opacity-80 mt-1">
-                {p.price} TK
+                {p.salePrice} TK
               </p>
             </div>
             <span className="absolute top-1 left-0 z-10 text-[10px] md:text-xs bg-gradient-to-r bg-black text-white px-2 py-[2px] md:px-3 md:py-1 rounded-full shadow-md tracking-wider">

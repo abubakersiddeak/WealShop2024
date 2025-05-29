@@ -5,7 +5,11 @@ const ShowAllProduct = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState({ brand: "", category: "", price: "" });
+  const [filter, setFilter] = useState({
+    brand: "",
+    category: "",
+    salePrice: "",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
@@ -43,7 +47,7 @@ const ShowAllProduct = () => {
           product.name,
           product.brand,
           product.category,
-          String(product.price),
+          String(product.salePrice),
           new Date(product.updatedAt).toLocaleDateString(),
         ]
           .join(" ")
@@ -62,11 +66,11 @@ const ShowAllProduct = () => {
       temp = temp.filter((product) => product.brand === filter.brand);
     }
 
-    // Price sorting
-    if (filter.price === "lowToHigh") {
-      temp.sort((a, b) => a.price - b.price);
-    } else if (filter.price === "highToLow") {
-      temp.sort((a, b) => b.price - a.price);
+    // salePrice sorting
+    if (filter.salePrice === "lowToHigh") {
+      temp.sort((a, b) => a.salePrice - b.salePrice);
+    } else if (filter.salePrice === "highToLow") {
+      temp.sort((a, b) => b.salePrice - a.salePrice);
     }
 
     setFilteredProducts(temp);
@@ -130,7 +134,7 @@ const ShowAllProduct = () => {
       <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
         <input
           type="text"
-          placeholder="Search by name, updated date, category, brand, price..."
+          placeholder="Search by name, updated date, category, brand, salePrice..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="p-2 border border-gray-300 rounded w-full md:w-1/3"
@@ -160,13 +164,13 @@ const ShowAllProduct = () => {
           </select>
 
           <select
-            name="price"
+            name="salePrice"
             onChange={handleFilterChange}
             className="p-2 border rounded"
           >
             <option value="">Default</option>
-            <option value="lowToHigh">Price: Low to High</option>
-            <option value="highToLow">Price: High to Low</option>
+            <option value="lowToHigh">salePrice: Low to High</option>
+            <option value="highToLow">salePrice: High to Low</option>
           </select>
         </div>
       </div>

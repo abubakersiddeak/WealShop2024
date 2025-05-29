@@ -25,8 +25,8 @@ const productSchema = new Schema(
 
     category: { type: categorySchema, required: true },
 
-    price: { type: Number, required: true, min: 0 },
-    discountPrice: { type: Number, min: 0 },
+    salePrice: { type: Number, required: true, min: 0 },
+    buyPrice: { type: Number, min: 0 },
 
     brand: { type: String, required: true },
     sizes: [{ type: String }],

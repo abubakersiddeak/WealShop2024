@@ -17,8 +17,8 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
     slug: "",
     description: "",
     brand: "",
-    price: "",
-    discountPrice: "",
+    salePrice: "",
+    discountsalePrice: "",
     categoryGender: "",
     categoryType: "",
     categoryScollection: "",
@@ -49,9 +49,11 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
         slug: product.slug || "",
         description: product.description || "",
         brand: product.brand || "",
-        price: product.price !== undefined ? product.price : "",
-        discountPrice:
-          product.discountPrice !== undefined ? product.discountPrice : "",
+        salePrice: product.salePrice !== undefined ? product.salePrice : "",
+        discountsalePrice:
+          product.discountsalePrice !== undefined
+            ? product.discountsalePrice
+            : "",
         categoryGender: product.category?.gender || "",
         categoryType: product.category?.type || "",
         categoryScollection: product.category?.scollection || "",
@@ -118,9 +120,9 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
       slug: formData.slug.trim(),
       description: formData.description.trim(),
       brand: formData.brand.trim(),
-      price: parseFloat(formData.price),
-      discountPrice: formData.discountPrice
-        ? parseFloat(formData.discountPrice)
+      salePrice: parseFloat(formData.salePrice),
+      discountsalePrice: formData.discountsalePrice
+        ? parseFloat(formData.discountsalePrice)
         : null,
       category: {
         gender: formData.categoryGender.trim(),
@@ -192,16 +194,19 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
         </p>
         <div className="flex items-baseline mb-2">
           <p className="text-lg font-bold text-purple-400 drop-shadow-md">
-            ৳{product.price}
+            ৳{product.salePrice}
           </p>
-          {product.discountPrice && (
+          {product.discountsalePrice && (
             <>
               <p className="text-sm text-gray-500 line-through ml-2">
-                ৳{product.discountPrice}
+                ৳{product.discountsalePrice}
               </p>
               <p className="text-sm text-green-500 ml-2">
                 (
-                {((1 - product.price / product.discountPrice) * 100).toFixed(0)}
+                {(
+                  (1 - product.salePrice / product.discountsalePrice) *
+                  100
+                ).toFixed(0)}
                 % off)
               </p>
             </>
@@ -405,18 +410,18 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                 />
               </div>
 
-              {/* Price & Discount Price */}
+              {/* salePrice & Buy Price */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Price (৳) <span className="text-red-500">*</span>
+                    salePrice (৳) <span className="text-red-500">*</span>
                   </label>
                   <input
-                    name="price"
+                    name="salePrice"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={formData.price}
+                    value={formData.salePrice}
                     onChange={handleChange}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
                     required
@@ -424,14 +429,14 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Discount Price (৳)
+                    Buy Price (৳)
                   </label>
                   <input
-                    name="discountPrice"
+                    name="discountsalePrice"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={formData.discountPrice}
+                    value={formData.discountsalePrice}
                     onChange={handleChange}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   />

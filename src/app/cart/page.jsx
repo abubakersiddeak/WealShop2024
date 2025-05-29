@@ -13,7 +13,7 @@ export default function CartPage() {
   const getTotal = () =>
     Array.isArray(cartItems)
       ? cartItems.reduce(
-          (total, item) => total + item.product.price * item.quantity,
+          (total, item) => total + item.product.salePrice * item.quantity,
           0
         )
       : 0;
@@ -26,7 +26,7 @@ export default function CartPage() {
   if (!Array.isArray(cartItems)) {
     return <p className="text-center mt-10 text-gray-500">Loading cart...</p>;
   }
-
+  console.log(cartItems);
   return (
     <>
       <Navbar />
@@ -70,9 +70,9 @@ export default function CartPage() {
                       Quantity: {item.quantity}
                     </p>
                     <p className="text-sm font-semibold text-gray-800">
-                      TK. {item.product.price} × {item.quantity} ={" "}
+                      TK. {item.product.salePrice} × {item.quantity} ={" "}
                       <span className="text-blue-600 font-bold">
-                        TK. {item.product.price * item.quantity}
+                        TK. {item.product.salePrice * item.quantity}
                       </span>
                     </p>
                   </div>

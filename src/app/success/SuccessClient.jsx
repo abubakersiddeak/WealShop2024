@@ -49,7 +49,10 @@ export default function SuccessPage() {
 
   const calculateGrandTotal = useCallback((items) => {
     return (
-      items?.reduce((total, item) => total + item.price * item.quantity, 0) || 0
+      items?.reduce(
+        (total, item) => total + item.salePrice * item.quantity,
+        0
+      ) || 0
     );
   }, []);
 
@@ -124,7 +127,8 @@ export default function SuccessPage() {
               },
               items: cartItems.map((item) => ({
                 name: item.product.name,
-                price: item.product.price,
+                salePrice: item.product.salePrice,
+                buyPrice: item.product.buyPrice,
                 quantity: item.quantity,
                 size: item.size || "N/A", // Ensure size is always defined
               })),
@@ -361,7 +365,7 @@ export default function SuccessPage() {
                           <th className="border px-4 py-2">Product</th>
                           <th className="border px-4 py-2">Size</th>
                           <th className="border px-4 py-2">Qty</th>
-                          <th className="border px-4 py-2">Unit Price</th>
+                          <th className="border px-4 py-2">Unit salePrice</th>
                           <th className="border px-4 py-2">Total</th>
                         </tr>
                       </thead>
@@ -377,10 +381,10 @@ export default function SuccessPage() {
                                 {item.quantity}
                               </td>
                               <td className="border px-4 py-2">
-                                ৳{item.price.toFixed(2)}
+                                ৳{item.salePrice.toFixed(2)}
                               </td>
                               <td className="border px-4 py-2">
-                                ৳{(item.price * item.quantity).toFixed(2)}
+                                ৳{(item.salePrice * item.quantity).toFixed(2)}
                               </td>
                             </tr>
                           ))

@@ -123,7 +123,16 @@ export default function EcomarsDashboard() {
       </div>
     );
   }
-
+  const totalsale = orders.reduce((sum, order) => sum + (order.amount || 0), 0);
+  const totalBuyPrice = orders.reduce((productAcc, product) => {
+    const itemTotal = product.items.reduce((itemAcc, item) => {
+      return itemAcc + item.buyPrice;
+    }, 0);
+    return productAcc + itemTotal;
+  }, 0);
+  const totalProfit =
+    orders.reduce((sum, order) => sum + (order.store_amount || 0), 0) -
+    totalBuyPrice;
   // Main Dashboard view with modern/futuristic enhancements
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-8 font-sans">
@@ -177,7 +186,7 @@ export default function EcomarsDashboard() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-green-400 group-hover:text-green-300">
-                Product Catalog
+                Total Products
               </h2>
               <p className="text-gray-400 text-sm mt-1">
                 Explore your inventory and product listings.
@@ -200,20 +209,33 @@ export default function EcomarsDashboard() {
               </h3>
               <CreditCard size={24} className="text-purple-500" />
             </div>
-            <p className="text-4xl font-bold text-purple-400">
-              TK {orders.reduce((sum, order) => sum + (order.amount || 0), 0)}
-            </p>
+            <p className="text-4xl font-bold text-purple-400">TK {totalsale}</p>
             <p className="text-sm text-gray-400 mt-2 flex items-center">
               <TrendingUp size={16} className="text-green-400 mr-1" />
               +12.5% since last month
             </p>
           </div>
-
+          {/* Metric Card: Average Order Value */}
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-orange-500/20 transition-shadow duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-300">
+                Revinue Form sale Product
+              </h3>
+              <CreditCard size={24} className="text-orange-500" />
+            </div>
+            <p className="text-4xl font-bold text-orange-400">
+              TK {totalProfit}
+            </p>
+            <p className="text-sm text-gray-400 mt-2 flex items-center">
+              <TrendingUp size={16} className="text-green-400 mr-1" />
+              +2.1% since last month
+            </p>
+          </div>
           {/* Metric Card: New Orders */}
           <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-300">
-                Totl Orders
+                Total Orders
               </h3>
               <ShoppingBag size={24} className="text-cyan-500" />
             </div>
@@ -236,24 +258,6 @@ export default function EcomarsDashboard() {
             <p className="text-sm text-gray-400 mt-2 flex items-center">
               <TrendingUp size={16} className="text-green-400 mr-1" />
               +15.0% since last month
-            </p>
-          </div>
-
-          {/* Metric Card: Average Order Value */}
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-orange-500/20 transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-300">
-                Avg. Order Value
-              </h3>
-              <ClipboardPlus size={24} className="text-orange-500" />
-            </div>
-            <p className="text-4xl font-bold text-orange-400">$71.85</p>
-            <p className="text-sm text-gray-400 mt-2 flex items-center">
-              <TrendingUp
-                size={16}
-                className="text-red-400 mr-1 transform rotate-180"
-              />
-              -2.1% since last month
             </p>
           </div>
         </div>

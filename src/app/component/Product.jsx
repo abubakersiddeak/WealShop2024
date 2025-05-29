@@ -9,7 +9,7 @@ export default function Product({ product }) {
     name,
     description,
     category,
-    price,
+    salePrice,
     brand,
     sizes = [],
     colors = [],
@@ -132,7 +132,7 @@ export default function Product({ product }) {
       <div className="mt-4 md:mt-6 space-y-4">
         <h1 className="text-xl sm:text-2xl font-bold">{name}</h1>
         <p className="text-lg sm:text-xl font-semibold text-gray-700">
-          TK. {price}
+          TK. {salePrice}
         </p>
 
         {description && (

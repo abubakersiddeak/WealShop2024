@@ -67,7 +67,9 @@ export default function Allproduct() {
             <h3 className="md:text-xl font-semibold text-start mt-3">
               {product.name}
             </h3>
-            <p className="text-gray-600 text-start mt-1">{product.price} TK</p>
+            <p className="text-gray-600 text-start mt-1">
+              {product.salePrice} TK
+            </p>
           </button>
         ))}
       </div>
