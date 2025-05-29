@@ -20,7 +20,9 @@ export default function NewSection() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/Product`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
+        );
 
         if (!res.ok) throw new Error("Product fetching failed");
 
