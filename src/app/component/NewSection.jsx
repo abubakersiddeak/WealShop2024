@@ -20,7 +20,7 @@ export default function NewSection() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/Product");
+        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/Product`);
 
         if (!res.ok) throw new Error("Product fetching failed");
 
@@ -111,7 +111,7 @@ export default function NewSection() {
 
   return (
     <div className="relative p-4 ">
-      <h1 className="xl:p-4 text-5xl mb-4 xl:text-8xl font-serif">
+      <h1 className="text-left text-4xl md:text-6xl lg:text-7xl font-serif mb-8">
         New Arrival
       </h1>
 
