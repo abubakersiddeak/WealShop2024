@@ -20,7 +20,7 @@ export default function NewSection() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/Product");
+        const res = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/Product`);
         if (!res.ok) {
           throw new Error(`Failed to fetch products: ${res.statusText}`);
         }
