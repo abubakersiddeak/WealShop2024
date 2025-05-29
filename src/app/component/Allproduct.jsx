@@ -47,8 +47,8 @@ export default function Allproduct() {
   };
 
   return (
-    <div className="relative p-4">
-      <h2 className="text-5xl mb-4 xl:p-4 xl:text-8xl font-serif">
+    <div className="relative p-4 mt-5">
+      <h2 className="text-left text-4xl md:text-6xl lg:text-7xl font-serif mb-8">
         All Products
       </h2>
 
