@@ -4,9 +4,8 @@ import Link from "next/link"; // Import Next.js Link component
 
 export default function MainSection() {
   return (
-    <section className="mt-6 flex flex-col md:flex-row h-[50vh] md:h-[80vh] lg:h-[90vh] w-full items-center justify-center bg-gray-50">
+    <section className="mt-6 flex flex-col md:flex-row h-[50vh] md:h-[80vh] lg:h-[90vh] w-full items-center justify-center ">
       {" "}
-      {/* Use section for semantic HTML, adjust height, use flex-col for mobile, add background */}
       {/* Left Section - Image */}
       <div className="relative w-full md:w-[60%] h-2/3 md:h-full overflow-hidden">
         {" "}
@@ -22,7 +21,7 @@ export default function MainSection() {
         />
       </div>
       {/* Right Section - Logo, Text, and Button */}
-      <div className="flex flex-col items-center justify-center gap-2 md:gap-4 w-full md:w-[40%] h-1/3 md:h-full bg-white p-4">
+      <div className="flex flex-col items-center justify-center  md:gap-4 w-full md:w-[40%] h-1/3 md:h-full bg-white p-4">
         {" "}
         {/* Responsive width and height, add background and padding */}
         <div className="relative h-16 w-16 md:h-32 md:w-32 lg:h-48 lg:w-48 flex-shrink-0">
@@ -48,9 +47,8 @@ export default function MainSection() {
         <Link href="/allProduct">
           {" "}
           {/* Use Next.js Link for client-side navigation */}
-          <button className="mt-4 bg-gray-500 text-white px-8 py-2 md:px-12 md:py-3 rounded-full shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 font-bold text-base md:text-xl lg:text-2xl">
+          <button className="mt-4 bg-gray-500 text-white px-5 py-2 md:px-12 md:py-3 rounded-sm shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 font-bold text-base md:text-xl lg:text-2xl">
             {" "}
-            {/* Professional button styling, rounded-full, better colors */}
             Shop Now
           </button>
         </Link>

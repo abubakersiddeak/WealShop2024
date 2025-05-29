@@ -96,7 +96,7 @@ export default function HeroSection() {
               <Link href={slide.shopLink}>
                 {" "}
                 {/* Use Next.js Link component */}
-                <button className="mt-8 bg-white text-black px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-lg md:text-xl lg:text-2xl">
+                <button className="mt-8 bg-white text-black px-4 py-2 rounded-sm shadow-lg hover:bg-black hover:text-white transition-all duration-300 font-bold text-lg md:text-xl lg:text-2xl">
                   {" "}
                   {/* Professional button styling */}
                   Shop Now
@@ -124,14 +124,14 @@ export default function HeroSection() {
         </div>
         <button
           onClick={goToPrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2  bg-opacity-40 text-white p-3 rounded-full text-xl md:text-2xl hover:bg-opacity-60 transition-colors duration-300 z-20" // Refined button style
+          className="absolute hidden md:block left-4 top-1/2 -translate-y-1/2  bg-opacity-40 text-white p-3 rounded-full text-xl md:text-2xl hover:bg-opacity-60 transition-colors duration-300 z-20" // Refined button style
           aria-label="Previous slide"
         >
           ❮
         </button>
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2  bg-opacity-40 text-white p-3 rounded-full text-xl md:text-2xl hover:bg-opacity-60 transition-colors duration-300 z-20" // Refined button style
+          className="absolute hidden md:block right-4 top-1/2 -translate-y-1/2  bg-opacity-40 text-white p-3 rounded-full text-xl md:text-2xl hover:bg-opacity-60 transition-colors duration-300 z-20" // Refined button style
           aria-label="Next slide"
         >
           ❯

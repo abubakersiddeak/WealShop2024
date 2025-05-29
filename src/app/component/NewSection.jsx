@@ -137,7 +137,7 @@ export default function NewSection() {
   if (products.length === 0) {
     return (
       <section className="container mx-auto p-4 py-8">
-        <h2 className="text-4xl text-center  md:text-6xl lg:text-7xl font-serif mb-8">
+        <h2 className="text-4xl text-left   md:text-6xl lg:text-7xl font-serif mb-8">
           New Arrivals
         </h2>
         <div className="flex justify-center items-center h-48">
@@ -213,7 +213,7 @@ export default function NewSection() {
           <Link
             href={`/product/${p._id}`}
             key={p._id}
-            className="flex-none w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer"
+            className="flex-none w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 bg-white border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer"
           >
             <div className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden">
               <img

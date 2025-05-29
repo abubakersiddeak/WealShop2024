@@ -273,7 +273,7 @@ export default function Navbar() {
           {/* Mobile Cart Icon */}
           <Link
             href="/cart"
-            className="relative p-1"
+            className="relative  "
             aria-label={`View shopping cart with ${totalItems} items`}
           >
             <Image
@@ -290,7 +290,7 @@ export default function Navbar() {
           </Link>
 
           {/* Mobile Drawer (Hamburger Menu) */}
-          <div className="drawer drawer-end">
+          <div className="drawer drawer-end mr-[-10px]">
             {" "}
             {/* Moved drawer-end here */}
             <input
@@ -301,7 +301,7 @@ export default function Navbar() {
               checked={isDrawerOpen} // Control state
               onChange={() => setIsDrawerOpen(!isDrawerOpen)} // Handle changes
             />
-            <div className="drawer-content">
+            <div className="drawer-content ">
               <label htmlFor="my-drawer" className="btn btn-ghost p-0 m-0">
                 {" "}
                 {/* Ghost button for hamburger */}

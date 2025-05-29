@@ -52,7 +52,7 @@ export default function Allproduct() {
         All Products
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {selectedProducts.map((product) => (
           <button
             onClick={(e) => productClick(e, product)}
@@ -62,7 +62,7 @@ export default function Allproduct() {
             <img
               src={product.images[0]}
               alt={product.name}
-              className="w-full h-110 border border-gray-300 md:h-90 xl:h-110 object-cover "
+              className="w-full h-50 border border-gray-300 md:h-90 xl:h-110 object-cover "
             />
             <h3 className="md:text-xl font-semibold text-start mt-3">
               {product.name}
