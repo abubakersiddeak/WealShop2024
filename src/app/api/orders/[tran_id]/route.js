@@ -3,7 +3,7 @@ import { connectMongodb } from "@/app/lib/mongodb";
 import Order from "@/app/models/Order";
 
 export async function PUT(request, { params }) {
-  const { tran_id } = params;
+  const { tran_id } = await params;
 
   if (!tran_id) {
     return NextResponse.json(

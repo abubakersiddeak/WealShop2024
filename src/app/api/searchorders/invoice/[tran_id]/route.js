@@ -6,7 +6,7 @@ export async function GET(req, context) {
   try {
     await connectMongodb();
 
-    const { tran_id } = context.params; // ✅ context থেকে ঠিকভাবে নিচ্ছি
+    const { tran_id } = await context.params; // ✅ context থেকে ঠিকভাবে নিচ্ছি
 
     if (!tran_id) {
       return NextResponse.json(

@@ -89,14 +89,13 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white text-black border-b border-gray-200 shadow-sm">
-      {" "}
       {/* Sticky nav, subtle shadow */}
       <div className="container mx-auto h-[80px] flex justify-between items-center px-4 md:px-6 lg:px-8">
-        {" "}
         {/* Responsive padding */}
-        {/* Left Section - Desktop Nav (hidden on mobile) */}
-        <div className="hidden md:flex gap-4 lg:gap-8 font-semibold text-lg">
-          {" "}
+
+        {/* Left Section - Desktop Nav */}
+        {/* For LG and up, this section will flex-grow to push the center logo */}
+        <div className="hidden md:flex lg:flex flex-grow gap-4 lg:gap-8 font-semibold text-lg justify-start">
           {/* Increased font size */}
           <DropdownMenu
             label="Man"
@@ -162,13 +161,14 @@ export default function Navbar() {
             ]}
           />
         </div>
+
         {/* Center Section - Logo */}
-        <div className="flex items-center gap-2">
+        {/* This section will remain its defined size and be pushed to center by flex-grow siblings */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             href={"/"}
             className="relative h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 flex-shrink-0"
           >
-            {" "}
             {/* Adjusted size and added flex-shrink */}
             <Image
               src="/weal.jpg"
@@ -181,14 +181,15 @@ export default function Navbar() {
           </Link>
           <p className="text-3xl lg:text-5xl font-extrabold text-gray-800">
             WEAL
-          </p>{" "}
+          </p>
           {/* Refined text color */}
         </div>
-        {/* Right Section - Desktop Icons & Search (hidden on mobile) */}
-        <div className="hidden md:flex items-center gap-4 lg:gap-6">
+
+        {/* Right Section - Desktop Icons & Search */}
+        {/* For LG and up, this section will flex-grow to push the center logo and align its content to the end */}
+        <div className="hidden md:flex lg:flex flex-grow items-center gap-4 lg:gap-6 justify-end">
           {/* Search bar */}
           <div className="flex items-center border border-gray-300 rounded-full overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-            {" "}
             {/* Professional search bar styling */}
             <input
               type="text"
@@ -212,16 +213,6 @@ export default function Navbar() {
               />
             </button>
           </div>
-
-          {/* Wishlist - commented out as per your previous code, but good to keep in mind */}
-          {/* <button className="cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200" aria-label="View wishlist">
-            <Image
-              src={"/favorite-svgrepo-com.svg"}
-              alt="Wishlist icon"
-              height={24}
-              width={24}
-            />
-          </button> */}
 
           {/* Account */}
           <DropdownMenu
@@ -261,19 +252,19 @@ export default function Navbar() {
             />
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                {" "}
                 {/* Adjusted size and position */}
                 {totalItems}
               </span>
             )}
           </Link>
         </div>
+
         {/* Mobile Navigation (visible on mobile, hidden on desktop) */}
         <div className="md:hidden flex items-center gap-4">
           {/* Mobile Cart Icon */}
           <Link
             href="/cart"
-            className="relative  "
+            className="relative"
             aria-label={`View shopping cart with ${totalItems} items`}
           >
             <Image
@@ -291,7 +282,6 @@ export default function Navbar() {
 
           {/* Mobile Drawer (Hamburger Menu) */}
           <div className="drawer drawer-end mr-[-10px]">
-            {" "}
             {/* Moved drawer-end here */}
             <input
               id="my-drawer"
@@ -303,7 +293,6 @@ export default function Navbar() {
             />
             <div className="drawer-content ">
               <label htmlFor="my-drawer" className="btn btn-ghost p-0 m-0">
-                {" "}
                 {/* Ghost button for hamburger */}
                 <Image
                   src={"/menu-symbol-of-three-parallel-lines-svgrepo-com.svg"}
@@ -320,7 +309,6 @@ export default function Navbar() {
                 className="drawer-overlay"
               ></label>
               <div className="menu bg-base-200 text-base-content min-h-full w-64 sm:w-80 p-4 pt-8">
-                {" "}
                 {/* Increased width for mobile sidebar */}
                 {/* Mobile Search Bar */}
                 <div className="flex items-center border border-gray-300 rounded-full overflow-hidden mb-6">
@@ -348,7 +336,6 @@ export default function Navbar() {
                 </div>
                 {/* Mobile Category Navigation */}
                 <ul className="space-y-4 text-xl font-semibold">
-                  {" "}
                   {/* Added spacing */}
                   <li>
                     <div

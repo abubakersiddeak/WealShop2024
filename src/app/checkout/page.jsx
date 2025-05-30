@@ -1,3 +1,4 @@
+// src/app/checkout/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,15 +23,17 @@ export default function CheckoutPage() {
     postcode: "",
   });
 
+  // This cartItems state correctly holds the *selected* items from the CartPage
   const [cartItems, setCartItems] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Correctly load the selected items and amount from localStorage
     const storedCart = JSON.parse(localStorage.getItem("checkoutCart")) || [];
     const storedAmount =
       JSON.parse(localStorage.getItem("checkoutAmount")) || 0;
 
-    setCartItems(storedCart);
+    setCartItems(storedCart); // Set the cartItems state with the selected items
     if (storedAmount > 0) {
       setForm((prevForm) => ({ ...prevForm, amount: storedAmount }));
     }
@@ -40,19 +43,21 @@ export default function CheckoutPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   console.log(form, "form");
-  console.log(cartItems, "cartitem");
+  console.log(cartItems, "cartitem"); // This `cartItems` array is what you need to save!
+
   const validateForm = () => {
     const { name, email, address, phone, city, postcode } = form;
     if (!name || !email || !address || !phone || !city || !postcode) {
-      setError("সব ফিল্ড পূরণ করা বাধ্যতামূলক!");
+      setError("সব ফিল্ড পূরণ করা বাধ্যতামূলক!"); // All fields are mandatory!
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("সঠিক ইমেইল ঠিকানা দিন।");
+      setError("সঠিক ইমেইল ঠিকানা দিন।"); // Please provide a valid email address.
       return false;
     }
+    // Updated regex for Bangladesh phone numbers starting with 01 and having 11 digits
     if (!/^01[3-9]\d{8}$/.test(phone)) {
-      setError("সঠিক ফোন নাম্বার দিন (বাংলাদেশ স্ট্যান্ডার্ড)।");
+      setError("সঠিক ফোন নাম্বার দিন (বাংলাদেশ স্ট্যান্ডার্ড)।"); // Please provide a valid phone number (Bangladesh Standard).
       return false;
     }
     setError("");
@@ -65,16 +70,28 @@ export default function CheckoutPage() {
     if (!validateForm()) return;
 
     try {
+      // --- FIX STARTS HERE ---
+      // Create a complete checkoutData object including customer info and cart items
+      const fullCheckoutData = {
+        ...form, // This includes name, email, address, phone, city, postcode, amount
+        items: cartItems, // <--- IMPORTANT: Include the `cartItems` from this component's state
+      };
+
+      // Save the complete data to localStorage
+      localStorage.setItem("checkoutData", JSON.stringify(fullCheckoutData));
+      // --- FIX ENDS HERE ---
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify(form), // Send only the form data (customer and amount) to the payment API
+          // Note: The payment API might only need the amount and customer details.
+          // If it also needs item details, you should send `fullCheckoutData` here instead of `form`.
+          // For now, assuming your payment API only needs `form` data for initiating payment.
         }
       );
-
-      localStorage.setItem("checkoutData", JSON.stringify(form));
 
       const data = await res.json();
 
@@ -85,11 +102,11 @@ export default function CheckoutPage() {
       if (data?.GatewayPageURL) {
         window.location.href = data.GatewayPageURL;
       } else {
-        alert("পেমেন্ট লিঙ্ক তৈরি হয়নি। আবার চেষ্টা করুন।");
+        alert("পেমেন্ট লিঙ্ক তৈরি হয়নি। আবার চেষ্টা করুন।"); // Payment link not generated. Please try again.
       }
     } catch (err) {
       console.error("Checkout error:", err);
-      setError(err.message || "An error occurred during checkout");
+      setError(err.message || "An error occurred during checkout"); // An error occurred during checkout
     }
   };
 
@@ -177,13 +194,15 @@ export default function CheckoutPage() {
                   <span>
                     {item.product.name} (x{item.quantity})
                   </span>
-                  <span>৳{item.product.salePrice * item.quantity}</span>
+                  <span>
+                    ৳{(item.product.salePrice * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               ))}
               <hr className="border-gray-200" />
               <div className="flex justify-between font-semibold text-gray-800">
                 <span>Total</span>
-                <span>৳{form.amount}</span>
+                <span>৳{form.amount.toFixed(2)}</span>
               </div>
             </div>
           )}
@@ -192,7 +211,7 @@ export default function CheckoutPage() {
             type="submit"
             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-lg font-semibold py-3 rounded-xl shadow-md transition duration-300"
           >
-            Pay ৳{form.amount} Now
+            Pay ৳{form.amount.toFixed(2)} Now
           </button>
         </form>
       </div>
@@ -204,11 +223,11 @@ export default function CheckoutPage() {
 
 function InputWithIcon({ icon, ...props }) {
   return (
-    <div className="flex items-center border border-white/20 rounded-xl px-4 py-2 bg-white/5">
-      <span className="text-cyan-300">{icon}</span>
+    <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2 bg-white">
+      <span className="text-cyan-600">{icon}</span>
       <input
         {...props}
-        className="bg-transparent w-full ml-3 focus:outline-none placeholder:text-gray-300"
+        className="bg-transparent w-full ml-3 focus:outline-none placeholder:text-gray-500 text-gray-800"
         required
       />
     </div>

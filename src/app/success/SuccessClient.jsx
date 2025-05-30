@@ -1,3 +1,4 @@
+// src/app/success/SuccessPage.jsx
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -21,7 +22,7 @@ export default function SuccessPage() {
   const searchParams = useSearchParams();
   const tran_id = searchParams.get("tran_id");
 
-  const { cartItems, clearCart } = useCart();
+  const { clearCheckedOutItems } = useCart();
 
   const [customerData, setCustomerData] = useState(null);
   const [orderData, setOrderData] = useState(null); // This holds the order saved to DB
@@ -72,36 +73,41 @@ export default function SuccessPage() {
   }, []);
 
   // 2. Load customer data from localStorage once
+  // This useEffect ensures customerData is set from localStorage
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     try {
-      const storedCustomer = localStorage.getItem("checkoutData");
-      if (storedCustomer) {
-        const parsed = JSON.parse(storedCustomer);
+      const storedCheckoutData = localStorage.getItem("checkoutData");
+      if (storedCheckoutData) {
+        const parsed = JSON.parse(storedCheckoutData);
         setCustomerData(parsed);
       }
     } catch (err) {
       console.error("Failed to parse checkoutData from localStorage", err);
-      // Optionally, set an error state here if crucial for flow
     }
-  }, []);
+  }, []); // Empty dependency array, runs only once on mount
 
-  // 3. Save order to the database if `tran_id`, `customerData`, and `cartItems` exist
-  //    This effect runs only once per transaction ID to prevent duplicate order saving.
+  // 3. Save order to the database
+  // This effect should only run ONCE when the necessary data is available.
   useEffect(() => {
-    // Ensure all prerequisites are met and order hasn't been saved yet
+    // Conditions for saving:
+    // 1. tran_id exists
+    // 2. customerData exists AND has items (meaning checkoutData was successfully loaded)
+    // 3. The order has not already been saved in this session (using isSavingOrder ref)
+    // 4. The orderData state is currently null (meaning we haven't successfully saved/fetched it yet)
     if (
       !tran_id ||
-      !customerData ||
-      !cartItems?.length ||
-      isSavingOrder.current
+      !customerData?.items?.length || // Ensure customerData and its items are present
+      isSavingOrder.current || // Already trying to save or saved
+      orderData // If orderData is already set, it means we've saved or fetched successfully
     ) {
-      // console.log("Skipping saveOrder:", { tran_id, customerData, cartItemsLength: cartItems?.length, isSavingOrder: isSavingOrder.current });
+      // console.log("Skipping saveOrder:", { tran_id, customerData: !!customerData, hasItems: customerData?.items?.length > 0, isSavingOrder: isSavingOrder.current, orderData: !!orderData });
       return;
     }
 
-    isSavingOrder.current = true; // Set flag to true to prevent re-execution
+    // Set the flag BEFORE starting the async operation
+    isSavingOrder.current = true;
 
     const saveOrder = async () => {
       setPageState((prev) => ({ ...prev, loading: true }));
@@ -125,16 +131,15 @@ export default function SuccessPage() {
                 postal_code: customerData.postcode,
                 country: "Bangladesh",
               },
-              items: cartItems.map((item) => ({
+              items: customerData.items.map((item) => ({
                 name: item.product.name,
                 salePrice: item.product.salePrice,
                 buyPrice: item.product.buyPrice,
                 quantity: item.quantity,
-                size: item.size || "N/A", // Ensure size is always defined
+                size: item.size || "N/A",
               })),
               payment_status: "PAID",
-              // Add a total amount for easier database querying/validation
-              total_amount: calculateGrandTotal(cartItems),
+              total_amount: calculateGrandTotal(customerData.items),
             }),
           }
         );
@@ -144,10 +149,9 @@ export default function SuccessPage() {
         if (res.ok && data.success) {
           setOrderData(data.order); // Store the saved order details
           setPageState({ loading: false, error: null, success: true });
-          clearCart(); // Clear cart only on successful order save
-          localStorage.removeItem("checkoutData"); // Clear checkout data after successful order
+          clearCheckedOutItems(customerData.items);
+          localStorage.removeItem("checkoutData"); // Clear checkout data ONLY on successful order save
         } else {
-          // Log server-side error for debugging
           console.error("Server responded with an error:", data.message);
           setPageState({
             loading: false,
@@ -166,23 +170,39 @@ export default function SuccessPage() {
           success: false,
         });
       } finally {
-        isSavingOrder.current = false; // Reset flag after operation attempt
+        // Reset flag only if an attempt was made and it failed OR completed,
+        // but if it succeeded and set orderData, we don't want it to run again.
+        // The `orderData` check in the initial `if` condition handles this better.
+        // isSavingOrder.current = false; // Moved this inside the initial check for better control
       }
     };
 
-    saveOrder();
-  }, [tran_id, customerData, cartItems, clearCart, calculateGrandTotal]);
+    saveOrder(); // Call saveOrder
+  }, [
+    tran_id,
+    customerData,
+    clearCheckedOutItems,
+    calculateGrandTotal,
+    orderData,
+  ]); // Added orderData to dependency array to stop re-running if orderData is set
 
   // 4. Fetch order details for display using `tran_id`
-  //    This runs independently to populate the invoice, even if `saveOrder` had issues.
+  //    This runs independently to populate the invoice.
+  //    It should also prevent re-fetching if `displayOrder` is already available.
   useEffect(() => {
-    if (!tran_id) {
-      setPageState((prev) => ({ ...prev, loading: false })); // Stop loading if no tran_id
+    if (
+      !tran_id ||
+      displayOrder || // If displayOrder is already set, no need to fetch again
+      (pageState.error && !pageState.success) // If there's a critical error and not successful, maybe don't re-fetch
+    ) {
+      // console.log("Skipping fetchOrderForDisplay:", { tran_id, displayOrder: !!displayOrder, pageStateError: pageState.error });
       return;
     }
 
     const fetchOrderForDisplay = async () => {
-      setPageState((prev) => ({ ...prev, loading: true }));
+      // Set loading true only if we are actually about to fetch.
+      // If already successful, we don't need to show "loading" again just for display fetch.
+      setPageState((prev) => ({ ...prev, loading: !prev.success }));
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/searchorders/invoice/${tran_id}`
@@ -194,25 +214,25 @@ export default function SuccessPage() {
           );
         }
         const orderDetails = await res.json();
-        setDisplayOrder(orderDetails.order); // Assuming the API returns { order: ... }
+        setDisplayOrder(orderDetails.order);
         setPageState((prev) => ({
           ...prev,
           loading: false,
-          success: prev.success || true,
-        })); // Mark as success if fetched, or keep existing success state
+          success: true, // Mark as success as order details are now available for display
+        }));
       } catch (err) {
         console.error("Order fetch error for display:", err);
         setPageState((prev) => ({
           ...prev,
           loading: false,
-          error: prev.error || `Could not load order details: ${err.message}`, // Keep existing error if more specific
-          success: false,
+          error: prev.error || `Could not load order details: ${err.message}`,
+          success: false, // Ensure success is false if display fetch fails
         }));
       }
     };
 
     fetchOrderForDisplay();
-  }, [tran_id]);
+  }, [tran_id, displayOrder, pageState.error, pageState.success]); // Added displayOrder and pageState to dependencies
 
   // --- Handlers ---
   const handlePrint = () => {
@@ -223,6 +243,47 @@ export default function SuccessPage() {
 
   // Determine which order data to display (prefer `orderData` if available, otherwise `displayOrder`)
   const orderToDisplay = orderData || displayOrder;
+
+  // Add a general loading indicator or conditional rendering for when orderToDisplay is null
+  if (pageState.loading && !orderToDisplay) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-900 p-4 md:p-6 font-sans">
+          <section className="max-w-4xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 text-center border border-gray-200">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-2">
+              Processing Your Order...
+            </h1>
+            <p className="text-lg text-gray-600 mb-4">
+              Please wait while we finalize your transaction and load your order
+              details.
+            </p>
+            <svg
+              className="animate-spin h-12 w-12 text-blue-500 mx-auto"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </section>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -261,8 +322,9 @@ export default function SuccessPage() {
               </>
             ) : (
               // This state will primarily be visible during the initial fetch/save
+              // This block might not be reached often with the improved loading state above
               <>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-2">
+                <h1 className="text-3xl md::text-4xl font-bold text-gray-700 mb-2">
                   Processing Your Order...
                 </h1>
                 <p className="text-lg text-gray-600">
@@ -272,13 +334,14 @@ export default function SuccessPage() {
             )}
           </div>
 
-          {pageState.loading && (
+          {/* This loading message is now less critical due to the initial loading render */}
+          {/* {pageState.loading && (
             <p className="text-gray-500 text-lg">
               {pageState.success
                 ? "Loading order details..."
                 : "Finalizing order..."}
             </p>
-          )}
+          )} */}
 
           {pageState.success && orderToDisplay && (
             <>

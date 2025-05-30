@@ -3,7 +3,7 @@ import Navbar from "@/app/component/Navbar";
 import Product from "@/app/component/Product";
 import React from "react";
 export default async function ProductPage({ params }) {
-  const { productId } = params;
+  const { productId } = await params;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/${productId}`,
