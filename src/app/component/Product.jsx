@@ -278,15 +278,16 @@ export default function Product({ product }) {
                     TK. {relProduct.salePrice}
                   </p>
                   <button
-                    onClick={() =>
+                    onClick={() => {
                       addToCart(
                         relProduct,
                         1, // Default quantity 1
                         relProduct.sizes && relProduct.sizes.length > 0
                           ? relProduct.sizes[0]
                           : "One Size" // Default size
-                      )
-                    }
+                      );
+                      setIsDrawerOpen(true);
+                    }}
                     className="mt-auto bg-black cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
                   >
                     Add to Cart
