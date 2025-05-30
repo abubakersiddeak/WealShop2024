@@ -7,7 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
 import { FaShoppingBag, FaTrashAlt, FaSmileBeam } from "react-icons/fa";
-import { MdOutlineErrorOutline } from "react-icons/md";
+
 import { HiMinusSm, HiPlusSm } from "react-icons/hi"; // Icons for quantity control
 
 export default function CartPage() {
@@ -126,18 +126,18 @@ export default function CartPage() {
           }}
         />
         <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center text-gray-800">
-          <span className="text-blue-600">Your</span> Shopping Cart
+          Your Cart
         </h1>
 
         {cartItems.length === 0 ? (
           <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto">
-            <FaSmileBeam className="text-blue-500 text-6xl mx-auto mb-4" />
+            <FaSmileBeam className="text-black text-6xl mx-auto mb-4" />
             <p className="text-gray-700 mb-6 text-lg font-medium">
               Your cart is feeling a little lonely.
             </p>
             <Link
               href="/allProduct"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-all duration-300 text-lg shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-sm hover:bg-gray-700 transition-all duration-300 text-lg shadow-md hover:shadow-lg"
               title="Start Browse our amazing products"
             >
               <FaShoppingBag className="text-xl" />
@@ -151,7 +151,7 @@ export default function CartPage() {
               <input
                 type="checkbox"
                 id="selectAll"
-                className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                className="form-checkbox h-5 w-5 cursor-pointer text-black rounded"
                 checked={isSelectAllChecked}
                 onChange={handleSelectAllToggle}
               />
@@ -172,7 +172,7 @@ export default function CartPage() {
                 {/* Checkbox for individual item */}
                 <input
                   type="checkbox"
-                  className="form-checkbox h-5 w-5 text-blue-600 rounded self-start mt-1 sm:mt-0"
+                  className="form-checkbox cursor-pointer h-5 w-5 text-black rounded self-start mt-1 sm:mt-0"
                   checked={item.isSelected}
                   onChange={() => handleItemToggle(item.product, item.size)}
                 />
@@ -202,7 +202,7 @@ export default function CartPage() {
                             item.quantity - 1
                           )
                         }
-                        className="px-3 py-1 text-lg text-gray-700 hover:bg-gray-100 rounded-l"
+                        className="px-3 py-1 cursor-pointer text-lg text-gray-700 hover:bg-gray-100 rounded-l"
                         aria-label="Decrease quantity"
                       >
                         <HiMinusSm />
@@ -222,7 +222,7 @@ export default function CartPage() {
                             item.quantity + 1
                           )
                         }
-                        className="px-3 py-1 text-lg text-gray-700 hover:bg-gray-100 rounded-r"
+                        className="px-3 py-1 cursor-pointer text-lg text-gray-700 hover:bg-gray-100 rounded-r"
                         aria-label="Increase quantity"
                       >
                         <HiPlusSm />
@@ -231,11 +231,11 @@ export default function CartPage() {
 
                     <p className="text-md sm:text-lg font-semibold text-gray-800 mt-2">
                       Price:{" "}
-                      <span className="text-blue-600">
+                      <span className="text-gray-700">
                         TK. {item.product.salePrice}
                       </span>{" "}
                       × {item.quantity} ={" "}
-                      <span className="text-green-600 font-extrabold">
+                      <span className="text-black font-extrabold">
                         TK.{" "}
                         {(item.product.salePrice * item.quantity).toFixed(2)}
                       </span>
@@ -244,7 +244,7 @@ export default function CartPage() {
                 </div>
                 <button
                   onClick={() => handleRemove(item.product, item.size)}
-                  className="mt-3 sm:mt-0 px-4 py-2 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors duration-200 flex items-center justify-center gap-2 self-end sm:self-center text-sm font-medium"
+                  className="cursor-pointer mt-3 sm:mt-0 px-4 py-2 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors duration-200 flex items-center justify-center gap-2 self-end sm:self-center text-sm font-medium"
                   title="Remove item from cart"
                 >
                   <FaTrashAlt />
@@ -253,11 +253,11 @@ export default function CartPage() {
               </div>
             ))}
 
-            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-lg shadow-xl border-t-4 border-blue-600 mt-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-lg shadow-xl border-t-4 border-black mt-8">
               <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
                 Selected Items Total:
               </h2>
-              <span className="text-2xl md:text-3xl font-extrabold text-green-700">
+              <span className="text-2xl md:text-3xl font-extrabold text-black">
                 TK. {getSelectedTotal().toFixed(2)}
               </span>
             </div>
@@ -265,7 +265,7 @@ export default function CartPage() {
             <div className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-4 pt-6">
               <Link
                 href="/allProduct"
-                className="w-full sm:w-auto text-center bg-gray-800 text-white px-8 py-3 rounded-full hover:bg-gray-700 transition-all duration-300 text-lg shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full sm:w-auto text-center bg-gray-800 text-white px-8 py-3 rounded-sm hover:bg-gray-700 transition-all duration-300 text-lg shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
                 🛍️ Continue Shopping
               </Link>
@@ -283,10 +283,10 @@ export default function CartPage() {
                     JSON.stringify(getSelectedTotal())
                   );
                 }}
-                className={`w-full sm:w-auto text-center px-8 py-3 rounded-full text-lg shadow-md transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`w-full sm:w-auto text-center px-8 py-3 rounded-sm text-lg shadow-md transition-all duration-300 flex items-center justify-center gap-2 ${
                   isCheckoutDisabled
                     ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
+                    : "bg-black text-white hover:bg-gray-700 hover:shadow-lg"
                 }`}
                 aria-disabled={isCheckoutDisabled}
                 tabIndex={isCheckoutDisabled ? -1 : 0} // Make it not focusable when disabled

@@ -20,7 +20,7 @@ export default function CheckoutPage() {
     phone: "",
     city: "",
     amount: 0,
-    postcode: "",
+    postcode: "", // Keep it in state to capture if provided
   });
 
   // This cartItems state correctly holds the *selected* items from the CartPage
@@ -46,9 +46,10 @@ export default function CheckoutPage() {
   console.log(cartItems, "cartitem"); // This `cartItems` array is what you need to save!
 
   const validateForm = () => {
-    const { name, email, address, phone, city, postcode } = form;
-    if (!name || !email || !address || !phone || !city || !postcode) {
-      setError("সব ফিল্ড পূরণ করা বাধ্যতামূলক!"); // All fields are mandatory!
+    // postcode is intentionally excluded from mandatory fields
+    const { name, email, address, phone, city } = form;
+    if (!name || !email || !address || !phone || !city) {
+      setError("নাম, ইমেইল, ঠিকানা, ফোন এবং শহর পূরণ করা বাধ্যতামূলক!"); // Name, email, address, phone, and city fields are mandatory!
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
@@ -70,7 +71,6 @@ export default function CheckoutPage() {
     if (!validateForm()) return;
 
     try {
-      // --- FIX STARTS HERE ---
       // Create a complete checkoutData object including customer info and cart items
       const fullCheckoutData = {
         ...form, // This includes name, email, address, phone, city, postcode, amount
@@ -79,17 +79,13 @@ export default function CheckoutPage() {
 
       // Save the complete data to localStorage
       localStorage.setItem("checkoutData", JSON.stringify(fullCheckoutData));
-      // --- FIX ENDS HERE ---
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form), // Send only the form data (customer and amount) to the payment API
-          // Note: The payment API might only need the amount and customer details.
-          // If it also needs item details, you should send `fullCheckoutData` here instead of `form`.
-          // For now, assuming your payment API only needs `form` data for initiating payment.
+          body: JSON.stringify(fullCheckoutData), // <--- Sending fullCheckoutData
         }
       );
 
@@ -135,6 +131,7 @@ export default function CheckoutPage() {
               name="name"
               value={form.name}
               onChange={handleChange}
+              required // Keep required for mandatory fields
             />
             <InputWithIcon
               icon={<FaEnvelope />}
@@ -143,6 +140,7 @@ export default function CheckoutPage() {
               name="email"
               value={form.email}
               onChange={handleChange}
+              required
             />
             <InputWithIcon
               icon={<FaPhone />}
@@ -151,6 +149,7 @@ export default function CheckoutPage() {
               name="phone"
               value={form.phone}
               onChange={handleChange}
+              required
             />
             <InputWithIcon
               icon={<FaCity />}
@@ -158,13 +157,15 @@ export default function CheckoutPage() {
               name="city"
               value={form.city}
               onChange={handleChange}
+              required
             />
             <InputWithIcon
               icon={<FaMapMarkerAlt />}
-              placeholder="Postcode"
+              placeholder="Postcode (Optional)"
               name="postcode"
               value={form.postcode}
               onChange={handleChange}
+              // Removed 'required' here to make it optional
             />
           </div>
 
@@ -209,7 +210,7 @@ export default function CheckoutPage() {
 
           <button
             type="submit"
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-lg font-semibold py-3 rounded-xl shadow-md transition duration-300"
+            className="w-full cursor-pointer bg-black hover:bg-gray-700 text-white text-lg font-semibold py-3 rounded-xl shadow-md transition duration-300"
           >
             Pay ৳{form.amount.toFixed(2)} Now
           </button>
@@ -228,7 +229,8 @@ function InputWithIcon({ icon, ...props }) {
       <input
         {...props}
         className="bg-transparent w-full ml-3 focus:outline-none placeholder:text-gray-500 text-gray-800"
-        required
+        // props.required will handle the required attribute, so no need to explicitly set it here if 'props' already contains it.
+        // If props does not contain 'required', then the field will implicitly be optional
       />
     </div>
   );

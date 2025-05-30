@@ -204,7 +204,10 @@ export default function Product({ product }) {
             )}
 
             <div className="flex items-center border border-gray-300 rounded mt-4">
-              <button onClick={decreaseQuantity} className="px-3 py-1 text-lg">
+              <button
+                onClick={decreaseQuantity}
+                className="px-3 py-1 text-lg cursor-pointer"
+              >
                 -
               </button>
               <input
@@ -213,14 +216,17 @@ export default function Product({ product }) {
                 readOnly
                 className="w-10 text-center border-x border-gray-300"
               />
-              <button onClick={increaseQuantity} className="px-3 py-1 text-lg">
+              <button
+                onClick={increaseQuantity}
+                className="px-3 py-1 text-lg cursor-pointer"
+              >
                 +
               </button>
             </div>
 
             <button
               onClick={handleAddToCart}
-              className="bg-black text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
+              className="bg-black cursor-pointer text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
             >
               {buttonText}
             </button>

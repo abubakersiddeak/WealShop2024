@@ -223,16 +223,16 @@ export default function CartDrawer({ isOpen, onClose }) {
               <span className="text-lg font-bold text-gray-800">
                 Selected Total:
               </span>
-              <span className="text-xl font-extrabold text-green-600">
+              <span className="text-xl font-extrabold text-black">
                 ৳{getSelectedTotal().toFixed(2)}
               </span>
             </div>
             <button
               onClick={handleProceedToCheckout}
-              className={`w-full text-white px-6 py-3 rounded-lg text-lg font-semibold transition-all duration-300 ${
+              className={`w-full text-white px-6 py-3 cursor-pointer rounded-lg text-lg font-semibold transition-all duration-300 ${
                 isCheckoutDisabled
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  : "bg-black hover:bg-gray-700 cursor-pointer"
               }`}
               disabled={isCheckoutDisabled}
             >

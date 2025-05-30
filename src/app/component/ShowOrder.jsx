@@ -40,12 +40,18 @@ export default function ShowOrder({ setOpenShowOrder }) {
   // Effect to re-filter orders whenever searchTerm or original orders change
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const results = orders.filter(
-      (order) =>
-        order.customer.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        order.tran_id.toLowerCase().includes(lowerCaseSearchTerm) || // Search by Transaction ID (Invoice ID)
-        order._id.toLowerCase().includes(lowerCaseSearchTerm) // Search by Order ID
-    );
+    const results = orders.filter((order) => {
+      // Add defensive checks here
+      const customerName = order.customer?.name || ""; // Use empty string if name is null/undefined
+      const tranId = order.tran_id || ""; // Use empty string if tran_id is null/undefined
+      const orderId = order._id || ""; // Use empty string if _id is null/undefined
+
+      return (
+        customerName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        tranId.toLowerCase().includes(lowerCaseSearchTerm) ||
+        orderId.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    });
     setFilteredOrders(results);
   }, [searchTerm, orders]);
 

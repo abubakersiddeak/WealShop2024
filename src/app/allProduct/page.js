@@ -13,7 +13,9 @@ export default function Allproduct() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/Product");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
+        );
         if (!res.ok) {
           throw new Error("Product fetching failed from API in GET method");
         }
@@ -51,7 +53,7 @@ export default function Allproduct() {
       {" "}
       <Navbar />
       <div className="relative p-4">
-        <h2 className="text-4xl mb-4 xl:p-4 xl:text-8xl font-serif">
+        <h2 className="text-left text-4xl md:text-6xl lg:text-7xl font-serif mb-8">
           All Products
         </h2>
 
