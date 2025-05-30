@@ -287,7 +287,7 @@ export default function Product({ product }) {
                           : "One Size" // Default size
                       )
                     }
-                    className="mt-auto bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
+                    className="mt-auto bg-black cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
                   >
                     Add to Cart
                   </button>

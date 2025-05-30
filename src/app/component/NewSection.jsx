@@ -119,14 +119,14 @@ export default function NewSection() {
 
       <button
         onClick={scrollLeftFunc}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-400 p-2 rounded-full md:text-4xl"
+        className="absolute cursor-pointer left-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700  bg-gray-300  p-2 rounded-full"
       >
         ❮
       </button>
 
       <button
         onClick={scrollRightFunc}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-400 p-2 rounded-full md:text-4xl"
+        className="absolute cursor-pointer right-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700 bg-gray-300 p-2 rounded-full"
       >
         ❯
       </button>
@@ -146,7 +146,7 @@ export default function NewSection() {
           <button
             onClick={(e) => productClick(e, p)}
             key={p._id}
-            className="relative w-70 md:w-80 bg-white overflow-hidden hover:scale-[1.02] shrink-0 transition-all duration-500"
+            className="relative cursor-pointer w-70 md:w-80 bg-white overflow-hidden hover:scale-[1.02] shrink-0 transition-all duration-500"
           >
             <div className="relative z-10 flex items-center justify-center h-90 md:h-120 ">
               <img

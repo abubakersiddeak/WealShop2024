@@ -62,7 +62,7 @@ export default function Allproduct() {
             <button
               onClick={(e) => productClick(e, product)}
               key={product._id}
-              className=" p-1  border-b-2 border-gray-200"
+              className=" p-1 cursor-pointer border-b-2 border-gray-200"
             >
               <img
                 src={product.images[0]}

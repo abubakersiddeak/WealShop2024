@@ -57,7 +57,7 @@ export default function Allproduct() {
           <button
             onClick={(e) => productClick(e, product)}
             key={product._id}
-            className=" p-1  border-b-2 border-gray-200"
+            className=" p-1 cursor-pointer  border-b-2 border-gray-200"
           >
             <img
               src={product.images[0]}
@@ -79,7 +79,7 @@ export default function Allproduct() {
         <button
           onClick={handlePrev}
           disabled={currentPage === 1}
-          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-lg cursor-pointer bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
           ⬅ Prev
         </button>
@@ -91,7 +91,7 @@ export default function Allproduct() {
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2 cursor-pointer rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Next ➡
         </button>
