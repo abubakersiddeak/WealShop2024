@@ -37,7 +37,7 @@ export const CartProvider = ({ children }) => {
     } else {
       setCartItems([
         ...cartItems,
-        { product, quantity, size: selectedSize, isSelected: true }, // Ensure new items are selected by default
+        { product, quantity, size: selectedSize, isSelected: true },
       ]);
       toast.success(`${product.name} added to cart!`);
     }
@@ -84,18 +84,26 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // --- MODIFIED clearCart FUNCTION ---
-  // Now accepts an array of items that were successfully checked out.
-  // It removes these specific items from the cart.
+  // --- RE-ADDED getSelectedTotal FUNCTION ---
+  const getSelectedTotal = () => {
+    return Array.isArray(cartItems)
+      ? cartItems.reduce(
+          (total, item) =>
+            item.isSelected
+              ? total + item.product.salePrice * item.quantity
+              : total,
+          0
+        )
+      : 0;
+  };
+  // --- END RE-ADDED FUNCTION ---
+
   const clearCheckedOutItems = (checkedOutItems) => {
     setCartItems((currentCartItems) => {
-      // Create a Set of unique identifiers for the items that were checked out
-      // Using a combination of product ID and size to uniquely identify items
       const checkedOutItemIds = new Set(
         checkedOutItems.map((item) => `${item.product._id}-${item.size}`)
       );
 
-      // Filter out items from the current cart that are present in the checkedOutItemIds set
       const updatedCart = currentCartItems.filter((item) => {
         return !checkedOutItemIds.has(`${item.product._id}-${item.size}`);
       });
@@ -103,7 +111,6 @@ export const CartProvider = ({ children }) => {
       return updatedCart;
     });
   };
-  // --- END MODIFIED FUNCTION ---
 
   return (
     <CartContext.Provider
@@ -114,8 +121,8 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         toggleItemSelection,
         toggleSelectAll,
-        // Expose the new function
-        clearCheckedOutItems, // <--- IMPORTANT: Use this new function
+        getSelectedTotal, // <--- IMPORTANT: This MUST be included here!
+        clearCheckedOutItems,
       }}
     >
       {children}
