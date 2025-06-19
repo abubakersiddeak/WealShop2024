@@ -1,211 +1,166 @@
 import React from "react";
-import Link from "next/link"; // Import Next.js Link for internal navigation
+import Link from "next/link";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaTiktok,
+  FaWhatsapp,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear(); // Get current year for copyright
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-gray-100 pt-8 mt-12 md:pt-12 relative text-gray-800">
-      {/* Social Media Section */}
-      <div className="w-full bg-gray-900 py-4 text-white flex justify-center items-center gap-6 md:gap-12 lg:gap-20">
-        <a
-          href="https://www.facebook.com/wealbd2024"
-          target="_blank" // Open in new tab
-          rel="noopener noreferrer" // Security best practice
-          aria-label="Visit us on Facebook"
-          className="hover:scale-110 transition-transform duration-200"
-        >
-          <img
-            src="/facebook-176-svgrepo-com.svg"
-            alt="Facebook icon"
-            className="h-5 w-5 md:h-8 md:w-8 filter invert"
-          />
-        </a>
-        <a
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Visit us on Instagram"
-          className="hover:scale-110 transition-transform duration-200"
-        >
-          <img
-            src="/instagram-svgrepo-com.svg"
-            alt="Instagram icon"
-            className="h-5 w-5 md:h-8 md:w-8 filter invert"
-          />
-        </a>
-        <a
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Visit us on TikTok"
-          className="hover:scale-110 transition-transform duration-200"
-        >
-          <img
-            src="/brand-tiktok-svgrepo-com.svg"
-            alt="TikTok icon"
-            className="h-5 w-5 md:h-8 md:w-8 filter invert"
-          />
-        </a>
-        <a
-          href="https://wa.me/8801403000212" // Example: WhatsApp direct link
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat with us on WhatsApp"
-          className="hover:scale-110 transition-transform duration-200"
-        >
-          <img
-            src="/whatsapp-svgrepo-com.svg"
-            alt="WhatsApp icon"
-            className="h-5 w-5 md:h-8 md:w-8 filter invert"
-          />
-        </a>
+    <footer className="w-full bg-white text-gray-800 shadow-xl  overflow-hidden">
+      {/* Socials */}
+      <div className="w-full bg-blue-50 py-6 px-4 flex flex-wrap justify-center items-center gap-6 md:gap-20 border-b border-gray-200">
+        {[
+          {
+            href: "https://www.facebook.com/wealbd2024",
+            icon: <FaFacebookF />,
+            color: "text-blue-600",
+          },
+          {
+            href: "#",
+            icon: <FaInstagram />,
+            color: "text-pink-600",
+          },
+          {
+            href: "#",
+            icon: <FaTiktok />,
+            color: "text-black",
+          },
+          {
+            href: "https://wa.me/8801403000212",
+            icon: <FaWhatsapp />,
+            color: "text-green-600",
+          },
+        ].map(({ href, icon, color }, i) => (
+          <a
+            key={i}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`hover:scale-110 transition-transform duration-300 ${color} hover:opacity-90 p-3  rounded-xl shadow-md`}
+          >
+            {React.cloneElement(icon, { className: "h-6 w-6 sm:h-7 sm:w-7" })}
+          </a>
+        ))}
       </div>
 
-      {/* Main Footer Content */}
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-10 px-4 md:px-6 lg:px-8">
-        {/* Services Column */}
-        <nav className="text-center md:text-left" aria-label="Services links">
-          <h3 className="text-xl font-bold mb-4">Services</h3>
-          <ul className="space-y-2 text-gray-700 font-medium">
-            <li>
-              <Link
-                href="/collections/men"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Men's Collection
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/collections/kids"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Kids Collection
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/collections/accessories"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Accessories
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/size-guide"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Size Guide
-              </Link>
-            </li>
-          </ul>
-        </nav>
+      {/* Links */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 py-12 px-8 md:px-20 bg-pink-50 text-gray-800">
+        {[
+          {
+            title: "Services",
+            links: [
+              ["Men's Collection", "/collections/men"],
+              ["Kids Collection", "/collections/kids"],
+              ["Accessories", "/collections/accessories"],
+              ["Size Guide", "/size-guide"],
+              ["Custom Orders", "/custom-orders"],
+            ],
+          },
+          {
+            title: "Company",
+            links: [
+              ["About Us", "/about"],
+              ["Careers", "/careers"],
+              ["Press", "/press"],
+              ["Sustainability", "/sustainability"],
+              ["Blog", "/blog"],
+            ],
+          },
+          {
+            title: "Help",
+            links: [
+              ["Shipping & Exchange", "/shipping-exchange"],
+              ["Returns", "/returns"],
+              ["FAQ", "/faq"],
+              ["Contact", "/contact"],
+              ["Warranty", "/warranty"],
+            ],
+          },
+        ].map(({ title, links }) => (
+          <div key={title}>
+            <h3 className="text-xl font-semibold text-blue-700 mb-4">
+              {title}
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              {links.map(([text, href]) => (
+                <li key={text}>
+                  <Link
+                    href={href}
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    {text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
-        {/* Company Column */}
-        <nav className="text-center md:text-left" aria-label="Company links">
-          <h3 className="text-xl font-bold mb-4">Company</h3>
-          <ul className="space-y-2 text-gray-700 font-medium">
-            <li>
-              <Link
-                href="/about"
-                className="hover:text-blue-600 transition-colors"
-              >
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/terms"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Terms & Conditions
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/faq"
-                className="hover:text-blue-600 transition-colors"
-              >
-                FAQ
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* Help Column */}
-        <nav className="text-center md:text-left" aria-label="Help links">
-          <h3 className="text-xl font-bold mb-4">Help</h3>
-          <ul className="space-y-2 text-gray-700 font-medium">
-            <li>
-              <Link
-                href="/shipping-exchange"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Shipping & Exchange Policy
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Connect Us
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/stores"
-                className="hover:text-blue-600 transition-colors"
-              >
-                Store Locator
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* Contact Column */}
-        <div className="text-center md:text-left">
-          <h3 className="text-xl font-bold mb-4">Contact</h3>
-          <address className="not-italic space-y-2 text-gray-700 font-medium">
-            <div>
-              <span>Mail us: </span>
-              <a
-                href="mailto:wealbd2024@gmail.com"
-                className="text-blue-600 hover:underline"
-              >
+        {/* Contact */}
+        <div>
+          <h3 className="text-xl font-semibold text-blue-700 mb-4">Contact</h3>
+          <div className="text-sm text-gray-700 space-y-3">
+            <div className="flex gap-3 items-center">
+              <FaEnvelope className="text-blue-600" />
+              <a href="mailto:wealbd2024@gmail.com" className="hover:underline">
                 wealbd2024@gmail.com
               </a>
             </div>
-            <div>
-              <span>Phone: </span>
-              <a
-                href="tel:+8801403000212"
-                className="text-blue-600 hover:underline"
-              >
+            <div className="flex gap-3 items-center">
+              <FaPhoneAlt className="text-blue-600" />
+              <a href="tel:+8801403000212" className="hover:underline">
                 +8801403000212
               </a>
             </div>
-            {/* Add physical address if available */}
-            {/* <div>
-              <span>Address:</span>
-              <p>123 Main St, City, Country</p>
-            </div> */}
-          </address>
+            <div className="flex gap-3 items-start">
+              <FaMapMarkerAlt className="text-blue-600 mt-1" />
+              <address className="not-italic leading-tight">
+                <a
+                  href="https://maps.app.goo.gl/kCXGnPdRYyMapJZa9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-700 hover:underline"
+                >
+                  Bicrompur Shopping Mall,
+                  <br />
+                  Balasur, Sreenagar, Munshiganj
+                  <br />
+                  Bangladesh
+                </a>
+              </address>
+            </div>
+          </div>
+
+          {/* Newsletter */}
+          <div className="mt-6">
+            <p className="font-semibold text-sm mb-2">Subscribe for updates</p>
+            <form className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+              >
+                Subscribe
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
-      {/* Copyright Section */}
-      <div className="w-full bg-gray-950 py-4 text-center text-gray-400 text-sm">
+      {/* Bottom */}
+      <div className="bg-gray-100 text-center text-sm text-gray-600 py-15 border-t border-gray-200">
         <p>&copy; {currentYear} WEAL BD. All rights reserved.</p>
       </div>
     </footer>

@@ -22,7 +22,7 @@ export default function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState(""); // Renamed for clarity
-
+  const [suggestions, setSuggestions] = useState([]);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   // Ref for the mobile drawer checkbox
@@ -41,7 +41,27 @@ export default function Navbar() {
       router.events?.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.length > 0) {
+        fetch(`/api/findproduct/search?query=${searchQuery}`)
+          .then((res) => res.json())
+          .then((data) => setSuggestions(data.products || []));
+      } else {
+        setSuggestions([]);
+      }
+    }, 100);
 
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  // ❌ Click outside to close dropdown
+
+  const handleSelect = (name) => {
+    setSearchQuery(name);
+    setSuggestions([]);
+    router.push(`/searchproduct/${encodeURIComponent(name)}`);
+  };
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
     router.push(`/searchproduct/${encodeURIComponent(searchQuery)}`);
@@ -90,12 +110,12 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white text-black border-b border-gray-200 shadow-sm">
       {/* Sticky nav, subtle shadow */}
-      <div className="container mx-auto h-[80px] flex justify-between items-center px-4 md:px-6 lg:px-8">
+      <div className="container  mx-auto h-[80px] flex justify-between items-center px-4 md:px-6 lg:px-8">
         {/* Responsive padding */}
 
         {/* Left Section - Desktop Nav */}
         {/* For LG and up, this section will flex-grow to push the center logo */}
-        <div className="hidden md:flex lg:flex flex-grow gap-4 lg:gap-8 font-semibold text-lg justify-start">
+        <div className="hidden relative w-[35%] md:flex lg:flex flex-grow gap-4 lg:gap-8 font-semibold text-lg justify-start ">
           {/* Increased font size */}
           <DropdownMenu
             label="Man"
@@ -164,14 +184,14 @@ export default function Navbar() {
 
         {/* Center Section - Logo */}
         {/* This section will remain its defined size and be pushed to center by flex-grow siblings */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0  justify-center">
           <Link
             href={"/"}
             className="relative h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 flex-shrink-0"
           >
             {/* Adjusted size and added flex-shrink */}
             <Image
-              src="/weal.jpg"
+              src="/WEinscape.png"
               alt="WealShop Logo"
               fill
               sizes="(max-width: 640px) 48px, (max-width: 1024px) 64px, 80px" // Improved image optimization
@@ -179,18 +199,22 @@ export default function Navbar() {
               priority // Prioritize loading for LCP
             />
           </Link>
-          <p className="text-3xl lg:text-5xl font-extrabold text-gray-800">
+          <Link
+            href={"/"}
+            className="text-3xl lg:text-[55px] font-extrabold text-gray-800 "
+          >
             WEAL
-          </p>
+          </Link>
           {/* Refined text color */}
         </div>
 
         {/* Right Section - Desktop Icons & Search */}
         {/* For LG and up, this section will flex-grow to push the center logo and align its content to the end */}
-        <div className="hidden md:flex lg:flex flex-grow items-center gap-4 lg:gap-6 justify-end">
+        <div className="hidden w-[35%] md:flex lg:flex flex-grow items-center gap-4 lg:gap-6 justify-end">
           {/* Search bar */}
           <div className="flex items-center border border-gray-300 rounded-full overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
             {/* Professional search bar styling */}
+
             <input
               type="text"
               placeholder="Search..."
@@ -252,7 +276,6 @@ export default function Navbar() {
             />
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                {/* Adjusted size and position */}
                 {totalItems}
               </span>
             )}
@@ -511,6 +534,48 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {suggestions.length > 0 && (
+        <ul className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-80 overflow-y-auto w-64 sm:w-80 backdrop-blur-sm transition-all duration-300 ease-in-out ring-1 ring-gray-100">
+          {/* Header + Close Button */}
+          <div className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-100 to-blue-50 border-b border-gray-200">
+            <span className="text-sm font-semibold text-blue-800">
+              Suggestions
+            </span>
+            <button
+              className="text-xs text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded-md shadow-sm transition"
+              onClick={() => setSuggestions([])}
+            >
+              ✖ Close
+            </button>
+          </div>
+
+          {/* Suggestion Items */}
+          {suggestions.map((item) => (
+            <li
+              key={item._id}
+              className="flex items-center gap-2 px-4 py-3 text-sm sm:text-base text-gray-700 hover:bg-blue-100/60 transition-all duration-200 cursor-pointer group"
+              onClick={() => handleSelect(item.name)}
+            >
+              <div className="w-6 h-6 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-200">
+                <svg
+                  className="w-4 h-4 text-blue-500 group-hover:text-blue-700"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 6.65a7.5 7.5 0 010 10.6z"
+                  />
+                </svg>
+              </div>
+              <span className="truncate font-medium">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 }

@@ -14,7 +14,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    slug: "",
+
     description: "",
     brand: "",
     salePrice: "",
@@ -46,7 +46,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
     if (product) {
       setFormData({
         name: product.name || "",
-        slug: product.slug || "",
+
         description: product.description || "",
         brand: product.brand || "",
         salePrice: product.salePrice !== undefined ? product.salePrice : "",
@@ -117,7 +117,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
     // Prepare updated product object for sending
     const updatedProduct = {
       name: formData.name.trim(),
-      slug: formData.slug.trim(),
+
       description: formData.description.trim(),
       brand: formData.brand.trim(),
       salePrice: parseFloat(formData.salePrice),
@@ -362,21 +362,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  required
-                />
-              </div>
-
-              {/* Slug */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Slug <span className="text-red-500">*</span>
-                </label>
-                <input
-                  name="slug"
-                  type="text"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
                   required
                 />
               </div>

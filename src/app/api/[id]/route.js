@@ -2,7 +2,24 @@ import { connectMongodb } from "@/app/lib/mongodb";
 import Product from "@/app/models/product";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { v2 as cloudinary } from "cloudinary";
 
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+function getCloudinaryPublicId(url) {
+  try {
+    const parts = url.split("/");
+    const fileWithExt = parts[parts.length - 1];
+    const publicId = fileWithExt.split(".")[0];
+    return publicId;
+  } catch (error) {
+    return null;
+  }
+}
 export async function GET(request, { params }) {
   await connectMongodb();
 
@@ -27,7 +44,7 @@ export async function GET(request, { params }) {
 export async function DELETE(request, { params }) {
   await connectMongodb();
 
-  const { id } = params;
+  const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
@@ -35,11 +52,27 @@ export async function DELETE(request, { params }) {
 
   try {
     const deletedProduct = await Product.findByIdAndDelete(id);
+
     if (!deletedProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+
+    // Cloudinary থেকে ছবি ডিলিট
+    if (deletedProduct.images && deletedProduct.images.length > 0) {
+      for (const imageUrl of deletedProduct.images) {
+        const publicId = getCloudinaryPublicId(imageUrl);
+        if (publicId) {
+          const result = await cloudinary.uploader.destroy(publicId);
+          console.log(`Deleted from Cloudinary: ${publicId}`, result);
+        }
+      }
+    }
+
     return NextResponse.json(
-      { message: "Product deleted successfully", product: deletedProduct },
+      {
+        message: "Product and images deleted successfully",
+        product: deletedProduct,
+      },
       { status: 200 }
     );
   } catch (error) {

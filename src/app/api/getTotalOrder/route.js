@@ -9,7 +9,7 @@ export async function GET() {
     connectMongodb();
 
     // সব অর্ডার খুঁজে আনা
-    const orders = await Order.find();
+    const orders = await Order.find().sort({ createdAt: -1 });
 
     // JSON হিসেবে রেসপন্স
     return NextResponse.json({ success: true, data: orders });

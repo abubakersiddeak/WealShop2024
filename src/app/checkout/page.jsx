@@ -1,6 +1,6 @@
 // src/app/checkout/page.js
 "use client";
-
+import { useCart } from "@/context/cartContext";
 import { useEffect, useState } from "react";
 import {
   FaUser,
@@ -11,8 +11,11 @@ import {
 } from "react-icons/fa";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { clearCheckedOutItems } = useCart();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -26,6 +29,7 @@ export default function CheckoutPage() {
   // This cartItems state correctly holds the *selected* items from the CartPage
   const [cartItems, setCartItems] = useState([]);
   const [error, setError] = useState("");
+  const [successSubmite, setSuccessSubmite] = useState(false);
 
   useEffect(() => {
     // Correctly load the selected items and amount from localStorage
@@ -42,8 +46,6 @@ export default function CheckoutPage() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  console.log(form, "form");
-  console.log(cartItems, "cartitem"); // This `cartItems` array is what you need to save!
 
   const validateForm = () => {
     // postcode is intentionally excluded from mandatory fields
@@ -67,42 +69,50 @@ export default function CheckoutPage() {
 
   const handleCheckout = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
+    const orderData = {
+      amount: form.amount,
+      customer: {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+      },
+      shipping: {
+        address: form.address,
+        city: form.city,
+        postal_code: form.postcode,
+        country: "Bangladesh",
+      },
+      items: cartItems.map((item) => ({
+        product_id: item.product._id,
+        name: item.product.name,
+        quantity: item.quantity,
+        salePrice: item.product.salePrice,
+        buyPrice: item.product.buyPrice,
+        size: item.size,
+      })),
+    };
     try {
-      // Create a complete checkoutData object including customer info and cart items
-      const fullCheckoutData = {
-        ...form, // This includes name, email, address, phone, city, postcode, amount
-        items: cartItems, // <--- IMPORTANT: Include the `cartItems` from this component's state
-      };
-
-      // Save the complete data to localStorage
-      localStorage.setItem("checkoutData", JSON.stringify(fullCheckoutData));
-
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullCheckoutData), // <--- Sending fullCheckoutData
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderData }),
         }
       );
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Payment request failed");
-      }
-
-      if (data?.GatewayPageURL) {
-        window.location.href = data.GatewayPageURL;
+      if (res.ok) {
+        setSuccessSubmite(true);
+        clearCheckedOutItems(cartItems);
       } else {
-        alert("পেমেন্ট লিঙ্ক তৈরি হয়নি। আবার চেষ্টা করুন।"); // Payment link not generated. Please try again.
+        console.error("Error creating order:", data.message);
       }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      setError(err.message || "An error occurred during checkout"); // An error occurred during checkout
+    } catch (error) {
+      console.error("Network error:", error.message);
     }
   };
 
@@ -212,10 +222,32 @@ export default function CheckoutPage() {
             type="submit"
             className="w-full cursor-pointer bg-black hover:bg-gray-700 text-white text-lg font-semibold py-3 rounded-xl shadow-md transition duration-300"
           >
-            Pay ৳{form.amount.toFixed(2)} Now
+            Submite Order
           </button>
         </form>
       </div>
+      {successSubmite && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center space-y-4">
+            <h2 className="text-2xl font-bold text-green-600">🎉 Thank You!</h2>
+            <p className="text-gray-700">
+              Your order has been placed successfully.
+            </p>
+            <p className="text-gray-600">
+              Our team will call you to confirm the order.
+            </p>
+            <button
+              onClick={() => {
+                setSuccessSubmite(false);
+                router.push("/");
+              }}
+              className="mt-4 px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-full"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>

@@ -20,46 +20,29 @@ const reviewSchema = new Schema({
 const productSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true },
-    description: { type: String, required: true },
+
+    description: { type: String },
 
     category: { type: categorySchema, required: true },
 
     salePrice: { type: Number, required: true, min: 0 },
     buyPrice: { type: Number, min: 0 },
 
-    brand: { type: String, required: true },
+    brand: { type: String },
     sizes: [{ type: String }],
-    colors: [{ type: String }],
 
     inStock: { type: Boolean, default: true },
     quantity: { type: Number, default: 0, min: 0 },
 
     images: [{ type: String, required: true }],
 
-    rating: { type: Number, default: 0, min: 0, max: 5 },
-    reviewsCount: { type: Number, default: 0 },
-    reviews: [reviewSchema],
-
-    isFeatured: { type: Boolean, default: false },
-
-    sku: { type: String, unique: true, sparse: true },
-    tags: [{ type: String }],
-
-    weight: { type: Number, min: 0 },
-    dimensions: {
-      length: { type: Number, min: 0 },
-      width: { type: Number, min: 0 },
-      height: { type: Number, min: 0 },
+    sizeGuide: {
+      chest: { type: String },
+      length: { type: String },
+      waist: { type: String },
+      shoulder: { type: String },
+      sleeve: { type: String },
     },
-
-    shippingDetails: {
-      freeShipping: { type: Boolean, default: false },
-      shippingCost: { type: Number, min: 0 },
-      estimatedDeliveryDays: { type: Number, min: 0 },
-    },
-
-    sizeGuide: { type: String },
     visibility: {
       type: String,
       enum: ["public", "private", "archived"],

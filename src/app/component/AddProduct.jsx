@@ -3,8 +3,7 @@
 import { useState, useRef } from "react";
 // Importing icons from react-icons/fi
 import { FiUpload, FiImage, FiCheck, FiX } from "react-icons/fi";
-// Assuming generateSlug is a utility function you have
-import generateSlug from "../utils/generateSlug";
+
 // Importing Select component from react-select for dropdowns
 import Select from "react-select";
 // Importing EyeOff icon from lucide-react
@@ -34,7 +33,6 @@ export default function AddProduct({ setOpenAddproduct }) {
   // State to manage form data
   const [formData, setFormData] = useState({
     name: "",
-    slug: "",
     description: "",
     category: {
       gender: "",
@@ -45,20 +43,22 @@ export default function AddProduct({ setOpenAddproduct }) {
     discountsalePrice: "",
     brand: "",
     sizes: [],
-    colors: [],
+    sizeGuide: { waist: "", chest: "", length: "", shoulder: "", sleeve: "" },
     quantity: "",
     images: [],
     inStock: true,
-    sku: "",
+    isFeatured: false,
     tags: [],
     visibility: "public",
     adminNote: "",
+    buyPrice: "",
   });
+  const [sizesInput, setSizesInput] = useState("");
 
   // State for uploaded images preview
   const [uploadedImages, setUploadedImages] = useState([]);
   // State for upload loading indicator
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // FIXED THIS LINE
   // State to show product added success message
   const [isProductAdded, setIsProductAdded] = useState(false);
   // State to manage active tab in the form
@@ -72,15 +72,8 @@ export default function AddProduct({ setOpenAddproduct }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // Special handling for product name to generate slug
-    if (name === "name") {
-      setFormData((prev) => ({
-        ...prev,
-        name: value,
-        slug: generateSlug(value), // Generate slug from product name
-      }));
-    } else if (name.includes(".")) {
-      // Handle nested state updates (e.g., category.gender)
+    if (name.includes(".")) {
+      // Handle nested state updates ( category.gender)
       const [parent, child] = name.split(".");
       setFormData((prev) => ({
         ...prev,
@@ -98,11 +91,22 @@ export default function AddProduct({ setOpenAddproduct }) {
     }
   };
 
-  // Handler for array type inputs (e.g., sizes, colors, tags)
+  // Handler for array type inputs ( sizes, tags)
   const handleArrayInput = (e, field) => {
     const value = e.target.value;
+
+    if (field === "sizes") {
+      setSizesInput(value); // Update the raw input string for sizes
+    } else if (field === "tags") {
+      setTagsInput(value); // Update the raw input string for tags
+    }
+
     // Split by comma and trim whitespace for each item
-    const array = value.split(",").map((item) => item.trim());
+    const array = value
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item !== ""); // Filter out empty strings
+
     setFormData((prev) => ({
       ...prev,
       [field]: array,
@@ -125,7 +129,12 @@ export default function AddProduct({ setOpenAddproduct }) {
         return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cloudinary`, {
           method: "POST",
           body: formData,
-        }).then((res) => res.json()); // Parse response as JSON
+        }).then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        }); // Parse response as JSON
       });
 
       // Wait for all upload promises to resolve
@@ -150,8 +159,7 @@ export default function AddProduct({ setOpenAddproduct }) {
 
   // Function to remove an uploaded image
   const removeImage = (index) => {
-    const newImages = [...uploadedImages];
-    newImages.splice(index, 1); // Remove image at specified index
+    const newImages = uploadedImages.filter((_, i) => i !== index); // More efficient removal
     setUploadedImages(newImages); // Update preview state
     setFormData((prev) => ({
       ...prev,
@@ -161,26 +169,26 @@ export default function AddProduct({ setOpenAddproduct }) {
 
   // Handler for form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    // Basic client-side validation for required fields
-    if (!formData.name || !formData.salePrice || formData.images.length === 0) {
-      setAlertMessage(
-        "Please fill in all required fields and upload at least one image."
-      );
-      return;
-    }
+    e.preventDefault();
 
     try {
       // Prepare the data to send to the API, converting numbers where necessary
       const productData = {
         ...formData,
         salePrice: Number(formData.salePrice),
-        discountsalePrice: formData.discountsalePrice
-          ? Number(formData.discountsalePrice)
-          : undefined, // Only include if present
-        quantity: Number(formData.quantity) || 0, // Default to 0 if empty
+
+        buyPrice: formData.buyPrice ? Number(formData.buyPrice) : undefined,
+        quantity: Number(formData.quantity) || 0,
       };
+
+      if (
+        !formData.name.trim() || // নাম ফাঁকা
+        !formData.salePrice || // সেল প্রাইস ফাঁকা (০ বা "")
+        formData.images.length === 0 // কোনো ছবি নাই
+      ) {
+        alert("Product Name, Image, and Sale Price are required.");
+        return;
+      }
 
       // Make API call to add product
       const response = await fetch(
@@ -196,7 +204,6 @@ export default function AddProduct({ setOpenAddproduct }) {
         // If response is successful, reset form and show success message
         setFormData({
           name: "",
-          slug: "",
           description: "",
           category: {
             gender: "",
@@ -204,38 +211,38 @@ export default function AddProduct({ setOpenAddproduct }) {
             scollection: "",
           },
           salePrice: "",
-          discountsalePrice: "",
+
           brand: "",
           sizes: [],
-          colors: [],
+          sizeGuide: {
+            waist: "",
+            chest: "",
+            length: "",
+            shoulder: "",
+            sleeve: "",
+          },
           quantity: "",
           images: [],
           inStock: true,
-          sku: "",
-          tags: [],
+          isFeatured: false,
+
           visibility: "public",
           adminNote: "",
+          buyPrice: "",
         });
         setUploadedImages([]); // Clear uploaded images preview
         setIsProductAdded(true); // Show product added success
+        setSizesInput("");
         setTimeout(() => setIsProductAdded(false), 3000); // Hide after 3 seconds
       } else {
         // If response is not OK, parse error and throw
         const errorData = await response.json();
         let errorMessage = "Failed to add product. Please try again.";
 
-        // Enhanced error message for duplicate field value
-        if (
-          errorData.message &&
-          (errorData.message.includes("duplicate key error") ||
-            errorData.message.includes("Duplicate field value"))
-        ) {
-          errorMessage =
-            "A product with this name or slug already exists. Please choose a different name or modify the slug.";
-        } else if (errorData.message) {
+        if (errorData.message) {
           errorMessage = errorData.message;
         }
-        throw new Error(errorMessage); // Throw error to be caught by catch block
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Error adding product:", error);
@@ -248,8 +255,9 @@ export default function AddProduct({ setOpenAddproduct }) {
   // Define tabs for navigation
   const tabs = [
     { id: "basic", label: "Basic Info" },
-    { id: "details", label: "Details" },
     { id: "media", label: "Media" },
+
+    { id: "details", label: "Details" },
   ];
 
   // Options for the collection select dropdown
@@ -284,18 +292,18 @@ export default function AddProduct({ setOpenAddproduct }) {
     }),
     menu: (provided) => ({
       ...provided,
-      backgroundColor: "#f0f9ff", // Dropdown menu background
+      backgroundColor: "#101217", // Dropdown menu background
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
         ? "#60a5fa"
         : state.isFocused
-        ? "#e0f2fe"
-        : "#f0f9ff",
-      color: "#1e3a8a",
+        ? "#101217"
+        : "#101217",
+      color: "#ffffff",
       "&:active": {
-        backgroundColor: "#bae6fd",
+        backgroundColor: "#101217",
       },
     }),
   };
@@ -362,20 +370,6 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Slug*
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
                   Description*
                 </label>
                 <textarea
@@ -394,10 +388,10 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Sale Price
+                  Sale Price*
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2">$</span>
+                  <span className="absolute left-3 top-2 text-gray-500">$</span>
                   <input
                     type="number"
                     name="salePrice"
@@ -405,7 +399,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                     onChange={handleChange}
                     min="0"
                     step="0.01"
-                    className="w-full pl-8 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
@@ -413,18 +407,18 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Buy Price
+                  Buy Price (Optional)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2">$</span>
+                  <span className="absolute left-3 top-2 text-gray-500">$</span>
                   <input
                     type="number"
-                    name="discountsalePrice"
-                    value={formData.discountsalePrice}
+                    name="buyPrice"
+                    value={formData.buyPrice}
                     onChange={handleChange}
                     min="0"
                     step="0.01"
-                    className="w-full pl-8 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -444,17 +438,35 @@ export default function AddProduct({ setOpenAddproduct }) {
                 />
               </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="inStock"
-                  checked={formData.inStock}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label className="ml-2 block text-sm text-white">
-                  In Stock
-                </label>
+              <div className="flex items-center gap-4">
+                {" "}
+                {/* Used gap-4 for spacing */}
+                {/* Existing In Stock checkbox */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="inStock"
+                    checked={formData.inStock}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-white">
+                    In Stock
+                  </label>
+                </div>
+                {/* NEW FIELD: isFeatured checkbox */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isFeatured"
+                    checked={formData.isFeatured}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-white">
+                    Is Featured
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -474,13 +486,14 @@ export default function AddProduct({ setOpenAddproduct }) {
                   name="category.gender"
                   value={formData.category.gender}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border bg-[#101217] border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Select Gender</option>
                   <option value="men">Men</option>
                   <option value="women">Women</option>
                   <option value="kids">Kids</option>
+                  <option value="unisex">Unisex</option>
                 </select>
               </div>
 
@@ -494,27 +507,34 @@ export default function AddProduct({ setOpenAddproduct }) {
                   value={formData.category.type}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=" Jersey, Shorts, T-Shirt"
                   required
                 />
               </div>
 
-              <Select
-                options={collectionoptions}
-                value={collectionoptions.find(
-                  (option) => option.value === formData.category.scollection
-                )}
-                onChange={(selectedOption) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    category: {
-                      ...prev.category,
-                      scollection: selectedOption ? selectedOption.value : "",
-                    },
-                  }));
-                }}
-                styles={customStyles}
-                placeholder="Select Collection"
-              />
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Collection
+                </label>
+                <Select
+                  options={collectionoptions}
+                  value={collectionoptions.find(
+                    (option) => option.value === formData.category.scollection
+                  )}
+                  onChange={(selectedOption) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      category: {
+                        ...prev.category,
+                        scollection: selectedOption ? selectedOption.value : "",
+                      },
+                    }));
+                  }}
+                  styles={customStyles}
+                  placeholder="Select Collection"
+                  isClearable
+                />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
@@ -536,49 +556,131 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Sizes (comma separated)
+                  Sizes (comma separated, S, M, L, XL)
                 </label>
                 <input
                   type="text"
-                  value={formData.sizes.join(", ")}
+                  value={sizesInput} // <-- IMPORTANT: Now uses sizesInput
                   onChange={(e) => handleArrayInput(e, "sizes")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=" S, M, L, XL"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Colors (comma separated)
+                  Size Guide (Optional - in cm/inches)
                 </label>
-                <input
-                  type="text"
-                  value={formData.colors.join(", ")}
-                  onChange={(e) => handleArrayInput(e, "colors")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                {/* Size Guide Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="chest"
+                    placeholder="Chest"
+                    value={formData.sizeGuide.chest}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sizeGuide: {
+                          ...prev.sizeGuide,
+                          chest: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    name="length"
+                    placeholder="Length"
+                    value={formData.sizeGuide.length}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sizeGuide: {
+                          ...prev.sizeGuide,
+                          length: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    name="waist"
+                    placeholder="Waist"
+                    value={formData.sizeGuide.waist}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sizeGuide: {
+                          ...prev.sizeGuide,
+                          waist: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    name="shoulder"
+                    placeholder="Shoulder"
+                    value={formData.sizeGuide.shoulder}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sizeGuide: {
+                          ...prev.sizeGuide,
+                          shoulder: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    name="sleeve"
+                    placeholder="Sleeve"
+                    value={formData.sizeGuide.sleeve}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sizeGuide: {
+                          ...prev.sizeGuide,
+                          sleeve: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  SKU
+                  Visibility
                 </label>
-                <input
-                  type="text"
-                  name="sku"
-                  value={formData.sku}
+                <select
+                  name="visibility"
+                  value={formData.visibility}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="public">Public</option>
+                  <option value="private">Private</option>
+                  <option value="hidden">Hidden</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Tags (comma separated)
+                  Admin Note (Optional)
                 </label>
-                <input
-                  type="text"
-                  value={formData.tags.join(", ")}
-                  onChange={(e) => handleArrayInput(e, "tags")}
+                <textarea
+                  name="adminNote"
+                  value={formData.adminNote}
+                  onChange={handleChange}
+                  rows={2}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -589,12 +691,14 @@ export default function AddProduct({ setOpenAddproduct }) {
         {/* Media Tab Content */}
         {activeTab === "media" && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white">Product Images</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Product Images*
+            </h2>
 
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <div className="flex flex-col items-center justify-center space-y-2">
                 <FiImage className="h-12 w-12 text-gray-400" />
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-400">
                   Drag and drop images here, or click to browse
                 </p>
                 <input
@@ -662,11 +766,13 @@ export default function AddProduct({ setOpenAddproduct }) {
             {activeTab !== "basic" && (
               <button
                 type="button"
-                onClick={() =>
-                  setActiveTab(
-                    tabs[tabs.findIndex((t) => t.id === activeTab) - 1].id
-                  )
-                }
+                onClick={() => {
+                  const currentIndex = tabs.findIndex(
+                    (t) => t.id === activeTab
+                  );
+                  const previousTab = tabs[currentIndex - 1];
+                  if (previousTab) setActiveTab(previousTab.id);
+                }}
                 className="px-4 py-2 border border-gray-300 rounded-md text-white hover:bg-gray-50"
               >
                 Previous
@@ -678,11 +784,13 @@ export default function AddProduct({ setOpenAddproduct }) {
             {activeTab !== tabs[tabs.length - 1].id ? (
               <button
                 type="button"
-                onClick={() =>
-                  setActiveTab(
-                    tabs[tabs.findIndex((t) => t.id === activeTab) + 1].id
-                  )
-                }
+                onClick={() => {
+                  const currentIndex = tabs.findIndex(
+                    (t) => t.id === activeTab
+                  );
+                  const nextTab = tabs[currentIndex + 1];
+                  if (nextTab) setActiveTab(nextTab.id);
+                }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Next
@@ -691,7 +799,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               <button
                 type="submit"
                 className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
-                disabled={isProductAdded}
+                disabled={isProductAdded || isUploading}
               >
                 {isProductAdded ? (
                   <>

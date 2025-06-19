@@ -119,14 +119,14 @@ export default function NewSection() {
 
       <button
         onClick={scrollLeftFunc}
-        className="absolute cursor-pointer left-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700  bg-gray-300  p-2 rounded-full"
+        className="absolute hidden lg:block cursor-pointer left-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700  bg-gray-300  p-2 rounded-full"
       >
         ❮
       </button>
 
       <button
         onClick={scrollRightFunc}
-        className="absolute cursor-pointer right-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700 bg-gray-300 p-2 rounded-full"
+        className="absolute hidden lg:block cursor-pointer right-0 top-1/2 transform -translate-y-1/2 z-40 text-gray-700 bg-gray-300 p-2 rounded-full"
       >
         ❯
       </button>
@@ -164,7 +164,7 @@ export default function NewSection() {
               </p>
             </div>
 
-            <span className="absolute top-1 left-0 z-10 text-[10px] md:text-xs bg-gradient-to-r bg-black text-white px-2 py-[2px] md:px-3 md:py-1 rounded-full shadow-md tracking-wider">
+            <span className="absolute top-0 left-0 z-10 text-[10px] md:text-xs bg-gradient-to-r bg-black text-white px-2 py-[2px] md:px-3 md:py-1  shadow-md tracking-wider">
               NEW
             </span>
           </button>

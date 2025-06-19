@@ -10,6 +10,7 @@ export default function Product({ product }) {
   const [buttonText, setButtonText] = useState("ADD TO CART");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [instock, setInstoke] = useState(true);
 
   // Destructure product details for cleaner access
   const {
@@ -20,11 +21,17 @@ export default function Product({ product }) {
     brand,
     sizes = [],
     colors = [],
-    inStock,
+
     images = [],
-    rating,
-    reviewsCount,
   } = product;
+
+  useEffect(() => {
+    if (product.quantity === 0) {
+      setInstoke(false);
+    } else {
+      setInstoke(true);
+    }
+  }, [product.quantity]);
 
   // Assuming product.category.scollection holds the type needed for related products
   // Make sure product.category and product.category.scollection are always defined
@@ -101,7 +108,7 @@ export default function Product({ product }) {
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
+  console.log(relatedProducts);
   return (
     <>
       <div className="relative w-full max-w-[90vw] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
@@ -169,15 +176,13 @@ export default function Product({ product }) {
               ))}
             </p>
           )}
-          <p className="text-sm text-gray-600">Rating: {rating} ⭐</p>
-          <p className="text-sm text-gray-600">Reviews: {reviewsCount}</p>
 
           <p
             className={`font-semibold ${
-              inStock ? "text-green-600" : "text-red-600"
+              instock ? "text-green-600" : "text-red-600"
             }`}
           >
-            Availability: {inStock ? "In Stock " : "Out of Stock "}
+            Availability: {instock ? "In Stock " : "Out of Stock "}
           </p>
 
           {/* Size Selector & Quantity */}
@@ -224,12 +229,18 @@ export default function Product({ product }) {
               </button>
             </div>
 
-            <button
-              onClick={handleAddToCart}
-              className="bg-black cursor-pointer text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
-            >
-              {buttonText}
-            </button>
+            {instock ? (
+              <button
+                onClick={handleAddToCart}
+                className="bg-black cursor-pointer text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition"
+              >
+                {buttonText}
+              </button>
+            ) : (
+              <button className="bg-gray-500 cursor-pointer text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition">
+                Out of stoke
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -277,21 +288,27 @@ export default function Product({ product }) {
                   <p className="text-md font-bold text-gray-800 mb-4">
                     TK. {relProduct.salePrice}
                   </p>
-                  <button
-                    onClick={() => {
-                      addToCart(
-                        relProduct,
-                        1, // Default quantity 1
-                        relProduct.sizes && relProduct.sizes.length > 0
-                          ? relProduct.sizes[0]
-                          : "One Size" // Default size
-                      );
-                      setIsDrawerOpen(true);
-                    }}
-                    className="mt-auto bg-black cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
-                  >
-                    Add to Cart
-                  </button>
+                  {relProduct.quantity > 0 ? (
+                    <button
+                      onClick={() => {
+                        addToCart(
+                          relProduct,
+                          1, // Default quantity 1
+                          relProduct.sizes && relProduct.sizes.length > 0
+                            ? relProduct.sizes[0]
+                            : "One Size" // Default size
+                        );
+                        setIsDrawerOpen(true);
+                      }}
+                      className="mt-auto bg-black cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
+                    >
+                      Add to Cart
+                    </button>
+                  ) : (
+                    <button className="mt-auto bg-gray-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium">
+                      Out of stoke
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

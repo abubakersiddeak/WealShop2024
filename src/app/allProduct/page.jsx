@@ -20,7 +20,8 @@ export default function Allproduct() {
           throw new Error("Product fetching failed from API in GET method");
         }
         const data = await res.json();
-        setProducts(data.products || []);
+        const rendomizeData = data.products.sort(() => Math.random() - 0.5);
+        setProducts(rendomizeData || []);
       } catch (error) {
         console.error(error);
       }

@@ -24,6 +24,8 @@ export default function EcomarsDashboard() {
   const [openAddproduct, setOpenAddproduct] = useState(false);
   const [openShowOrder, setOpenShowOrder] = useState(false);
   const [openAvailableProducts, setOpenAvailableProducts] = useState(false);
+  const [products, setProducts] = useState([]);
+
   const fetchOrders = async () => {
     try {
       const res = await fetch(
@@ -42,7 +44,24 @@ export default function EcomarsDashboard() {
   useEffect(() => {
     fetchOrders();
   }, []);
-  console.log(orders);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
+      );
+      const data = await res.json();
+
+      // Access products from the 'products' key
+      const sorted = data.products.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      setProducts(sorted);
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleAddProduct = () => {
     setOpenAddproduct(true);
     setOpenShowOrder(false);
@@ -133,7 +152,9 @@ export default function EcomarsDashboard() {
   const totalProfit =
     orders.reduce((sum, order) => sum + (order.store_amount || 0), 0) -
     totalBuyPrice;
-  // Main Dashboard view with modern/futuristic enhancements
+
+  const lowStockProduct = products.filter((product) => product.quantity < 10);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-8 font-sans">
       <div className="max-w-8xl mx-auto">
@@ -169,7 +190,7 @@ export default function EcomarsDashboard() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-cyan-400 group-hover:text-cyan-300">
-                Process Orders
+                Order Manifest
               </h2>
               <p className="text-gray-400 text-sm mt-1">
                 Review and manage all incoming customer requests.
@@ -186,7 +207,8 @@ export default function EcomarsDashboard() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-green-400 group-hover:text-green-300">
-                Total Products
+                Total Products{" "}
+                <span className="text-yellow-400">{products.length}</span>
               </h2>
               <p className="text-gray-400 text-sm mt-1">
                 Explore your inventory and product listings.
@@ -235,11 +257,13 @@ export default function EcomarsDashboard() {
           <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-300">
-                Total Orders
+                New Orders
               </h3>
               <ShoppingBag size={24} className="text-cyan-500" />
             </div>
-            <p className="text-4xl font-bold text-cyan-400">{orders.length}</p>
+            <p className="text-4xl font-bold text-yellow-400">
+              {orders.filter((order) => order.status === "VALID").length}
+            </p>
             <p className="text-sm text-gray-400 mt-2 flex items-center">
               <TrendingUp size={16} className="text-green-400 mr-1" />
               +8.1% since last week
@@ -329,30 +353,47 @@ export default function EcomarsDashboard() {
             </ul>
           </div>
 
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-            <h3 className="text-2xl font-bold text-gray-200 mb-5 flex items-center gap-3">
-              <BellRing size={24} className="text-orange-400" /> Notifications
-            </h3>
-            <ul className="space-y-4">
-              <li className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center gap-3">
-                <span className="text-yellow-400">●</span>
-                <p className="text-gray-100 font-medium text-sm">
-                  System maintenance scheduled for May 30th, 2 AM PST.
-                </p>
-              </li>
-              <li className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center gap-3">
-                <span className="text-red-400">●</span>
-                <p className="text-gray-100 font-medium text-sm">
-                  Payment gateway processing delay on some transactions.
-                </p>
-              </li>
-              <li className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center gap-3">
-                <span className="text-green-400">●</span>
-                <p className="text-gray-100 font-medium text-sm">
-                  New dashboard features are now live! Check settings.
-                </p>
-              </li>
-            </ul>
+          <div className="bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700">
+            <h1 className="text-center text-3xl font-bold text-red-500 mb-6">
+              Low Stock Products
+            </h1>
+
+            {lowStockProduct && lowStockProduct.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg">
+                <table className="min-w-full text-sm text-left text-gray-300">
+                  <thead className="bg-gray-800 text-cyan-400">
+                    <tr>
+                      <th className="px-6 py-3 border-b border-gray-700">
+                        Product Name
+                      </th>
+                      <th className="px-6 py-3 border-b border-gray-700">
+                        Quantity
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lowStockProduct.map((p, index) => (
+                      <tr
+                        key={p._id || index}
+                        className="hover:bg-gray-800 transition-colors"
+                      >
+                        <td className="px-6 py-4 border-b border-gray-700">
+                          {p.name}
+                        </td>
+                        <td className="px-6 py-4 border-b border-gray-700 text-red-500 font-semibold">
+                          {p.quantity}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-400 text-center">
+                No low stock products found.
+              </p>
+            )}
+
             <button className="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 shadow-md">
               View All Notifications
             </button>

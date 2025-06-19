@@ -7,6 +7,8 @@ export default function ShowOrder({ setOpenShowOrder }) {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  // New state to manage the active order filter tab, defaulting to 'VALID' (New Orders)
+  const [activeTab, setActiveTab] = useState("VALID"); // 'all', 'VALID', 'PROCESSING', 'DELIVERED'
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [processingOrderId, setProcessingOrderId] = useState(null); // State to track which order is being processed
 
@@ -23,7 +25,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
           (a, b) => new Date(b.tran_date) - new Date(a.tran_date)
         );
         setOrders(sortedOrders);
-        setFilteredOrders(sortedOrders); // Initialize filteredOrders with sorted orders
+        // Initial filtering will be handled by the useEffect that depends on orders and activeTab
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -37,10 +39,10 @@ export default function ShowOrder({ setOpenShowOrder }) {
     fetchOrders();
   }, []);
 
-  // Effect to re-filter orders whenever searchTerm or original orders change
+  // Effect to filter orders whenever searchTerm, original orders, or activeTab change
   useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const results = orders.filter((order) => {
+    let results = orders.filter((order) => {
       // Add defensive checks here
       const customerName = order.customer?.name || ""; // Use empty string if name is null/undefined
       const tranId = order.tran_id || ""; // Use empty string if tran_id is null/undefined
@@ -52,8 +54,14 @@ export default function ShowOrder({ setOpenShowOrder }) {
         orderId.toLowerCase().includes(lowerCaseSearchTerm)
       );
     });
+
+    // Further filter based on the active tab
+    if (activeTab !== "all") {
+      results = results.filter((order) => order.status === activeTab);
+    }
+
     setFilteredOrders(results);
-  }, [searchTerm, orders]);
+  }, [searchTerm, orders, activeTab]); // Added activeTab to dependencies
 
   // Function to update order status
   const updateOrderStatus = async (orderId, currentStatus) => {
@@ -71,7 +79,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
     try {
       // Assuming an API endpoint for updating order status
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateOrderStatus`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/updateOrderStatus`,
         {
           method: "PUT", // Or PATCH, depending on your API
           headers: {
@@ -92,17 +100,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
             (a, b) => new Date(b.tran_date) - new Date(a.tran_date)
           );
         });
-        // Also update filteredOrders if the current view is filtered
-        setFilteredOrders((prevFilteredOrders) => {
-          const updatedFilteredOrders = prevFilteredOrders.map((order) =>
-            order._id === orderId ? { ...order, status: newStatus } : order
-          );
-          // Re-sort the filtered orders as well
-          return updatedFilteredOrders.sort(
-            (a, b) => new Date(b.tran_date) - new Date(a.tran_date)
-          );
-        });
-        // Optionally, show a success message
+        // filteredOrders will be updated automatically by the useEffect
         console.log(`Order ${orderId} status updated to ${newStatus}`);
       } else {
         console.error("Failed to update order status:", json.message);
@@ -127,8 +125,15 @@ export default function ShowOrder({ setOpenShowOrder }) {
       </div>
     );
 
+  const tabs = [
+    { name: "New Orders", status: "VALID" }, // Prioritize New Orders
+    { name: "Processing Orders", status: "PROCESSING" },
+    { name: "Delivered Orders", status: "DELIVERED" },
+    { name: "All Orders", status: "all" },
+  ];
+
   return (
-    <div className="p-6 rounded-xl shadow-lg bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 overflow-hidden">
+    <div className="p-6 rounded-xl shadow-lg bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 overflow-hidden font-inter">
       <div className="flex justify-between items-center mb-6">
         <span className="text-xl md:text-2xl font-semibold tracking-wide uppercase">
           Order Manifest{" "}
@@ -137,6 +142,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
         <button
           className="hover:text-gray-400 transition-colors duration-200"
           onClick={() => setOpenShowOrder(false)}
+          aria-label="Close Order Manifest"
         >
           <EyeOff className="h-6 w-6" />
         </button>
@@ -151,12 +157,14 @@ export default function ShowOrder({ setOpenShowOrder }) {
             className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring-blue-500 focus:outline-none text-gray-200 placeholder-gray-400 text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search orders"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+              aria-label="Clear search"
             >
               <X className="h-5 w-5" />
             </button>
@@ -164,20 +172,36 @@ export default function ShowOrder({ setOpenShowOrder }) {
         </div>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-2 mb-6 justify-center">
+        {tabs.map((tab) => (
+          <button
+            key={tab.status}
+            onClick={() => setActiveTab(tab.status)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out
+              ${
+                activeTab === tab.status
+                  ? "bg-blue-600 text-white shadow-md transform scale-105"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-gray-100"
+              }`}
+          >
+            {tab.name}
+          </button>
+        ))}
+      </div>
+
       <div className="overflow-auto rounded-md border border-gray-700">
-        <table className="min-w-full text-sm md:text-md divide-y divide-gray-700 bg-gray-800">
+        <table className="min-w-full text-sm md:text-md divide-y divide-gray-700 bg-gray-800 hidden md:table">
           <thead className="bg-gray-700 text-gray-300 uppercase tracking-wider">
             <tr>
+              {/* No whitespace between th tags on the same line */}
               <th className="px-3 py-3 text-left font-semibold">Client Name</th>
               <th className="px-3 py-3 text-left font-semibold">Order ID</th>
-              <th className="px-3 py-3 text-left font-semibold hidden md:table-cell">
+              <th className="px-3 py-3 text-left font-semibold hidden lg:table-cell">
                 Contact
               </th>
               <th className="px-3 py-3 text-left font-semibold">Merchandise</th>
               <th className="px-3 py-3 text-center font-semibold">Units</th>
-              <th className="px-3 py-3 text-left font-semibold hidden md:table-cell">
-                Payment Status
-              </th>
               <th className="px-3 py-3 text-center font-semibold">Value</th>
               <th className="px-3 py-3 text-center font-semibold">State</th>
               <th className="px-3 py-3 text-right font-semibold">Action</th>
@@ -187,7 +211,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
             {filteredOrders.length === 0 ? (
               <tr>
                 <td colSpan="9" className="px-3 py-6 text-center text-gray-400">
-                  No orders found matching your search criteria.
+                  No orders found matching your criteria.
                 </td>
               </tr>
             ) : (
@@ -199,10 +223,12 @@ export default function ShowOrder({ setOpenShowOrder }) {
                   <td className="px-3 py-3 font-medium">
                     {order.customer.name}
                   </td>
-                  <td className="px-3 py-3 text-gray-400 text-xs">
-                    {order._id.substring(0, 8)}...
+                  <td className="px-3 py-3">
+                    <span className="text-blue-400 text-xs">
+                      {order._id.substring(0, 8)}...
+                    </span>
                   </td>
-                  <td className="px-3 py-3 hidden md:table-cell">
+                  <td className="px-3 py-3 hidden lg:table-cell">
                     <span className="block">{order.customer.phone}</span>
                     {order.customer.email && (
                       <span className="block text-gray-400 text-xs">
@@ -225,17 +251,6 @@ export default function ShowOrder({ setOpenShowOrder }) {
                   <td className="px-3 py-3 text-center">
                     {order.items.reduce((sum, item) => sum + item.quantity, 0)}
                   </td>
-                  <td className="px-3 py-3 hidden md:table-cell">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        order.payment_status === "paid"
-                          ? "bg-green-700 text-green-200"
-                          : "bg-yellow-700 text-yellow-200"
-                      }`}
-                    >
-                      {order.payment_status}
-                    </span>
-                  </td>
                   <td className="px-3 py-3 text-center">৳{order.amount}</td>
                   <td className="px-3 py-3 text-center">
                     <span
@@ -244,7 +259,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
                           ? "bg-green-600 text-green-100"
                           : order.status === "PROCESSING"
                           ? "bg-blue-600 text-blue-100"
-                          : "bg-purple-600 text-purple-100" // For DELIVERED
+                          : "bg-purple-600 text-purple-100"
                       }`}
                     >
                       {order.status}
@@ -255,6 +270,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
                       <button
                         onClick={() => setSelectedOrder(order)}
                         className="text-blue-400 hover:underline font-semibold transition-colors duration-200 flex items-center"
+                        aria-label={`View details for order ${order._id}`}
                       >
                         <Info className="h-5 w-5 inline-block mr-1" />
                         <span>Details</span>
@@ -276,6 +292,11 @@ export default function ShowOrder({ setOpenShowOrder }) {
                                 ? "opacity-70 cursor-not-allowed"
                                 : ""
                             }`}
+                          aria-label={
+                            order.status === "VALID"
+                              ? "Initiate Processing"
+                              : "Mark as Delivered"
+                          }
                         >
                           {processingOrderId === order._id ? (
                             <Loader2 className="h-4 w-4 animate-spin mr-1" />
@@ -303,7 +324,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
         <div className="md:hidden space-y-4 p-4">
           {filteredOrders.length === 0 ? (
             <div className="text-center text-gray-400 py-6">
-              No orders found matching your search criteria.
+              No orders found matching your criteria.
             </div>
           ) : (
             filteredOrders.map((order) => (
@@ -371,6 +392,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
                   <button
                     onClick={() => setSelectedOrder(order)}
                     className="text-blue-400 hover:underline font-semibold transition-colors duration-200 flex items-center"
+                    aria-label={`View details for order ${order._id}`}
                   >
                     <Info className="h-5 w-5 inline-block mr-1" />{" "}
                     <span>More</span>
@@ -390,6 +412,11 @@ export default function ShowOrder({ setOpenShowOrder }) {
                             ? "opacity-70 cursor-not-allowed"
                             : ""
                         }`}
+                      aria-label={
+                        order.status === "VALID"
+                          ? "Process order"
+                          : "Deliver order"
+                      }
                     >
                       {processingOrderId === order._id ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-1" />
@@ -478,7 +505,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
               </p>
               <p>
                 <span className="text-gray-400">Initiated On:</span>{" "}
-                {new Date(selectedOrder.tran_date).toLocaleDateString("en-BD", {
+                {new Date(selectedOrder.createdAt).toLocaleDateString("en-BD", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -504,6 +531,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
             <button
               onClick={() => setSelectedOrder(null)}
               className="absolute top-3 right-3 text-gray-500 hover:text-red-500 transition-colors duration-200"
+              aria-label="Close order details"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

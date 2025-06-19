@@ -2,20 +2,7 @@ import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
-    tran_id: { type: String, required: true, unique: true },
-    val_id: { type: String, required: true },
     amount: { type: Number, required: true },
-    store_amount: { type: Number, required: true },
-    status: {
-      type: String,
-      enum: ["VALID", "FAILED", "PENDING"],
-      default: "PENDING",
-    },
-    card_type: { type: String, default: null },
-    card_no: { type: String, default: null },
-    card_issuer: { type: String, default: null },
-    tran_date: { type: Date, required: true },
-    currency: { type: String, default: "BDT" },
 
     customer: {
       name: { type: String, default: null },
@@ -30,14 +17,6 @@ const OrderSchema = new mongoose.Schema(
       country: { type: String, default: "Bangladesh" },
     },
 
-    payment_status: {
-      type: String,
-      enum: ["PAID", "UNPAID", "REFUNDED"],
-      default: "UNPAID",
-    },
-
-    invoice_number: { type: String, unique: true, sparse: true },
-
     items: [
       {
         product_id: String,
@@ -51,6 +30,11 @@ const OrderSchema = new mongoose.Schema(
         },
       },
     ],
+    status: {
+      type: String,
+      enum: ["VALID", "PROCESSING", "DELIVERED"], // ঐ তিনটি স্ট্যাটাস সাপোর্ট করবে
+      default: "VALID",
+    },
   },
   {
     timestamps: true,
