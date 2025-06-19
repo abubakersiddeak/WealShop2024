@@ -144,7 +144,7 @@ const ShowAllProduct = () => {
           <select
             name="category"
             onChange={handleFilterChange}
-            className="p-2 border rounded"
+            className="p-2 border rounded bg-gray-800"
           >
             <option value="">All Categories</option>
             <option value="Clothing">Clothing</option>
@@ -155,7 +155,7 @@ const ShowAllProduct = () => {
           <select
             name="brand"
             onChange={handleFilterChange}
-            className="p-2 border rounded"
+            className="p-2 border rounded bg-gray-800"
           >
             <option value="">All Brands</option>
             <option value="Nike">Nike</option>
@@ -166,7 +166,7 @@ const ShowAllProduct = () => {
           <select
             name="salePrice"
             onChange={handleFilterChange}
-            className="p-2 border rounded"
+            className="p-2 border rounded bg-gray-800"
           >
             <option value="">Default</option>
             <option value="lowToHigh">salePrice: Low to High</option>

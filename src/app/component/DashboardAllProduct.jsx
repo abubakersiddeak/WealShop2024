@@ -18,25 +18,16 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
     description: "",
     brand: "",
     salePrice: "",
-    discountsalePrice: "",
+
     categoryGender: "",
     categoryType: "",
     categoryScollection: "",
     sizes: "",
-    colors: "",
+    buyPrice: "",
     quantity: "",
     inStock: false,
     isFeatured: false,
-    sku: "",
-    tags: "",
-    weight: "",
-    dimensionsLength: "",
-    dimensionsWidth: "",
-    dimensionsHeight: "",
-    shippingFreeShipping: false,
-    shippingCost: "",
-    shippingEstimatedDeliveryDays: "",
-    sizeGuide: "",
+
     visibility: "public",
     adminNote: "",
   });
@@ -50,43 +41,16 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
         description: product.description || "",
         brand: product.brand || "",
         salePrice: product.salePrice !== undefined ? product.salePrice : "",
-        discountsalePrice:
-          product.discountsalePrice !== undefined
-            ? product.discountsalePrice
-            : "",
+        buyPrice: product.buyPrice || "",
         categoryGender: product.category?.gender || "",
         categoryType: product.category?.type || "",
         categoryScollection: product.category?.scollection || "",
         sizes: product.sizes?.join(", ") || "",
-        colors: product.colors?.join(", ") || "",
+
         quantity: product.quantity !== undefined ? product.quantity : "",
         inStock: product.inStock || false,
         isFeatured: product.isFeatured || false,
-        sku: product.sku || "",
-        tags: product.tags?.join(", ") || "",
-        weight: product.weight !== undefined ? product.weight : "",
-        dimensionsLength:
-          product.dimensions?.length !== undefined
-            ? product.dimensions.length
-            : "",
-        dimensionsWidth:
-          product.dimensions?.width !== undefined
-            ? product.dimensions.width
-            : "",
-        dimensionsHeight:
-          product.dimensions?.height !== undefined
-            ? product.dimensions.height
-            : "",
-        shippingFreeShipping: product.shippingDetails?.freeShipping || false,
-        shippingCost:
-          product.shippingDetails?.shippingCost !== undefined
-            ? product.shippingDetails.shippingCost
-            : "",
-        shippingEstimatedDeliveryDays:
-          product.shippingDetails?.estimatedDeliveryDays !== undefined
-            ? product.shippingDetails.estimatedDeliveryDays
-            : "",
-        sizeGuide: product.sizeGuide || "",
+
         visibility: product.visibility || "public",
         adminNote: product.adminNote || "",
       });
@@ -121,7 +85,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
       description: formData.description.trim(),
       brand: formData.brand.trim(),
       salePrice: parseFloat(formData.salePrice),
-      discountsalePrice: formData.discountsalePrice
+      buyPrice: formData.buyPrice
         ? parseFloat(formData.discountsalePrice)
         : null,
       category: {
@@ -132,38 +96,11 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
       sizes: formData.sizes
         ? formData.sizes.split(",").map((s) => s.trim())
         : [],
-      colors: formData.colors
-        ? formData.colors.split(",").map((c) => c.trim())
-        : [],
+
       quantity: formData.quantity ? parseInt(formData.quantity) : 0,
       inStock: formData.inStock,
       isFeatured: formData.isFeatured,
-      sku: formData.sku.trim() || undefined,
-      tags: formData.tags
-        ? formData.tags.split(",").map((tag) => tag.trim())
-        : [],
-      weight: formData.weight ? parseFloat(formData.weight) : undefined,
-      dimensions: {
-        length: formData.dimensionsLength
-          ? parseFloat(formData.dimensionsLength)
-          : undefined,
-        width: formData.dimensionsWidth
-          ? parseFloat(formData.dimensionsWidth)
-          : undefined,
-        height: formData.dimensionsHeight
-          ? parseFloat(formData.dimensionsHeight)
-          : undefined,
-      },
-      shippingDetails: {
-        freeShipping: formData.shippingFreeShipping,
-        shippingCost: formData.shippingCost
-          ? parseFloat(formData.shippingCost)
-          : undefined,
-        estimatedDeliveryDays: formData.shippingEstimatedDeliveryDays
-          ? parseInt(formData.shippingEstimatedDeliveryDays)
-          : undefined,
-      },
-      sizeGuide: formData.sizeGuide.trim() || undefined,
+
       visibility: formData.visibility,
       adminNote: formData.adminNote.trim() || undefined,
       // Do NOT send rating and reviewsCount from the frontend for direct editing,
@@ -196,21 +133,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
           <p className="text-lg font-bold text-purple-400 drop-shadow-md">
             ৳{product.salePrice}
           </p>
-          {product.discountsalePrice && (
-            <>
-              <p className="text-sm text-gray-500 line-through ml-2">
-                ৳{product.discountsalePrice}
-              </p>
-              <p className="text-sm text-green-500 ml-2">
-                (
-                {(
-                  (1 - product.salePrice / product.discountsalePrice) *
-                  100
-                ).toFixed(0)}
-                % off)
-              </p>
-            </>
-          )}
         </div>
 
         <p className="text-sm text-gray-400 mb-1">
@@ -222,13 +144,10 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
           <strong className="text-gray-300">Sizes:</strong>{" "}
           {product.sizes?.join(", ")}
         </p>
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Colors:</strong>{" "}
-          {product.colors?.join(", ")}
-        </p>
+
         <p className="text-sm text-gray-400 mb-1 flex items-center">
           <strong className="text-gray-300 mr-1">Stock:</strong>{" "}
-          {product.inStock ? (
+          {product.quantity > 0 ? (
             <span className="text-green-500 flex items-center">
               <CheckCircle size={16} className="mr-1" /> In Stock
             </span>
@@ -253,59 +172,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
           )}
         </p>
 
-        {product.sku && (
-          <p className="text-sm text-gray-400 mb-1">
-            <strong className="text-gray-300">SKU:</strong> {product.sku}
-          </p>
-        )}
-        {product.tags && product.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2 mb-1">
-            <strong className="text-gray-300 text-sm">Tags:</strong>
-            {product.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-        {product.weight && (
-          <p className="text-sm text-gray-400 mb-1">
-            <strong className="text-gray-300">Weight:</strong> {product.weight}{" "}
-            kg
-          </p>
-        )}
-        {product.dimensions && (
-          <p className="text-sm text-gray-400 mb-1">
-            <strong className="text-gray-300">Dimensions:</strong>{" "}
-            {product.dimensions.length}L x {product.dimensions.width}W x{" "}
-            {product.dimensions.height}H cm
-          </p>
-        )}
-        {product.shippingDetails && (
-          <p className="text-sm text-gray-400 mb-1">
-            <strong className="text-gray-300">Shipping:</strong>{" "}
-            {product.shippingDetails.freeShipping
-              ? "Free"
-              : `৳${product.shippingDetails.shippingCost}`}{" "}
-            (Est. {product.shippingDetails.estimatedDeliveryDays} days)
-          </p>
-        )}
-        {product.sizeGuide && (
-          <p className="text-sm text-gray-400 mb-1 flex items-center">
-            <strong className="text-gray-300 mr-1">Size Guide:</strong>
-            <a
-              href={product.sizeGuide}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline flex items-center"
-            >
-              View <ExternalLink size={14} className="ml-1" />
-            </a>
-          </p>
-        )}
         <p className="text-sm text-gray-400 mb-1">
           <strong className="text-gray-300">Visibility:</strong>{" "}
           {product.visibility}
@@ -421,7 +287,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={formData.discountsalePrice}
+                    value={formData.buyPrice}
                     onChange={handleChange}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   />
@@ -483,19 +349,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Colors (comma separated)
-                  </label>
-                  <input
-                    name="colors"
-                    type="text"
-                    value={formData.colors}
-                    onChange={handleChange}
-                    placeholder="e.g., red, blue, green"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
               </div>
 
               {/* Quantity & Stock Status */}
@@ -542,187 +395,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
                   >
                     Is Featured
                   </label>
-                </div>
-              </div>
-
-              {/* SKU & Tags */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    SKU
-                  </label>
-                  <input
-                    name="sku"
-                    type="text"
-                    value={formData.sku}
-                    onChange={handleChange}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Tags (comma separated)
-                  </label>
-                  <input
-                    name="tags"
-                    type="text"
-                    value={formData.tags}
-                    onChange={handleChange}
-                    placeholder="e.g., casual, summer, new-arrival"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Weight & Dimensions */}
-              <div className="space-y-4 bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <label className="block text-lg font-semibold text-gray-200 mb-2">
-                  Physical Attributes
-                </label>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Weight (kg)
-                  </label>
-                  <input
-                    name="weight"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Length (cm)
-                    </label>
-                    <input
-                      name="dimensionsLength"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.dimensionsLength}
-                      onChange={handleChange}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Width (cm)
-                    </label>
-                    <input
-                      name="dimensionsWidth"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.dimensionsWidth}
-                      onChange={handleChange}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Height (cm)
-                    </label>
-                    <input
-                      name="dimensionsHeight"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.dimensionsHeight}
-                      onChange={handleChange}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping Details */}
-              <div className="space-y-4 bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <label className="block text-lg font-semibold text-gray-200 mb-2">
-                  Shipping Details
-                </label>
-                <div className="flex items-center space-x-3">
-                  <input
-                    name="shippingFreeShipping"
-                    type="checkbox"
-                    checked={formData.shippingFreeShipping}
-                    onChange={handleChange}
-                    className="h-5 w-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 transition-colors duration-200"
-                    id="shippingFreeShipping"
-                  />
-                  <label
-                    htmlFor="shippingFreeShipping"
-                    className="text-sm font-medium text-gray-300"
-                  >
-                    Free Shipping
-                  </label>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Shipping Cost (৳)
-                  </label>
-                  <input
-                    name="shippingCost"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.shippingCost}
-                    onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Estimated Delivery Days
-                  </label>
-                  <input
-                    name="shippingEstimatedDeliveryDays"
-                    type="number"
-                    min="0"
-                    value={formData.shippingEstimatedDeliveryDays}
-                    onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Size Guide & Visibility */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Size Guide URL
-                  </label>
-                  <input
-                    name="sizeGuide"
-                    type="text"
-                    value={formData.sizeGuide}
-                    onChange={handleChange}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Visibility
-                  </label>
-                  <select
-                    name="visibility"
-                    value={formData.visibility}
-                    onChange={handleChange}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="public" className="bg-gray-800">
-                      Public
-                    </option>
-                    <option value="private" className="bg-gray-800">
-                      Private
-                    </option>
-                    <option value="archived" className="bg-gray-800">
-                      Archived
-                    </option>
-                  </select>
                 </div>
               </div>
 
