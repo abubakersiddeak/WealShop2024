@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import {
   ClipboardPlus,
   ShoppingBag,
@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import ShowAllProduct from "../component/ShowAllProduct";
 
 export default function EcomarsDashboard() {
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [openAddproduct, setOpenAddproduct] = useState(false);
@@ -61,6 +62,13 @@ export default function EcomarsDashboard() {
 
     fetchProducts();
   }, []);
+  const handlelogout = async () => {
+    await fetch("/api/logout", {
+      method: "GET",
+    });
+
+    router.push("/login"); // লগআউট হলে login page এ পাঠিয়ে দাও
+  };
 
   const handleAddProduct = () => {
     setOpenAddproduct(true);
@@ -158,9 +166,15 @@ export default function EcomarsDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-8 font-sans">
       <div className="max-w-8xl mx-auto">
-        <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-10 tracking-tight">
-          WEAL
-        </h1>
+        <div className="text-5xl flex justify-between font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-10 tracking-tight">
+          <span>WEAL</span>{" "}
+          <button
+            onClick={handlelogout}
+            className="text-xl text-red-500 border p-2 rounded-2xl cursor-pointer hover:bg-gray-600"
+          >
+            logout
+          </button>
+        </div>
 
         {/* Quick Actions / Main Navigation */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

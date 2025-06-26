@@ -11,10 +11,29 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add login logic
-    router.push("/");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/cheacking`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
+      }
+      console.log("login success");
+      router.push("/dashboard");
+    } catch (error) {
+      alert("Something went wrong: " + error.message);
+    }
   };
 
   return (

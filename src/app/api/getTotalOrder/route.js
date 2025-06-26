@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 
 import Order from "@/app/models/Order";
 import { connectMongodb } from "@/app/lib/mongodb";
+// import { auth } from "@/auth"; // auth .js file theke asce
 
 export async function GET() {
+  // const sessinon = await auth();
   try {
     // MongoDB কানেকশন চেক ও কানেক্ট
     connectMongodb();

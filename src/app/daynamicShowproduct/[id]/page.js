@@ -4,7 +4,7 @@ import ShowProductCard from "@/app/component/ShowProductCard";
 import React from "react";
 
 export default async function page({ params }) {
-  const { id } = params; // this id could be product catagory or product name
+  const { id } = await params; // this id could be product catagory or product name
 
   console.log(id);
 

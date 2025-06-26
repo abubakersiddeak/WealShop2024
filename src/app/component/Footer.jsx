@@ -124,12 +124,12 @@ export default function Footer() {
               <FaMapMarkerAlt className="text-blue-600 mt-1" />
               <address className="not-italic leading-tight">
                 <a
-                  href="https://maps.app.goo.gl/kCXGnPdRYyMapJZa9"
+                  href="https://maps.app.goo.gl/4hccp969SeYRUVpH6"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-700 hover:underline"
                 >
-                  Bicrompur Shopping Mall,
+                  Bikrampur Shopping Mall,
                   <br />
                   Balasur, Sreenagar, Munshiganj
                   <br />

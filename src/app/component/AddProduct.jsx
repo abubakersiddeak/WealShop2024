@@ -121,11 +121,10 @@ export default function AddProduct({ setOpenAddproduct }) {
     setIsUploading(true); // Set uploading state to true
 
     try {
-      // Map over selected files to create upload promises
       const uploadPromises = files.map((file) => {
         const formData = new FormData();
-        formData.append("file", file); // Append file to FormData
-        // Make fetch request to cloudinary API endpoint
+        formData.append("file", file);
+
         return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cloudinary`, {
           method: "POST",
           body: formData,

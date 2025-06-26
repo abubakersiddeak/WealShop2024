@@ -2,8 +2,11 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+// import { useSession } from "next-auth/react";
 
 export default function Allproduct() {
+  // const { data: session } = useSession();
+
   const [products, setProducts] = useState([]);
   const itemsPerPage = 8; // 2 rows * 4 columns
   const [currentPage, setCurrentPage] = useState(1);

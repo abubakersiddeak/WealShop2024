@@ -195,16 +195,30 @@ export default function ShowOrder({ setOpenShowOrder }) {
           <thead className="bg-gray-700 text-gray-300 uppercase tracking-wider">
             <tr>
               {/* No whitespace between th tags on the same line */}
-              <th className="px-3 py-3 text-left font-semibold">Client Name</th>
-              <th className="px-3 py-3 text-left font-semibold">Order ID</th>
-              <th className="px-3 py-3 text-left font-semibold hidden lg:table-cell">
+              <th className="px-3 py-3 text-left font-semibold text-gray-300">
+                Client Name
+              </th>
+              <th className="px-3 py-3 text-left font-semibold text-gray-300">
+                Order ID
+              </th>
+              <th className="px-3 py-3 text-left font-semibold hidden lg:table-cell text-gray-300">
                 Contact
               </th>
-              <th className="px-3 py-3 text-left font-semibold">Merchandise</th>
-              <th className="px-3 py-3 text-center font-semibold">Units</th>
-              <th className="px-3 py-3 text-center font-semibold">Value</th>
-              <th className="px-3 py-3 text-center font-semibold">State</th>
-              <th className="px-3 py-3 text-right font-semibold">Action</th>
+              <th className="px-3 py-3 text-left font-semibold text-gray-300">
+                Merchandise
+              </th>
+              <th className="px-3 py-3 text-center font-semibold text-gray-300">
+                Units
+              </th>
+              <th className="px-3 py-3 text-center font-semibold text-gray-300">
+                Value
+              </th>
+              <th className="px-3 py-3 text-center font-semibold text-gray-300">
+                State
+              </th>
+              <th className="px-3 py-3 text-right font-semibold text-gray-300">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
@@ -454,7 +468,7 @@ export default function ShowOrder({ setOpenShowOrder }) {
                 </span>
               </p>
               <p>
-                <span className="text-gray-400">Order ID:</span>{" "}
+                <span className="text-gray-100">Order ID:</span>{" "}
                 <span className="text-blue-500">{selectedOrder._id}</span>
               </p>
               <p>
