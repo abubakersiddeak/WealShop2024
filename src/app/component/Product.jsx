@@ -202,7 +202,13 @@ export default function Product({ product }) {
                   className="border border-gray-300 p-2 rounded w-full max-w-[160px]"
                 >
                   {sizes.map((size, i) => (
-                    <option key={i}>{size}</option>
+                    <option
+                      key={i}
+                      value={size.size}
+                      disabled={size.quantity === 0}
+                    >
+                      {size.size} {size.quantity === 0 ? "(Out of Stock)" : ""}
+                    </option>
                   ))}
                 </select>
               </div>

@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
+
+const sizeSchema = new Schema(
+  {
+    size: { type: String, required: true },
+    quantity: { type: Number, default: 0, min: 0 },
+  },
+  { _id: false }
+);
 const categorySchema = new Schema(
   {
     gender: { type: String, required: true },
@@ -29,7 +37,7 @@ const productSchema = new Schema(
     buyPrice: { type: Number, min: 0 },
 
     brand: { type: String },
-    sizes: [{ type: String }],
+    sizes: [sizeSchema],
 
     inStock: { type: Boolean, default: true },
     quantity: { type: Number, default: 0, min: 0 },

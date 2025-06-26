@@ -555,17 +555,41 @@ export default function AddProduct({ setOpenAddproduct }) {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Sizes (comma separated, S, M, L, XL)
+                  Sizes & Quantities
                 </label>
-                <input
-                  type="text"
-                  value={sizesInput} // <-- IMPORTANT: Now uses sizesInput
-                  onChange={(e) => handleArrayInput(e, "sizes")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" S, M, L, XL"
-                />
+                {["S", "M", "L", "XL", "XXL", "XXXL"].map((sizeLabel) => (
+                  <div key={sizeLabel} className="flex items-center gap-4 mb-2">
+                    <span className="w-12 text-white font-medium">
+                      {sizeLabel}
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Quantity"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={
+                        formData.sizes.find((s) => s.size === sizeLabel)
+                          ?.quantity || ""
+                      }
+                      onChange={(e) => {
+                        const qty = parseInt(e.target.value) || 0;
+                        setFormData((prev) => {
+                          const sizes = [...prev.sizes];
+                          const index = sizes.findIndex(
+                            (s) => s.size === sizeLabel
+                          );
+                          if (index !== -1) {
+                            sizes[index].quantity = qty;
+                          } else {
+                            sizes.push({ size: sizeLabel, quantity: qty });
+                          }
+                          return { ...prev, sizes };
+                        });
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
                   Size Guide (Optional - in cm/inches)

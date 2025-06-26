@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectMongodb } from "@/app/lib/mongodb";
 import Order from "@/app/models/Order";
-import Product from "@/app/models/product"; // ✅ Product মডেল import
+import Product from "@/app/models/product";
 
 export async function POST(request) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request) {
     const requestBody = await request.json();
     const { orderData } = requestBody;
 
-    // ✅ ফর্ম ভ্যালিডেশন
+    // 🔍 Validation
     if (
       typeof orderData.amount !== "number" ||
       !orderData.customer?.name ||
@@ -29,42 +29,84 @@ export async function POST(request) {
       );
     }
 
-    // ✅ প্রতিটি পণ্যের স্টক হালনাগাদ করা
+    // 🔁 Prepare bulk operations
+    const bulkOps = [];
+
     for (const item of orderData.items) {
-      const productId = item.product_id;
+      const { product_id, quantity, size } = item;
 
-      if (!productId) {
-        return NextResponse.json(
-          { success: false, message: "Product ID is missing in order item" },
-          { status: 400 }
-        );
-      }
-
-      const product = await Product.findById(productId);
-      if (!product) {
-        return NextResponse.json(
-          { success: false, message: `Product not found: ${productId}` },
-          { status: 404 }
-        );
-      }
-
-      // ✅ চেক করো যথেষ্ট স্টক আছে কিনা
-      if (product.quantity < item.quantity) {
+      if (!product_id || !size) {
         return NextResponse.json(
           {
             success: false,
-            message: `Not enough stock for product: ${product.name}`,
+            message: "Product ID or size missing in order item",
           },
           { status: 400 }
         );
       }
 
-      // ✅ স্টক কমাও
-      product.quantity -= item.quantity;
-      await product.save();
+      const product = await Product.findById(product_id);
+      if (!product) {
+        return NextResponse.json(
+          { success: false, message: `Product not found: ${product_id}` },
+          { status: 404 }
+        );
+      }
+
+      // ✅ Match size string with product.sizes array
+      const sizeEntry = product.sizes.find((s) => s.size === size);
+      if (!sizeEntry) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Size '${size}' not found for product: ${product.name}`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // ✅ Check available stock
+      if (sizeEntry.quantity < quantity) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Not enough stock for product: ${product.name}, size: ${size}`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // ✅ Check overall quantity
+      if (product.quantity < quantity) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Not enough overall stock for product: ${product.name}`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // 🛠️ Prepare bulk update (size-based & overall quantity)
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: product_id, "sizes.size": size },
+          update: {
+            $inc: {
+              "sizes.$.quantity": -quantity,
+              quantity: -quantity,
+            },
+          },
+        },
+      });
     }
 
-    // ✅ অর্ডার সংরক্ষণ
+    // 💾 Apply stock changes in bulk
+    if (bulkOps.length > 0) {
+      await Product.bulkWrite(bulkOps);
+    }
+
+    // 🧾 Save the order
     const newOrder = new Order(orderData);
     const savedOrder = await newOrder.save();
 
@@ -77,9 +119,13 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("❌ Error creating order:", error);
     return NextResponse.json(
-      { success: false, message: "Server error", error: error.message },
+      {
+        success: false,
+        message: "Server error",
+        error: error.message,
+      },
       { status: 500 }
     );
   }

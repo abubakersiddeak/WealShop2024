@@ -18,7 +18,7 @@ export default function CartDrawer({ isOpen, onClose }) {
     toggleSelectAll, // New: for select all functionality
     getSelectedTotal, // New: to get total of selected items
   } = useCart();
-
+  console.log(cartItems);
   const router = useRouter();
 
   // Calculate total for all items in the drawer (not just selected) for display purposes if needed
@@ -94,12 +94,6 @@ export default function CartDrawer({ isOpen, onClose }) {
 
         {cartItems.length === 0 ? (
           <div className="flex-grow flex flex-col items-center justify-center text-gray-600 text-center">
-            {/* Replaced Next/image with <img> tag for empty cart */}
-            <img
-              src="/empty-cart.gif" // Assuming you have an empty cart gif/image
-              alt="Empty cart"
-              className="mb-4 w-[150px] h-[150px]" // Apply width and height directly or via CSS
-            />
             <p className="text-lg font-medium">Your cart is empty!</p>
             <Link
               href="/allProduct"
@@ -130,6 +124,7 @@ export default function CartDrawer({ isOpen, onClose }) {
 
             {cartItems.map((item, index) => {
               const productDetails = item.product;
+
               const imageUrl =
                 productDetails.images && productDetails.images.length > 0
                   ? productDetails.images[0]

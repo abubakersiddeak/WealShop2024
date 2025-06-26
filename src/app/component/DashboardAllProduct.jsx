@@ -14,7 +14,6 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-
     description: "",
     brand: "",
     salePrice: "",
@@ -22,9 +21,19 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
     categoryGender: "",
     categoryType: "",
     categoryScollection: "",
-    sizes: "",
+
+    sizes: [
+      { size: "S", quantity: 0 },
+      { size: "M", quantity: 0 },
+      { size: "L", quantity: 0 },
+      { size: "XL", quantity: 0 },
+      { size: "XXL", quantity: 0 },
+      { size: "XXXL", quantity: 0 },
+    ],
+
     buyPrice: "",
     quantity: "",
+
     inStock: false,
     isFeatured: false,
 
@@ -45,8 +54,16 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
         categoryGender: product.category?.gender || "",
         categoryType: product.category?.type || "",
         categoryScollection: product.category?.scollection || "",
-        sizes: product.sizes?.join(", ") || "",
-
+        sizes: Array.isArray(product.sizes)
+          ? product.sizes
+          : [
+              { size: "S", quantity: 0 },
+              { size: "M", quantity: 0 },
+              { size: "L", quantity: 0 },
+              { size: "XL", quantity: 0 },
+              { size: "XXL", quantity: 0 },
+              { size: "XXXL", quantity: 0 },
+            ],
         quantity: product.quantity !== undefined ? product.quantity : "",
         inStock: product.inStock || false,
         isFeatured: product.isFeatured || false,
@@ -93,9 +110,7 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
         type: formData.categoryType.trim(),
         scollection: formData.categoryScollection.trim(),
       },
-      sizes: formData.sizes
-        ? formData.sizes.split(",").map((s) => s.trim())
-        : [],
+      sizes: formData.sizes,
 
       quantity: formData.quantity ? parseInt(formData.quantity) : 0,
       inStock: formData.inStock,
@@ -140,10 +155,14 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
           {product.category?.type} ({product.category?.gender},{" "}
           {product.category?.scollection})
         </p>
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Sizes:</strong>{" "}
-          {product.sizes?.join(", ")}
-        </p>
+        {product.sizes && product.sizes.length > 0 && (
+          <p className="text-sm text-gray-400 mb-1">
+            <strong className="text-gray-300">Sizes:</strong>{" "}
+            {product.sizes
+              .map((item) => `${item.size} (${item.quantity})`)
+              .join(", ")}
+          </p>
+        )}
 
         <p className="text-sm text-gray-400 mb-1 flex items-center">
           <strong className="text-gray-300 mr-1">Stock:</strong>{" "}
@@ -337,17 +356,43 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
               {/* Sizes & Colors */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Sizes (comma separated)
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Sizes & Quantities
                   </label>
-                  <input
-                    name="sizes"
-                    type="text"
-                    value={formData.sizes}
-                    onChange={handleChange}
-                    placeholder="e.g., S, M, L, XL"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  />
+                  {["S", "M", "L", "XL", "XXL", "XXXL"].map((sizeLabel) => (
+                    <div
+                      key={sizeLabel}
+                      className="flex items-center gap-4 mb-2"
+                    >
+                      <span className="w-12 text-gray-300 font-medium">
+                        {sizeLabel}
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={
+                          formData.sizes?.find((s) => s.size === sizeLabel)
+                            ?.quantity || ""
+                        }
+                        onChange={(e) => {
+                          const qty = parseInt(e.target.value) || 0;
+                          setFormData((prev) => {
+                            const sizes = [...(prev.sizes || [])];
+                            const index = sizes.findIndex(
+                              (s) => s.size === sizeLabel
+                            );
+                            if (index !== -1) {
+                              sizes[index].quantity = qty;
+                            } else {
+                              sizes.push({ size: sizeLabel, quantity: qty });
+                            }
+                            return { ...prev, sizes };
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 

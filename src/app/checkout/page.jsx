@@ -205,6 +205,7 @@ export default function CheckoutPage() {
                   <span>
                     {item.product.name} (x{item.quantity})
                   </span>
+
                   <span>
                     ৳{(item.product.salePrice * item.quantity).toFixed(2)}
                   </span>
