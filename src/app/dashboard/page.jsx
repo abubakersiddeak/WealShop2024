@@ -6,111 +6,121 @@ import {
   PackageOpen,
   LineChart,
   Activity,
-  ArrowUpRight,
-  TrendingUp,
+  ArrowLeft, // Changed from ArrowUpRight for a more intuitive 'back' arrow
   CreditCard,
   Users,
-  BellRing,
 } from "lucide-react";
 import AddProduct from "../component/AddProduct";
 import ShowOrder from "../component/ShowOrder";
 
 import { useEffect, useState } from "react";
 import ShowAllProduct from "../component/ShowAllProduct";
+import VisitorList from "../component/VisitorList";
 
 export default function EcomarsDashboard() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [openAddproduct, setOpenAddproduct] = useState(false);
   const [openShowOrder, setOpenShowOrder] = useState(false);
   const [openAvailableProducts, setOpenAvailableProducts] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [openVisitor, serOpenVisitor] = useState(false);
 
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getTotalOrder`
-      );
-      const json = await res.json();
-      if (json.success) {
-        setOrders(json.data);
-        setFilteredOrders(json.data); // Initialize filteredOrders with all orders
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      // Optionally, show an error message to the user
-    }
-  };
+  // Fetch orders on component mount
   useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/getTotalOrder`
+        );
+        const json = await res.json();
+        if (json.success) {
+          setOrders(json.data);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
     fetchOrders();
   }, []);
+
+  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
-      );
-      const data = await res.json();
-
-      // Access products from the 'products' key
-      const sorted = data.products.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-
-      setProducts(sorted);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/Product`
+        );
+        const data = await res.json();
+        // Access products from the 'products' key and sort them
+        const sorted = data.products.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setProducts(sorted);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
     };
-
     fetchProducts();
   }, []);
+
   const handlelogout = async () => {
-    await fetch("/api/logout", {
-      method: "GET",
-    });
-
-    router.push("/login"); // লগআউট হলে login page এ পাঠিয়ে দাও
+    await fetch("/api/logout", { method: "GET" });
+    router.push("/login");
   };
 
-  const handleAddProduct = () => {
-    setOpenAddproduct(true);
-    setOpenShowOrder(false);
-    setOpenAvailableProducts(false);
-  };
-
-  const handleShowOrder = () => {
-    setOpenShowOrder(true);
-    setOpenAddproduct(false);
-    setOpenAvailableProducts(false);
-  };
-
-  const handleShowAvailableProducts = () => {
-    setOpenAvailableProducts(true);
-    setOpenAddproduct(false);
-    setOpenShowOrder(false);
+  const handleNavigate = (page) => {
+    setOpenAddproduct(page === "add");
+    setOpenShowOrder(page === "orders");
+    setOpenAvailableProducts(page === "products");
+    serOpenVisitor(page === "visitor");
   };
 
   const handleBack = () => {
     setOpenAddproduct(false);
     setOpenShowOrder(false);
     setOpenAvailableProducts(false);
+    serOpenVisitor(false);
   };
 
-  // Common styling for navigated components to match futuristic theme
+  // --- Derived State for Analytics ---
+  const totalSale = orders.reduce((sum, order) => sum + (order.amount || 0), 0);
+
+  const totalBuyPrice = orders.reduce((orderSum, order) => {
+    const orderItemsBuyPrice = order.items.reduce((itemSum, item) => {
+      return itemSum + (item.buyPrice || 0) * (item.quantity || 0);
+    }, 0);
+    return orderSum + orderItemsBuyPrice;
+  }, 0);
+
+  const totalProfit = totalSale - totalBuyPrice;
+
+  const lowStockProducts = products.filter((product) => product.quantity < 10);
+  const totalNewOrders = orders.filter(
+    (order) => order.status === "VALID"
+  ).length;
+
+  // --- Common back button component for reusability and consistency ---
+  const BackButton = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="absolute top-4 left-4 sm:top-6 sm:left-6 text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center gap-2 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+      aria-label="Back to Dashboard"
+    >
+      <ArrowLeft size={24} />
+      <span className="hidden sm:inline">Back to Dashboard</span>
+    </button>
+  );
+
+  // --- Render different views based on state ---
   const navigatedComponentStyle =
-    "min-h-screen bg-gray-900 text-gray-100 p-6 relative";
+    "min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-6 relative";
 
   if (openAddproduct) {
     return (
       <div className={navigatedComponentStyle}>
-        <button
-          onClick={handleBack}
-          className="mb-6 absolute top-6 left-6 text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center gap-2"
-        >
-          <ArrowUpRight size={20} className="transform rotate-180" /> Back to
-          Dashboard
-        </button>
-        <div className="pt-12">
-          {" "}
-          {/* Add padding to prevent content from hiding behind back button */}
+        <BackButton onClick={handleBack} />
+        <div className="pt-16 sm:pt-20">
           <AddProduct setOpenAddproduct={setOpenAddproduct} />
         </div>
       </div>
@@ -120,14 +130,8 @@ export default function EcomarsDashboard() {
   if (openShowOrder) {
     return (
       <div className={navigatedComponentStyle}>
-        <button
-          onClick={handleBack}
-          className="mb-6 absolute top-6 left-6 text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center gap-2"
-        >
-          <ArrowUpRight size={20} className="transform rotate-180" /> Back to
-          Dashboard
-        </button>
-        <div className="pt-12">
+        <BackButton onClick={handleBack} />
+        <div className="pt-16 sm:pt-20">
           <ShowOrder setOpenShowOrder={setOpenShowOrder} />
         </div>
       </div>
@@ -137,56 +141,53 @@ export default function EcomarsDashboard() {
   if (openAvailableProducts) {
     return (
       <div className={navigatedComponentStyle}>
-        <button
-          onClick={handleBack}
-          className="mb-6 absolute top-6 left-6 text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center gap-2"
-        >
-          <ArrowUpRight size={20} className="transform rotate-180" /> Back to
-          Dashboard
-        </button>
-        <div className="pt-12">
+        <BackButton onClick={handleBack} />
+        <div className="pt-16 sm:pt-20">
           <ShowAllProduct />
         </div>
       </div>
     );
   }
-  const totalsale = orders.reduce((sum, order) => sum + (order.amount || 0), 0);
-  const totalBuyPrice = orders.reduce((productAcc, product) => {
-    const itemTotal = product.items.reduce((itemAcc, item) => {
-      return itemAcc + item.buyPrice;
-    }, 0);
-    return productAcc + itemTotal;
-  }, 0);
-  const totalProfit =
-    orders.reduce((sum, order) => sum + (order.store_amount || 0), 0) -
-    totalBuyPrice;
+  if (openVisitor) {
+    return (
+      <div className={navigatedComponentStyle}>
+        <BackButton onClick={handleBack} />
+        <div className="pt-16 sm:pt-20">
+          <VisitorList />
+        </div>
+      </div>
+    );
+  }
 
-  const lowStockProduct = products.filter((product) => product.quantity < 10);
-
+  // --- Main Dashboard View ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-8 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-4 sm:p-8 font-sans">
       <div className="max-w-8xl mx-auto">
-        <div className="text-5xl flex justify-between font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-10 tracking-tight">
-          <span>WEAL</span>{" "}
+        {/* Header Section */}
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 gap-4">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 tracking-tight">
+            WEAL Dashboard
+          </h1>
           <button
             onClick={handlelogout}
-            className="text-xl text-red-500 border p-2 rounded-2xl cursor-pointer hover:bg-gray-600"
+            className="text-sm sm:text-lg text-red-500 border border-red-600 p-2 sm:p-3 rounded-xl hover:bg-red-900/40 transition-colors duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            logout
+            Log Out
           </button>
-        </div>
+        </header>
 
         {/* Quick Actions / Main Navigation */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+          {/* Action Card: Add Product */}
           <button
-            onClick={handleAddProduct}
-            className="group bg-gray-800 hover:bg-gray-700 p-8 rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center gap-6 border border-gray-700 hover:border-purple-500 transform hover:-translate-y-1"
+            onClick={() => handleNavigate("add")}
+            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-purple-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-purple-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
-            <div className="bg-purple-600 group-hover:bg-purple-500 p-4 rounded-full text-white shadow-xl transition-all duration-300">
+            <div className="bg-purple-600 group-hover:bg-purple-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
               <ClipboardPlus size={32} />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-purple-400 group-hover:text-purple-300">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-purple-400 group-hover:text-purple-300">
                 Add New Product
               </h2>
               <p className="text-gray-400 text-sm mt-1">
@@ -195,15 +196,16 @@ export default function EcomarsDashboard() {
             </div>
           </button>
 
+          {/* Action Card: Show Orders */}
           <button
-            onClick={handleShowOrder}
-            className="group bg-gray-800 hover:bg-gray-700 p-8 rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 flex items-center gap-6 border border-gray-700 hover:border-cyan-500 transform hover:-translate-y-1"
+            onClick={() => handleNavigate("orders")}
+            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-cyan-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500"
           >
-            <div className="bg-cyan-600 group-hover:bg-cyan-500 p-4 rounded-full text-white shadow-xl transition-all duration-300">
+            <div className="bg-cyan-600 group-hover:bg-cyan-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
               <ShoppingBag size={32} />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-cyan-400 group-hover:text-cyan-300">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-cyan-400 group-hover:text-cyan-300">
                 Order Manifest
               </h2>
               <p className="text-gray-400 text-sm mt-1">
@@ -212,102 +214,110 @@ export default function EcomarsDashboard() {
             </div>
           </button>
 
+          {/* Action Card: Show All Products */}
           <button
-            onClick={handleShowAvailableProducts}
-            className="group bg-gray-800 hover:bg-gray-700 p-8 rounded-xl shadow-lg hover:shadow-green-500/30 transition-all duration-300 flex items-center gap-6 border border-gray-700 hover:border-green-500 transform hover:-translate-y-1"
+            onClick={() => handleNavigate("products")}
+            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-green-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-green-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <div className="bg-green-600 group-hover:bg-green-500 p-4 rounded-full text-white shadow-xl transition-all duration-300">
+            <div className="bg-green-600 group-hover:bg-green-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
               <PackageOpen size={32} />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-green-400 group-hover:text-green-300">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-green-400 group-hover:text-green-300">
                 Total Products{" "}
-                <span className="text-yellow-400">{products.length}</span>
+                <span className="text-yellow-400 block sm:inline">
+                  ({products.length})
+                </span>
               </h2>
               <p className="text-gray-400 text-sm mt-1">
                 Explore your inventory and product listings.
               </p>
             </div>
           </button>
-        </div>
+          <button
+            onClick={() => handleNavigate("visitor")}
+            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-green-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-green-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <div className="bg-green-600 group-hover:bg-green-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
+              <Users size={32} />
+            </div>
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-green-400 group-hover:text-green-300">
+                Web Visitiors
+                <span className="text-yellow-400 block sm:inline">({""})</span>
+              </h2>
+              <p className="text-gray-400 text-sm mt-1">
+                Explore every visitor
+              </p>
+            </div>
+          </button>
+        </section>
 
         {/* Analytics & Insights Section */}
-        <h2 className="text-3xl font-bold text-gray-200 mb-6 flex items-center gap-3">
-          <LineChart size={28} className="text-purple-400" />
-          Real-time Analytics
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Metric Card: Total Sales */}
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-purple-500/20 transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-300">
-                Total Sales
-              </h3>
-              <CreditCard size={24} className="text-purple-500" />
+        <section>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-200 mb-6 flex items-center gap-3">
+            <LineChart size={28} className="text-purple-400" />
+            Real-time Analytics
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-10 sm:mb-12">
+            {/* Metric Card: Total Sales */}
+            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-purple-500/20 transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-300">
+                  Total Sales
+                </h3>
+                <CreditCard size={24} className="text-purple-500" />
+              </div>
+              <p className="text-4xl font-bold text-purple-400">
+                TK {totalSale.toLocaleString()}
+              </p>
             </div>
-            <p className="text-4xl font-bold text-purple-400">TK {totalsale}</p>
-            <p className="text-sm text-gray-400 mt-2 flex items-center">
-              <TrendingUp size={16} className="text-green-400 mr-1" />
-              +12.5% since last month
-            </p>
-          </div>
-          {/* Metric Card: Average Order Value */}
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-orange-500/20 transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-300">
-                Revinue Form sale Product
-              </h3>
-              <CreditCard size={24} className="text-orange-500" />
+            {/* Metric Card: Total Profit */}
+            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-orange-500/20 transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-300">
+                  Revenue from Sales
+                </h3>
+                <CreditCard size={24} className="text-orange-500" />
+              </div>
+              <p className="text-4xl font-bold text-orange-400">
+                TK {totalProfit.toLocaleString()}
+              </p>
             </div>
-            <p className="text-4xl font-bold text-orange-400">
-              TK {totalProfit}
-            </p>
-            <p className="text-sm text-gray-400 mt-2 flex items-center">
-              <TrendingUp size={16} className="text-green-400 mr-1" />
-              +2.1% since last month
-            </p>
-          </div>
-          {/* Metric Card: New Orders */}
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-300">
-                New Orders
-              </h3>
-              <ShoppingBag size={24} className="text-cyan-500" />
+            {/* Metric Card: New Orders */}
+            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-300">
+                  New Orders
+                </h3>
+                <ShoppingBag size={24} className="text-cyan-500" />
+              </div>
+              <p className="text-4xl font-bold text-yellow-400">
+                {totalNewOrders}
+              </p>
             </div>
-            <p className="text-4xl font-bold text-yellow-400">
-              {orders.filter((order) => order.status === "VALID").length}
-            </p>
-            <p className="text-sm text-gray-400 mt-2 flex items-center">
-              <TrendingUp size={16} className="text-green-400 mr-1" />
-              +8.1% since last week
-            </p>
-          </div>
 
-          {/* Metric Card: Customers Acquired */}
-          <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:shadow-green-500/20 transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-300">
-                New Customers
-              </h3>
-              <Users size={24} className="text-green-500" />
+            {/* Metric Card: Customers Acquired */}
+            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-green-500/20 transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-300">
+                  Total Visitors
+                </h3>
+                <Users size={24} className="text-green-500" />
+              </div>
             </div>
-            <p className="text-4xl font-bold text-green-400">325</p>
-            <p className="text-sm text-gray-400 mt-2 flex items-center">
-              <TrendingUp size={16} className="text-green-400 mr-1" />
-              +15.0% since last month
-            </p>
           </div>
-        </div>
+        </section>
 
-        {/* Recent Activity & Notifications */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-            <h3 className="text-2xl font-bold text-gray-200 mb-5 flex items-center gap-3">
+        {/* Recent Activity & Low Stock Notifications */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Recent Activity */}
+          <div className="lg:col-span-2 bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-700">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-200 mb-5 flex items-center gap-3">
               <Activity size={24} className="text-sky-400" /> Recent Activity
             </h3>
             <ul className="space-y-4">
-              <li className="flex items-start gap-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
                 <ShoppingBag
                   size={20}
                   className="text-emerald-400 flex-shrink-0 mt-1"
@@ -322,7 +332,7 @@ export default function EcomarsDashboard() {
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
                 <ClipboardPlus
                   size={20}
                   className="text-yellow-400 flex-shrink-0 mt-1"
@@ -337,7 +347,7 @@ export default function EcomarsDashboard() {
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
                 <Users size={20} className="text-blue-400 flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-gray-100 font-medium">
@@ -349,7 +359,7 @@ export default function EcomarsDashboard() {
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
                 <PackageOpen
                   size={20}
                   className="text-red-400 flex-shrink-0 mt-1"
@@ -367,34 +377,30 @@ export default function EcomarsDashboard() {
             </ul>
           </div>
 
+          {/* Low Stock Products */}
           <div className="bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700">
-            <h1 className="text-center text-3xl font-bold text-red-500 mb-6">
+            <h3 className="text-center text-2xl font-bold text-red-500 mb-6">
               Low Stock Products
-            </h1>
-
-            {lowStockProduct && lowStockProduct.length > 0 ? (
-              <div className="overflow-x-auto rounded-lg">
+            </h3>
+            {lowStockProducts && lowStockProducts.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg border border-gray-700">
                 <table className="min-w-full text-sm text-left text-gray-300">
-                  <thead className="bg-gray-800 text-cyan-400">
+                  <thead className="bg-gray-800 text-cyan-400 uppercase text-xs">
                     <tr>
-                      <th className="px-6 py-3 border-b border-gray-700">
+                      <th className="px-4 py-3 sm:px-6 sm:py-4">
                         Product Name
                       </th>
-                      <th className="px-6 py-3 border-b border-gray-700">
-                        Quantity
-                      </th>
+                      <th className="px-4 py-3 sm:px-6 sm:py-4">Quantity</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {lowStockProduct.map((p, index) => (
+                    {lowStockProducts.map((p, index) => (
                       <tr
                         key={p._id || index}
-                        className="hover:bg-gray-800 transition-colors"
+                        className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
                       >
-                        <td className="px-6 py-4 border-b border-gray-700">
-                          {p.name}
-                        </td>
-                        <td className="px-6 py-4 border-b border-gray-700 text-red-500 font-semibold">
+                        <td className="px-4 py-3 sm:px-6 sm:py-4">{p.name}</td>
+                        <td className="px-4 py-3 sm:px-6 sm:py-4 text-red-400 font-bold">
                           {p.quantity}
                         </td>
                       </tr>
@@ -403,16 +409,16 @@ export default function EcomarsDashboard() {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-400 text-center">
+              <p className="text-gray-400 text-center py-8">
                 No low stock products found.
               </p>
             )}
 
-            <button className="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 shadow-md">
+            <button className="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 shadow-lg transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500">
               View All Notifications
             </button>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

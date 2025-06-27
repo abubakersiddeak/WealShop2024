@@ -1,25 +1,42 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { verifyToken } from "./app/lib/auth";
 
-export function middleware(request) {
-  const token = request.cookies.get("token")?.value;
+export async function middleware(request) {
+  const { pathname, origin } = request.nextUrl;
 
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  // 🔐 শুধু `/dashboard` রুটে authentication চেক করো
+  if (pathname.startsWith("/dashboard")) {
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    try {
+      verifyToken(token);
+      return NextResponse.next();
+    } catch (err) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
+
+  // ✅ dashboard ছাড়া অন্য সব রুটে visitor track করো
+  const ip = request.headers.get("x-forwarded-for") || "Unknown";
+  const url = pathname;
+  const userAgent = request.headers.get("user-agent") || "Unknown";
+
   try {
-    verifyToken(token);
-
-    return NextResponse.next();
+    await fetch(`${origin}/api/track`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip, url, userAgent }),
+    });
   } catch (err) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+    console.error("Visitor log fetch error:", err.message);
   }
-}
 
-// Apply middleware to specific paths
+  return NextResponse.next();
+}
 export const config = {
-  matcher: ["/dashboard"],
+  matcher: ["/dashboard", "/"], // সব route-এ middleware apply হবে
 };
