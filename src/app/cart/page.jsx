@@ -190,7 +190,8 @@ export default function CartPage() {
                       {item.product.name}
                     </h2>
                     <p className="text-sm text-gray-600 mt-1">
-                      Size: <span className="font-medium">{item.size}</span>
+                      Size:{" "}
+                      <span className="font-medium">{item.size.size}</span>
                     </p>
                     {/* Quantity Control */}
                     <div className="flex items-center border border-gray-300 rounded mt-2 max-w-[120px]">

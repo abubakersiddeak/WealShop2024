@@ -1,4 +1,4 @@
-// Your existing Product.js
+// components/Product.js
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import { useCart } from "@/context/cartContext";
@@ -10,7 +10,7 @@ export default function Product({ product }) {
   const [buttonText, setButtonText] = useState("ADD TO CART");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [instock, setInstoke] = useState(true);
+  const [instock, setInstock] = useState(true); // Corrected typo: setInstoke -> setInstock
 
   // Destructure product details for cleaner access
   const {
@@ -19,19 +19,30 @@ export default function Product({ product }) {
     category,
     salePrice,
     brand,
-    sizes = [],
+    sizes = [], // Ensure sizes is an array
     colors = [],
-
     images = [],
   } = product;
 
+  // State to hold the full selected size object, not just the string
+  // Initialize with the first size object if available, otherwise null
+  const [selectedSize, setSelectedSize] = useState(
+    sizes.length > 0 ? sizes[0] : null
+  );
+
   useEffect(() => {
+    // Update instock status based on overall product quantity
     if (product.quantity === 0) {
-      setInstoke(false);
+      setInstock(false);
     } else {
-      setInstoke(true);
+      setInstock(true);
     }
-  }, [product.quantity]);
+
+    // Also, if sizes array is available, ensure a default selected size
+    if (sizes.length > 0 && !selectedSize) {
+      setSelectedSize(sizes[0]);
+    }
+  }, [product.quantity, sizes, selectedSize]);
 
   // Assuming product.category.scollection holds the type needed for related products
   // Make sure product.category and product.category.scollection are always defined
@@ -45,7 +56,12 @@ export default function Product({ product }) {
         );
         const data = await res.json();
         // Filter out the current product from related products
-        const filteredData = data.filter((item) => item._id !== product._id);
+        // Ensure _id comparison handles potential object types if they ever occur
+        const currentProductId = product._id?.$oid || product._id; // Robustly get current product ID
+        const filteredData = data.filter((item) => {
+          const relatedProductId = item._id?.$oid || item._id; // Robustly get related product ID
+          return relatedProductId !== currentProductId;
+        });
         setRelatedProducts(filteredData);
       } catch (error) {
         console.error("Failed to fetch related products:", error);
@@ -62,7 +78,7 @@ export default function Product({ product }) {
   const [zoomed, setZoomed] = useState(false);
   const [backgroundPosition, setBackgroundPosition] = useState("center");
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
+  // selectedSize state is now managed above
   const [activeImage, setActiveImage] = useState(
     images[0] || "/placeholder.jpg"
   );
@@ -77,6 +93,14 @@ export default function Product({ product }) {
 
   const handleAddToCart = async () => {
     try {
+      // Ensure a size is selected before adding to cart
+      if (!selectedSize) {
+        console.error("Please select a size before adding to cart.");
+        // Optionally, show a user-friendly message or alert here
+        return;
+      }
+
+      // Pass the complete selectedSize object to addToCart
       addToCart(product, quantity, selectedSize);
       setButtonText("SUCCESS");
       setIsDrawerOpen(true); // Open the drawer after adding to cart
@@ -90,7 +114,7 @@ export default function Product({ product }) {
   };
 
   const handleMouseMove = (e) => {
-    if (isTouchDevice) return;
+    if (isTouchDevice || !containerRef.current) return; // Add null check for containerRef.current
     const { left, top, width, height } =
       containerRef.current.getBoundingClientRect();
     const x = ((e.pageX - left) / width) * 100;
@@ -108,7 +132,8 @@ export default function Product({ product }) {
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  console.log(relatedProducts);
+  console.log("Related Products:", relatedProducts); // Changed to a more descriptive log
+
   return (
     <>
       <div className="relative w-full max-w-[90vw] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
@@ -130,7 +155,7 @@ export default function Product({ product }) {
           <div className="flex gap-2 overflow-x-auto max-w-full px-2">
             {images.map((img, index) => (
               <img
-                key={index}
+                key={index} // Using index here is acceptable as thumbnails are static and not reordered
                 src={img}
                 alt={`Thumbnail ${index}`}
                 className={`w-16 h-16 object-cover cursor-pointer border ${
@@ -197,13 +222,20 @@ export default function Product({ product }) {
                 </label>
                 <select
                   id="size"
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
+                  // Bind value to the string representation of the selected size
+                  value={selectedSize ? selectedSize.size : ""}
+                  onChange={(e) => {
+                    // Find the full size object from the `sizes` array
+                    const foundSize = sizes.find(
+                      (s) => s.size === e.target.value
+                    );
+                    setSelectedSize(foundSize); // Set the full object to state
+                  }}
                   className="border border-gray-300 p-2 rounded w-full max-w-[160px]"
                 >
                   {sizes.map((size, i) => (
                     <option
-                      key={i}
+                      key={size.size || i} // Use size.size as key if available, fallback to index
                       value={size.size}
                       disabled={size.quantity === 0}
                     >
@@ -243,8 +275,8 @@ export default function Product({ product }) {
                 {buttonText}
               </button>
             ) : (
-              <button className="bg-gray-500 cursor-pointer text-white px-6 py-2 rounded mt-4 hover:bg-gray-800 transition">
-                Out of stoke
+              <button className="bg-gray-500 cursor-not-allowed text-white px-6 py-2 rounded mt-4">
+                Out of Stock
               </button>
             )}
           </div>
@@ -272,10 +304,13 @@ export default function Product({ product }) {
           >
             {relatedProducts.map((relProduct) => (
               <div
-                key={relProduct._id}
+                key={relProduct._id?.$oid || relProduct._id} // Robust key for related products
                 className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
               >
-                <Link href={`/dynamic/${relProduct._id}`} className="block">
+                <Link
+                  href={`/dynamic/${relProduct._id?.$oid || relProduct._id}`}
+                  className="block"
+                >
                   <img
                     src={relProduct.images[0] || "/placeholder-product.jpg"}
                     alt={relProduct.name}
@@ -285,7 +320,9 @@ export default function Product({ product }) {
                 <div className="p-4 flex flex-col flex-grow">
                   <h4 className="font-semibold text-lg text-gray-900 mb-2 leading-tight">
                     <Link
-                      href={`/dynamic/${relProduct._id}`}
+                      href={`/dynamic/${
+                        relProduct._id?.$oid || relProduct._id
+                      }`}
                       className="hover:text-blue-600 transition-colors"
                     >
                       {relProduct.name}
@@ -300,9 +337,10 @@ export default function Product({ product }) {
                         addToCart(
                           relProduct,
                           1, // Default quantity 1
+                          // Ensure we pass the full size object if available, otherwise a default string
                           relProduct.sizes && relProduct.sizes.length > 0
-                            ? relProduct.sizes[0]
-                            : "One Size" // Default size
+                            ? relProduct.sizes[0] // Pass the full size object here
+                            : { size: "One Size", quantity: 0 } // Fallback to an object for consistency
                         );
                         setIsDrawerOpen(true);
                       }}
@@ -311,8 +349,8 @@ export default function Product({ product }) {
                       Add to Cart
                     </button>
                   ) : (
-                    <button className="mt-auto bg-gray-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium">
-                      Out of stoke
+                    <button className="mt-auto bg-gray-600 cursor-not-allowed text-white px-4 py-2 rounded-md">
+                      Out of Stock
                     </button>
                   )}
                 </div>

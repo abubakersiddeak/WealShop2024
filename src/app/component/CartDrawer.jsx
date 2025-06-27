@@ -72,6 +72,7 @@ export default function CartDrawer({ isOpen, onClose }) {
     onClose(); // Close the drawer
     router.push("/checkout"); // Navigate to checkout page
   };
+  console.log(cartItems);
 
   return (
     <div
@@ -154,7 +155,8 @@ export default function CartDrawer({ isOpen, onClose }) {
                       {productDetails.name}
                     </h3>
                     <p className="text-sm text-gray-600 mt-0.5">
-                      Size: <span className="font-medium">{item.size}</span>
+                      Size:{" "}
+                      <span className="font-medium">{item.size.size}</span>
                     </p>
 
                     {/* Quantity Control */}
