@@ -38,5 +38,5 @@ export async function middleware(request) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: ["/dashboard", "/"], // সব route-এ middleware apply হবে
+  matcher: ["/dashboard", "/"],
 };
