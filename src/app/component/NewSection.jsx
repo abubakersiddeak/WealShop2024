@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
+import ProductSkeleton from "../ui/skeleton/ProductSkeleton";
 
 export default function NewSection() {
   const [products, setProducts] = useState([]);
@@ -16,6 +17,7 @@ export default function NewSection() {
   const scrollLeft = useRef(0);
 
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,6 +31,7 @@ export default function NewSection() {
         const data = await res.json();
 
         setProducts(data.products || []);
+        setIsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -142,33 +145,36 @@ export default function NewSection() {
         onTouchMove={handleTouchMove}
         className="scroll-container flex xl:gap-6 gap-2 overflow-x-hidden md:p-2 font-serif cursor-grab"
       >
-        {products.map((p) => (
-          <button
-            onClick={(e) => productClick(e, p)}
-            key={p._id}
-            className="relative cursor-pointer w-70 md:w-80 bg-white overflow-hidden hover:scale-[1.02] shrink-0 transition-all duration-500"
-          >
-            <div className="relative z-10 flex items-center justify-center h-90 md:h-120 ">
-              <img
-                src={p.images[0]}
-                alt={p.name}
-                className="h-full w-full border border-gray-300 object-cover transition-all duration-500 ease-in-out group-hover:scale-105"
-              />
-            </div>
+        {isLoading
+          ? Array.from({ length: 5 }).map((_, idx) => (
+              <ProductSkeleton key={idx} />
+            ))
+          : products.map((p) => (
+              <button
+                onClick={(e) => productClick(e, p)}
+                key={p._id}
+                className="relative cursor-pointer w-70 md:w-80 bg-white overflow-hidden hover:scale-[1.02] shrink-0 transition-all duration-500"
+              >
+                <div className="relative z-10 flex items-center justify-center h-90 md:h-120 ">
+                  <img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="h-full w-full border border-gray-300 object-cover transition-all duration-500 ease-in-out group-hover:scale-105"
+                  />
+                </div>
 
-            <div className="relative z-10 p-4 text-black text-left">
-              <h2 className="text-xs md:text-xl font-serif">{p.name}</h2>
+                <div className="relative z-10 p-4 text-black text-left">
+                  <h2 className="text-xs md:text-xl font-serif">{p.name}</h2>
+                  <p className="text-sm md:text-base opacity-80 mt-1">
+                    {p.salePrice} TK
+                  </p>
+                </div>
 
-              <p className="text-sm md:text-base opacity-80 mt-1">
-                {p.salePrice} TK
-              </p>
-            </div>
-
-            <span className="absolute top-0 left-0 z-10 text-[10px] md:text-xs bg-gradient-to-r bg-black text-white px-2 py-[2px] md:px-3 md:py-1  shadow-md tracking-wider">
-              NEW
-            </span>
-          </button>
-        ))}
+                <span className="absolute top-0 left-0 z-10 text-[10px] md:text-xs bg-gradient-to-r bg-black text-white px-2 py-[2px] md:px-3 md:py-1 shadow-md tracking-wider">
+                  NEW
+                </span>
+              </button>
+            ))}
       </div>
     </div>
   );
