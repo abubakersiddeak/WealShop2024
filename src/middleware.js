@@ -5,7 +5,10 @@ export async function middleware(request) {
   const { pathname, origin } = request.nextUrl;
 
   // 🔐 শুধু `/dashboard` রুটে authentication চেক করো
-  if (pathname.startsWith("/dashboard")) {
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/dashboard/expence")
+  ) {
     const token = request.cookies.get("token")?.value;
 
     if (!token) {
@@ -38,5 +41,5 @@ export async function middleware(request) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: ["/dashboard", "/"],
+  matcher: ["/dashboard", "/dashboard/expence", "/"],
 };

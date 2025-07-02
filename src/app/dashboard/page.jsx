@@ -16,6 +16,8 @@ import ShowOrder from "../component/ShowOrder";
 import { useEffect, useState } from "react";
 import ShowAllProduct from "../component/ShowAllProduct";
 import VisitorList from "../component/VisitorList";
+import Expenses from "./component/Expenses";
+import Link from "next/link";
 
 export default function EcomarsDashboard() {
   const router = useRouter();
@@ -244,7 +246,6 @@ export default function EcomarsDashboard() {
             <div className="text-center sm:text-left">
               <h2 className="text-xl sm:text-2xl font-bold text-green-400 group-hover:text-green-300">
                 Web Visitiors
-                <span className="text-yellow-400 block sm:inline">({""})</span>
               </h2>
               <p className="text-gray-400 text-sm mt-1">
                 Explore every visitor
@@ -298,14 +299,17 @@ export default function EcomarsDashboard() {
             </div>
 
             {/* Metric Card: Customers Acquired */}
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-green-500/20 transition-shadow duration-300">
+            <Link
+              href="/dashboard/expence"
+              className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-green-500/20 transition-shadow duration-300"
+            >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-300">
-                  Total Visitors
+                  Expencess
                 </h3>
                 <Users size={24} className="text-green-500" />
               </div>
-            </div>
+            </Link>
           </div>
         </section>
 
