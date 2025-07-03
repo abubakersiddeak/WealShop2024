@@ -20,7 +20,7 @@ const CustomAlert = ({ message, onClose }) => {
         <p className="text-gray-600 mb-6">{message}</p>
         <button
           onClick={onClose}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-2 bg-blue-600  rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Close
         </button>
@@ -308,15 +308,13 @@ export default function AddProduct({ setOpenAddproduct }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-md">
+    <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-2xl">
       {/* Custom Alert Component */}
       <CustomAlert message={alertMessage} onClose={() => setAlertMessage("")} />
 
       <div className="flex justify-between">
-        <span className="text-3xl font-bold text-white mb-6">
-          Add New Product
-        </span>
-        <span className="text-3xl font-bold text-white mb-6 hover:text-gray-600">
+        <span className="text-3xl font-bold  mb-6">Add New Product</span>
+        <span className="text-3xl font-bold  mb-6 hover:text-gray-600">
           <button
             onClick={() => {
               setOpenAddproduct(false); // Close the add product form
@@ -335,7 +333,7 @@ export default function AddProduct({ setOpenAddproduct }) {
             className={`px-4 py-2 font-medium text-sm focus:outline-none ${
               activeTab === tab.id
                 ? "border-b-2 border-blue-500 text-blue-600" // Active tab styles
-                : "text-white hover:text-white" // Inactive tab styles
+                : "text-gray-800 hover:" // Inactive tab styles
             }`}
             onClick={() => setActiveTab(tab.id)} // Set active tab on click
           >
@@ -349,12 +347,10 @@ export default function AddProduct({ setOpenAddproduct }) {
         {activeTab === "basic" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">
-                Product Information
-              </h2>
+              <h2 className="text-xl font-semibold ">Product Information</h2>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Product Name*
                 </label>
                 <input
@@ -368,7 +364,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Description*
                 </label>
                 <textarea
@@ -383,10 +379,10 @@ export default function AddProduct({ setOpenAddproduct }) {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">Pricing</h2>
+              <h2 className="text-xl font-semibold ">Pricing</h2>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Sale Price*
                 </label>
                 <div className="relative">
@@ -405,7 +401,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Buy Price (Optional)
                 </label>
                 <div className="relative">
@@ -423,7 +419,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Quantity*
                 </label>
                 <input
@@ -449,9 +445,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                     onChange={handleChange}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-white">
-                    In Stock
-                  </label>
+                  <label className="ml-2 block text-sm ">In Stock</label>
                 </div>
                 {/* NEW FIELD: isFeatured checkbox */}
                 <div className="flex items-center">
@@ -462,9 +456,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                     onChange={handleChange}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-white">
-                    Is Featured
-                  </label>
+                  <label className="ml-2 block text-sm ">Is Featured</label>
                 </div>
               </div>
             </div>
@@ -475,17 +467,17 @@ export default function AddProduct({ setOpenAddproduct }) {
         {activeTab === "details" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">Category</h2>
+              <h2 className="text-xl font-semibold ">Category</h2>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Gender*
                 </label>
                 <select
                   name="category.gender"
                   value={formData.category.gender}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border bg-[#101217] border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border bg-[#8891aa] border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Select Gender</option>
@@ -497,9 +489,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Type*
-                </label>
+                <label className="block text-sm font-medium  mb-1">Type*</label>
                 <input
                   type="text"
                   name="category.type"
@@ -512,7 +502,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Collection
                 </label>
                 <Select
@@ -536,7 +526,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Brand*
                 </label>
                 <input
@@ -551,17 +541,15 @@ export default function AddProduct({ setOpenAddproduct }) {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">Attributes</h2>
+              <h2 className="text-xl font-semibold ">Attributes</h2>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Sizes & Quantities
                 </label>
                 {["S", "M", "L", "XL", "XXL", "XXXL"].map((sizeLabel) => (
                   <div key={sizeLabel} className="flex items-center gap-4 mb-2">
-                    <span className="w-12 text-white font-medium">
-                      {sizeLabel}
-                    </span>
+                    <span className="w-12  font-medium">{sizeLabel}</span>
                     <input
                       type="number"
                       min="0"
@@ -591,7 +579,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                 ))}
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Size Guide (Optional - in cm/inches)
                 </label>
                 {/* Size Guide Fields */}
@@ -680,7 +668,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Visibility
                 </label>
                 <select
@@ -696,7 +684,7 @@ export default function AddProduct({ setOpenAddproduct }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">
+                <label className="block text-sm font-medium  mb-1">
                   Admin Note (Optional)
                 </label>
                 <textarea
@@ -714,9 +702,7 @@ export default function AddProduct({ setOpenAddproduct }) {
         {/* Media Tab Content */}
         {activeTab === "media" && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white">
-              Product Images*
-            </h2>
+            <h2 className="text-xl font-semibold ">Product Images*</h2>
 
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <div className="flex flex-col items-center justify-center space-y-2">
@@ -735,14 +721,12 @@ export default function AddProduct({ setOpenAddproduct }) {
                 />
                 <label
                   htmlFor="file-upload"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer flex items-center"
+                  className="px-4 py-2 bg-blue-600  rounded-md hover:bg-blue-700 cursor-pointer flex items-center"
                 >
                   <FiUpload className="mr-2" />
                   {isUploading ? "Uploading..." : "Select Images"}
                 </label>
-                <p className="text-xs text-white">
-                  Supports JPG, PNG up to 10MB
-                </p>
+                <p className="text-xs ">Supports JPG, PNG up to 10MB</p>
               </div>
             </div>
 
@@ -757,7 +741,7 @@ export default function AddProduct({ setOpenAddproduct }) {
 
             {uploadedImages.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-medium text-white mb-3">
+                <h3 className="text-lg font-medium  mb-3">
                   Uploaded Images ({uploadedImages.length})
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -771,7 +755,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute -top-2 -right-2 bg-red-500  rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <FiX className="h-4 w-4" />
                       </button>
@@ -796,7 +780,7 @@ export default function AddProduct({ setOpenAddproduct }) {
                   const previousTab = tabs[currentIndex - 1];
                   if (previousTab) setActiveTab(previousTab.id);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-white hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-md  hover:bg-gray-50"
               >
                 Previous
               </button>
@@ -814,14 +798,14 @@ export default function AddProduct({ setOpenAddproduct }) {
                   const nextTab = tabs[currentIndex + 1];
                   if (nextTab) setActiveTab(nextTab.id);
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-blue-600  rounded-md hover:bg-blue-700"
               >
                 Next
               </button>
             ) : (
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+                className="px-6 py-2 bg-green-600  rounded-md hover:bg-green-700 flex items-center"
                 disabled={isProductAdded || isUploading}
               >
                 {isProductAdded ? (

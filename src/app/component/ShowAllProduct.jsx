@@ -125,8 +125,8 @@ const ShowAllProduct = () => {
     }
   };
   return (
-    <div className="p-6 from-gray-800 to-gray-900 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-300">
+    <div className="p-6 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center ">
         Available Products ({filteredProducts.length})
       </h1>
 
@@ -144,7 +144,7 @@ const ShowAllProduct = () => {
           <select
             name="category"
             onChange={handleFilterChange}
-            className="p-2 border rounded bg-gray-800"
+            className="p-2 border rounded "
           >
             <option value="">All Categories</option>
             <option value="Clothing">Clothing</option>
@@ -155,7 +155,7 @@ const ShowAllProduct = () => {
           <select
             name="brand"
             onChange={handleFilterChange}
-            className="p-2 border rounded bg-gray-800"
+            className="p-2 border rounded "
           >
             <option value="">All Brands</option>
             <option value="Nike">Nike</option>
@@ -166,7 +166,7 @@ const ShowAllProduct = () => {
           <select
             name="salePrice"
             onChange={handleFilterChange}
-            className="p-2 border rounded bg-gray-800"
+            className="p-2 border rounded "
           >
             <option value="">Default</option>
             <option value="lowToHigh">salePrice: Low to High</option>

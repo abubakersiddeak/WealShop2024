@@ -6,9 +6,10 @@ import {
   PackageOpen,
   LineChart,
   Activity,
-  ArrowLeft, // Changed from ArrowUpRight for a more intuitive 'back' arrow
+  ArrowLeft,
   CreditCard,
   Users,
+  BellRing, // Added for notifications
 } from "lucide-react";
 import AddProduct from "../component/AddProduct";
 import ShowOrder from "../component/ShowOrder";
@@ -16,7 +17,6 @@ import ShowOrder from "../component/ShowOrder";
 import { useEffect, useState } from "react";
 import ShowAllProduct from "../component/ShowAllProduct";
 import VisitorList from "../component/VisitorList";
-import Expenses from "./component/Expenses";
 import Link from "next/link";
 import Sales from "./component/Sales";
 
@@ -108,17 +108,17 @@ export default function EcomarsDashboard() {
   const BackButton = ({ onClick }) => (
     <button
       onClick={onClick}
-      className="absolute top-4 left-4 sm:top-6 sm:left-6 text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center gap-2 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+      className="absolute top-4 left-4 sm:top-6 sm:left-6 text-purple-600 hover:text-purple-800 transition-colors duration-200 flex items-center gap-2 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
       aria-label="Back to Dashboard"
     >
       <ArrowLeft size={24} />
-      <span className="hidden sm:inline">Back to Dashboard</span>
+      <span className="hidden sm:inline font-semibold">Back to Dashboard</span>
     </button>
   );
 
   // --- Render different views based on state ---
   const navigatedComponentStyle =
-    "min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-6 relative";
+    "min-h-screen bg-pink-50 text-gray-800 p-4 sm:p-6 relative"; // Changed text color
 
   if (openAddproduct) {
     return (
@@ -165,36 +165,36 @@ export default function EcomarsDashboard() {
 
   // --- Main Dashboard View ---
   return (
-    <div className="min-h-screen bg-pink-50 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen bg-pink-50 p-4 sm:p-8 font-sans text-gray-800">
       <div className="max-w-8xl mx-auto">
         {/* Header Section */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 gap-4">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-rose-500 tracking-tight">
             WEAL Dashboard
           </h1>
           <button
             onClick={handlelogout}
-            className="text-sm sm:text-lg text-red-500 border border-red-600 p-2 sm:p-3 rounded-xl hover:bg-red-900/40 transition-colors duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="text-sm sm:text-lg text-red-600 border border-red-600 p-2 sm:p-3 rounded-xl hover:bg-red-100 transition-colors duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Log Out
           </button>
         </header>
 
         {/* Quick Actions / Main Navigation */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 mb-10 sm:mb-12">
           {/* Action Card: Add Product */}
           <button
             onClick={() => handleNavigate("add")}
-            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-purple-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-purple-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="group bg-white hover:bg-purple-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
-            <div className="bg-purple-600 group-hover:bg-purple-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
+            <div className="bg-purple-600 group-hover:bg-purple-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <ClipboardPlus size={32} />
             </div>
             <div className="text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-purple-400 group-hover:text-purple-300">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-purple-700">
                 Add New Product
               </h2>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-600 text-sm mt-1">
                 Deploy new items to your digital storefront.
               </p>
             </div>
@@ -203,16 +203,16 @@ export default function EcomarsDashboard() {
           {/* Action Card: Show Orders */}
           <button
             onClick={() => handleNavigate("orders")}
-            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-cyan-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className="group bg-white hover:bg-cyan-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500"
           >
-            <div className="bg-cyan-600 group-hover:bg-cyan-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
+            <div className="bg-cyan-600 group-hover:bg-cyan-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <ShoppingBag size={32} />
             </div>
             <div className="text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-cyan-400 group-hover:text-cyan-300">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-cyan-700">
                 Order Manifest
               </h2>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-600 text-sm mt-1">
                 Review and manage all incoming customer requests.
               </p>
             </div>
@@ -221,36 +221,36 @@ export default function EcomarsDashboard() {
           {/* Action Card: Show All Products */}
           <button
             onClick={() => handleNavigate("products")}
-            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-green-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-green-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="group bg-white hover:bg-green-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <div className="bg-green-600 group-hover:bg-green-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
+            <div className="bg-green-600 group-hover:bg-green-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <PackageOpen size={32} />
             </div>
             <div className="text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-green-400 group-hover:text-green-300">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-green-700">
                 Total Products{" "}
-                <span className="text-yellow-400 block sm:inline">
+                <span className="text-yellow-600 block sm:inline">
                   ({products.length})
                 </span>
               </h2>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-600 text-sm mt-1">
                 Explore your inventory and product listings.
               </p>
             </div>
           </button>
           <button
             onClick={() => handleNavigate("visitor")}
-            className="group bg-gray-800 hover:bg-gray-700 p-6 sm:p-8 rounded-2xl shadow-xl hover:shadow-green-500/30 transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-2 border-transparent hover:border-green-600 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="group bg-white hover:bg-blue-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <div className="bg-green-600 group-hover:bg-green-500 p-4 rounded-full text-white shadow-lg transition-all duration-300">
+            <div className="bg-blue-600 group-hover:bg-blue-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <Users size={32} />
             </div>
             <div className="text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-green-400 group-hover:text-green-300">
-                Web Visitiors
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-blue-700">
+                Web Visitors
               </h2>
-              <p className="text-gray-400 text-sm mt-1">
-                Explore every visitor
+              <p className="text-gray-600 text-sm mt-1">
+                Explore every visitor.
               </p>
             </div>
           </button>
@@ -258,67 +258,68 @@ export default function EcomarsDashboard() {
 
         {/* Analytics & Insights Section */}
         <section>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-200 mb-6 flex items-center gap-3">
-            <LineChart size={28} className="text-purple-400" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <LineChart size={28} className="text-purple-600" />
             Real-time Analytics
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-10 sm:mb-12">
             {/* Metric Card: Total Sales */}
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-purple-500/20 transition-shadow duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-300">
+                <h3 className="text-lg font-semibold text-gray-700">
                   Total Sales
                 </h3>
-                <CreditCard size={24} className="text-purple-500" />
+                <CreditCard size={24} className="text-purple-600" />
               </div>
-              <p className="text-4xl font-bold text-purple-400">
+              <p className="text-4xl font-bold text-purple-800">
                 TK {totalSale.toLocaleString()}
               </p>
             </div>
             {/* Metric Card: Total Profit */}
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-orange-500/20 transition-shadow duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-300">
+                <h3 className="text-lg font-semibold text-gray-700">
                   Revenue from Sales
                 </h3>
-                <CreditCard size={24} className="text-orange-500" />
+                <CreditCard size={24} className="text-orange-600" />
               </div>
-              <p className="text-4xl font-bold text-orange-400">
+              <p className="text-4xl font-bold text-orange-800">
                 TK {totalProfit.toLocaleString()}
               </p>
             </div>
-            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-300">
+                <h3 className="text-lg font-semibold text-gray-700">
                   New Orders
                 </h3>
-                <ShoppingBag size={24} className="text-cyan-500" />
+                <ShoppingBag size={24} className="text-cyan-600" />
               </div>
-              <p className="text-4xl font-bold text-yellow-400">
+              <p className="text-4xl font-bold text-cyan-800">
                 {totalNewOrders}
               </p>
             </div>
-            {/* Metric Card: New Orders */}
+            {/* Metric Card: New Sale Button */}
             <button
               onClick={() => {
                 setsaleproduct(true);
               }}
-              className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300 text-3xl"
+              className="bg-gradient-to-r from-teal-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
-              New Sale
+              <ShoppingBag size={32} className="mr-3" /> New Sale
             </button>
 
-            {/* Metric Card: Customers Acquired */}
+            {/* Metric Card: Expenses Link */}
             <Link
               href="/dashboard/expence"
-              className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-green-500/20 transition-shadow duration-300"
+              className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 flex items-center justify-between"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-300">
-                  Expencess
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Expenses
                 </h3>
-                <Users size={24} className="text-green-500" />
+                <p className="text-4xl font-bold text-green-800">View</p>
               </div>
+              <Users size={32} className="text-green-600" />
             </Link>
           </div>
         </section>
@@ -326,65 +327,65 @@ export default function EcomarsDashboard() {
         {/* Recent Activity & Low Stock Notifications */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Recent Activity */}
-          <div className="lg:col-span-2 bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-700">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-200 mb-5 flex items-center gap-3">
-              <Activity size={24} className="text-sky-400" /> Recent Activity
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-5 flex items-center gap-3">
+              <Activity size={24} className="text-sky-600" /> Recent Activity
             </h3>
             <ul className="space-y-4">
-              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
                 <ShoppingBag
                   size={20}
-                  className="text-emerald-400 flex-shrink-0 mt-1"
+                  className="text-emerald-500 flex-shrink-0 mt-1"
                 />
                 <div>
-                  <p className="text-gray-100 font-medium">
+                  <p className="text-gray-800 font-medium">
                     New Order #ORD-20250528-001 by Alice Smith
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-500 text-sm">
                     Product: Quantum Monitor X-Series, Qty: 1 -{" "}
-                    <span className="text-purple-300">2 minutes ago</span>
+                    <span className="text-purple-500">2 minutes ago</span>
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
                 <ClipboardPlus
                   size={20}
-                  className="text-yellow-400 flex-shrink-0 mt-1"
+                  className="text-yellow-500 flex-shrink-0 mt-1"
                 />
                 <div>
-                  <p className="text-gray-100 font-medium">
+                  <p className="text-gray-800 font-medium">
                     Product "Hyper-drive Processor" updated
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-500 text-sm">
                     Stock adjusted to 50 units -{" "}
-                    <span className="text-purple-300">1 hour ago</span>
+                    <span className="text-purple-500">1 hour ago</span>
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
-                <Users size={20} className="text-blue-400 flex-shrink-0 mt-1" />
+              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
+                <Users size={20} className="text-blue-500 flex-shrink-0 mt-1" />
                 <div>
-                  <p className="text-gray-100 font-medium">
+                  <p className="text-gray-800 font-medium">
                     New customer registration: John Doe
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-500 text-sm">
                     Welcome to the platform! -{" "}
-                    <span className="text-purple-300">4 hours ago</span>
+                    <span className="text-purple-500">4 hours ago</span>
                   </p>
                 </div>
               </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-700/70 transition-colors duration-200">
+              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
                 <PackageOpen
                   size={20}
-                  className="text-red-400 flex-shrink-0 mt-1"
+                  className="text-red-500 flex-shrink-0 mt-1"
                 />
                 <div>
-                  <p className="text-gray-100 font-medium">
+                  <p className="text-gray-800 font-medium">
                     Low Stock Alert: "Nano-Fiber Cables"
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-500 text-sm">
                     Only 10 units remaining -{" "}
-                    <span className="text-purple-300">Yesterday</span>
+                    <span className="text-purple-500">Yesterday</span>
                   </p>
                 </div>
               </li>
@@ -392,14 +393,15 @@ export default function EcomarsDashboard() {
           </div>
 
           {/* Low Stock Products */}
-          <div className="bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700">
-            <h3 className="text-center text-2xl font-bold text-red-500 mb-6">
+          <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+            <h3 className="text-center text-2xl font-bold text-red-600 mb-6 flex items-center justify-center gap-2">
+              <BellRing size={28} className="text-red-600" />
               Low Stock Products
             </h3>
             {lowStockProducts && lowStockProducts.length > 0 ? (
-              <div className="overflow-x-auto rounded-lg border border-gray-700">
-                <table className="min-w-full text-sm text-left text-gray-300">
-                  <thead className="bg-gray-800 text-cyan-400 uppercase text-xs">
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full text-sm text-left text-gray-700">
+                  <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
                       <th className="px-4 py-3 sm:px-6 sm:py-4">
                         Product Name
@@ -411,10 +413,10 @@ export default function EcomarsDashboard() {
                     {lowStockProducts.map((p, index) => (
                       <tr
                         key={p._id || index}
-                        className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
+                        className="border-t border-gray-200 hover:bg-red-50 transition-colors"
                       >
                         <td className="px-4 py-3 sm:px-6 sm:py-4">{p.name}</td>
-                        <td className="px-4 py-3 sm:px-6 sm:py-4 text-red-400 font-bold">
+                        <td className="px-4 py-3 sm:px-6 sm:py-4 text-red-500 font-bold">
                           {p.quantity}
                         </td>
                       </tr>
@@ -423,35 +425,31 @@ export default function EcomarsDashboard() {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">
+              <p className="text-gray-500 text-center py-8">
                 No low stock products found.
               </p>
             )}
 
-            <button className="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 shadow-lg transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <button className="mt-6 w-full py-3 bg-gradient-to-r from-purple-600 to-rose-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-rose-600 transition-all duration-300 shadow-lg transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500">
               View All Notifications
             </button>
           </div>
         </section>
       </div>
       {saleproduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-screen h-screen">
-          {" "}
-          <div className="bg-pink-50 text-black p-6 rounded-lg w-full h-full relative overflow-y-auto">
-            {" "}
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-pink-50 p-6 rounded-lg w-full h-full relative overflow-y-auto">
             <button
               onClick={() => setsaleproduct(false)}
-              className="absolute top-4 right-4 text-black text-2xl font-bold cursor-pointer hover:text-red-500"
+              className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-3xl font-bold cursor-pointer transition-colors duration-200"
               aria-label="Close modal"
             >
-              {" "}
-              ✕{" "}
-            </button>{" "}
-            <div className="mt-10">
-              {" "}
-              <Sales />{" "}
-            </div>{" "}
-          </div>{" "}
+              ✕
+            </button>
+            <div className="mt-8">
+              <Sales />
+            </div>
+          </div>
         </div>
       )}
     </div>

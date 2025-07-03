@@ -129,45 +129,44 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
   return (
     <>
       {/* Product Card */}
-      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl hover:shadow-purple-500/30 transition-all duration-300 p-6 border border-gray-700 transform hover:-translate-y-1">
+      <div className="bg-cyan-200  rounded-xl shadow-xl hover:shadow-purple-500/30 transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1">
         <img
           src={
             product.images?.[0] ||
             "https://placehold.co/400x300/333/999?text=No+Image"
           }
           alt={product.name}
-          className="w-full h-48 object-cover rounded-lg mb-4 border border-gray-700"
+          className="w-full h-48 object-cover rounded-lg mb-4 "
         />
-        <h2 className="text-xl font-bold text-gray-100 mb-2 leading-tight">
+        <h2 className="text-xl font-bold  mb-2 leading-tight">
           {product.name}
         </h2>
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Brand:</strong> {product.brand}
+        <p className="text-sm  mb-1">
+          <strong className="">Brand:</strong> {product.brand}
         </p>
         <div className="flex items-baseline mb-2">
-          <p className="text-lg font-bold text-purple-400 drop-shadow-md">
+          <p className="text-lg font-bold text-purple-600 drop-shadow-md">
             ৳{product.salePrice}
           </p>
         </div>
 
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Category:</strong>{" "}
-          {product.category?.type} ({product.category?.gender},{" "}
-          {product.category?.scollection})
+        <p className="text-sm mb-1">
+          <strong className="">Category:</strong> {product.category?.type} (
+          {product.category?.gender}, {product.category?.scollection})
         </p>
         {product.sizes && product.sizes.length > 0 && (
-          <p className="text-sm text-gray-400 mb-1">
-            <strong className="text-gray-300">Sizes:</strong>{" "}
+          <p className="text-sm  mb-1">
+            <strong className="">Sizes:</strong>{" "}
             {product.sizes
               .map((item) => `${item.size} (${item.quantity})`)
               .join(", ")}
           </p>
         )}
 
-        <p className="text-sm text-gray-400 mb-1 flex items-center">
-          <strong className="text-gray-300 mr-1">Stock:</strong>{" "}
+        <p className="text-sm mb-1 flex items-center">
+          <strong className=" mr-1">Stock:</strong>{" "}
           {product.quantity > 0 ? (
-            <span className="text-green-500 flex items-center">
+            <span className="text-green-600 flex items-center">
               <CheckCircle size={16} className="mr-1" /> In Stock
             </span>
           ) : (
@@ -176,12 +175,11 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
             </span>
           )}
         </p>
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Quantity:</strong>{" "}
-          {product.quantity}
+        <p className="text-sm  mb-1">
+          <strong className="">Quantity:</strong> {product.quantity}
         </p>
-        <p className="text-sm text-gray-400 mb-1 flex items-center">
-          <strong className="text-gray-300 mr-1">Featured:</strong>{" "}
+        <p className="text-sm  mb-1 flex items-center">
+          <strong className=" mr-1">Featured:</strong>{" "}
           {product.isFeatured ? (
             <span className="text-yellow-400 flex items-center">
               <Star size={16} className="mr-1 fill-yellow-400" /> Yes
@@ -191,9 +189,8 @@ const DashboardAllProduct = ({ product, handleUpdate, handleDelete }) => {
           )}
         </p>
 
-        <p className="text-sm text-gray-400 mb-1">
-          <strong className="text-gray-300">Visibility:</strong>{" "}
-          {product.visibility}
+        <p className="text-sm  mb-1">
+          <strong className="">Visibility:</strong> {product.visibility}
         </p>
         {product.adminNote && (
           <p className="text-sm text-gray-400 mb-1">
