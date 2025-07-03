@@ -101,7 +101,6 @@ export default function ShowOrder({ setOpenShowOrder }) {
           );
         });
         // filteredOrders will be updated automatically by the useEffect
-        console.log(`Order ${orderId} status updated to ${newStatus}`);
       } else {
         console.error("Failed to update order status:", json.message);
         // Optionally, show an error message to the user

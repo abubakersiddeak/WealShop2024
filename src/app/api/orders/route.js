@@ -125,7 +125,6 @@ export async function POST(request) {
     // 💾 Apply stock changes in bulk
     if (bulkOps.length > 0) {
       const bulkResult = await Product.bulkWrite(bulkOps);
-      console.log("Product stock bulk write result:", bulkResult);
     }
 
     // 🧾 Create the new order with transformed items

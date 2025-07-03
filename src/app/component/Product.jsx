@@ -132,7 +132,6 @@ export default function Product({ product }) {
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  console.log("Related Products:", relatedProducts); // Changed to a more descriptive log
 
   return (
     <>

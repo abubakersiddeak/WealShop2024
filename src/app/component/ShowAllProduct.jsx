@@ -119,7 +119,6 @@ const ShowAllProduct = () => {
         alert("Product updated successfully");
         // Optionally update state
       }
-      console.log(data);
     } catch (error) {
       console.error("Update failed:", error);
     }

@@ -63,7 +63,6 @@ export async function DELETE(request, { params }) {
         const publicId = getCloudinaryPublicId(imageUrl);
         if (publicId) {
           const result = await cloudinary.uploader.destroy(publicId);
-          console.log(`Deleted from Cloudinary: ${publicId}`, result);
         }
       }
     }

@@ -18,7 +18,7 @@ export default function CartDrawer({ isOpen, onClose }) {
     toggleSelectAll, // New: for select all functionality
     getSelectedTotal, // New: to get total of selected items
   } = useCart();
-  console.log(cartItems);
+
   const router = useRouter();
 
   // Calculate total for all items in the drawer (not just selected) for display purposes if needed
@@ -72,7 +72,6 @@ export default function CartDrawer({ isOpen, onClose }) {
     onClose(); // Close the drawer
     router.push("/checkout"); // Navigate to checkout page
   };
-  console.log(cartItems);
 
   return (
     <div

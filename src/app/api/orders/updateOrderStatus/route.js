@@ -8,8 +8,6 @@ export async function PUT(request) {
     const body = await request.json(); // body থেকে data আনছি
     const { orderId, status } = body;
 
-    console.log("Order ID:", orderId);
-
     if (!orderId || !status) {
       return NextResponse.json(
         {

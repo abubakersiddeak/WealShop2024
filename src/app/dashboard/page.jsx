@@ -19,6 +19,9 @@ import ShowAllProduct from "../component/ShowAllProduct";
 import VisitorList from "../component/VisitorList";
 import Link from "next/link";
 import Sales from "./component/Sales";
+import DueCollect from "./component/DueCollect";
+import ExtraProfit from "./component/ExtraProfit";
+import MonthlyReport from "./component/MonthlyReport";
 
 export default function EcomarsDashboard() {
   const router = useRouter();
@@ -29,6 +32,8 @@ export default function EcomarsDashboard() {
   const [openAvailableProducts, setOpenAvailableProducts] = useState(false);
   const [openVisitor, serOpenVisitor] = useState(false);
   const [saleproduct, setsaleproduct] = useState(false);
+  const [showdue, setshowdue] = useState(false);
+  const [showextraprofict, setshowextraprofict] = useState(false);
 
   // Fetch orders on component mount
   useEffect(() => {
@@ -174,7 +179,7 @@ export default function EcomarsDashboard() {
           </h1>
           <button
             onClick={handlelogout}
-            className="text-sm sm:text-lg text-red-600 border border-red-600 p-2 sm:p-3 rounded-xl hover:bg-red-100 transition-colors duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="cursor-pointer text-sm sm:text-lg text-red-600 border border-red-600 p-2 sm:p-3 rounded-xl hover:bg-red-100 transition-colors duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Log Out
           </button>
@@ -185,7 +190,7 @@ export default function EcomarsDashboard() {
           {/* Action Card: Add Product */}
           <button
             onClick={() => handleNavigate("add")}
-            className="group bg-white hover:bg-purple-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="cursor-pointer  group bg-white hover:bg-purple-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <div className="bg-purple-600 group-hover:bg-purple-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <ClipboardPlus size={32} />
@@ -203,7 +208,7 @@ export default function EcomarsDashboard() {
           {/* Action Card: Show Orders */}
           <button
             onClick={() => handleNavigate("orders")}
-            className="group bg-white hover:bg-cyan-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            className=" cursor-pointer group bg-white hover:bg-cyan-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500"
           >
             <div className="bg-cyan-600 group-hover:bg-cyan-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <ShoppingBag size={32} />
@@ -221,7 +226,7 @@ export default function EcomarsDashboard() {
           {/* Action Card: Show All Products */}
           <button
             onClick={() => handleNavigate("products")}
-            className="group bg-white hover:bg-green-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="cursor-pointer group bg-white hover:bg-green-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <div className="bg-green-600 group-hover:bg-green-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <PackageOpen size={32} />
@@ -240,7 +245,7 @@ export default function EcomarsDashboard() {
           </button>
           <button
             onClick={() => handleNavigate("visitor")}
-            className="group bg-white hover:bg-blue-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="cursor-pointer group bg-white hover:bg-blue-50 p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border border-gray-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <div className="bg-blue-600 group-hover:bg-blue-700 p-4 rounded-full text-white shadow-md transition-all duration-300">
               <Users size={32} />
@@ -303,9 +308,25 @@ export default function EcomarsDashboard() {
               onClick={() => {
                 setsaleproduct(true);
               }}
-              className="bg-gradient-to-r from-teal-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="cursor-pointer bg-gradient-to-r from-teal-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <ShoppingBag size={32} className="mr-3" /> New Sale
+            </button>
+            <button
+              onClick={() => {
+                setshowdue(true);
+              }}
+              className="cursor-pointer bg-gradient-to-r bg-white text-red-600 md:text-3xl  p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              Total Due
+            </button>
+            <button
+              onClick={() => {
+                setshowextraprofict(true);
+              }}
+              className="cursor-pointer bg-gradient-to-r bg-white text-red-600 md:text-3xl  p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              Extra Profict
             </button>
 
             {/* Metric Card: Expenses Link */}
@@ -437,7 +458,7 @@ export default function EcomarsDashboard() {
         </section>
       </div>
       {saleproduct && (
-        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50 ">
           <div className="bg-pink-50 p-6 rounded-lg w-full h-full relative overflow-y-auto">
             <button
               onClick={() => setsaleproduct(false)}
@@ -452,6 +473,39 @@ export default function EcomarsDashboard() {
           </div>
         </div>
       )}
+      {showdue && (
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50 ">
+          <div className="bg-pink-50 p-6 rounded-lg w-full h-full relative overflow-y-auto">
+            <button
+              onClick={() => setshowdue(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-3xl font-bold cursor-pointer transition-colors duration-200"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <div className="mt-8">
+              <DueCollect />
+            </div>
+          </div>
+        </div>
+      )}
+      {showextraprofict && (
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50 ">
+          <div className="bg-pink-50 p-6 rounded-lg w-full h-full relative overflow-y-auto">
+            <button
+              onClick={() => setshowextraprofict(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-red-600 text-3xl font-bold cursor-pointer transition-colors duration-200"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <div className="mt-8">
+              <ExtraProfit />
+            </div>
+          </div>
+        </div>
+      )}
+      <MonthlyReport />
     </div>
   );
 }

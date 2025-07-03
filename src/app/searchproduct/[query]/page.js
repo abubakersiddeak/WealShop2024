@@ -25,7 +25,6 @@ export default function Page() {
       fetchData();
     }
   }, [query]);
-  console.log(results);
 
   return (
     <div>

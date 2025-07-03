@@ -102,7 +102,6 @@ export default function SuccessPage() {
       isSavingOrder.current || // Already trying to save or saved
       orderData // If orderData is already set, it means we've saved or fetched successfully
     ) {
-      // console.log("Skipping saveOrder:", { tran_id, customerData: !!customerData, hasItems: customerData?.items?.length > 0, isSavingOrder: isSavingOrder.current, orderData: !!orderData });
       return;
     }
 
@@ -195,7 +194,6 @@ export default function SuccessPage() {
       displayOrder || // If displayOrder is already set, no need to fetch again
       (pageState.error && !pageState.success) // If there's a critical error and not successful, maybe don't re-fetch
     ) {
-      // console.log("Skipping fetchOrderForDisplay:", { tran_id, displayOrder: !!displayOrder, pageStateError: pageState.error });
       return;
     }
 

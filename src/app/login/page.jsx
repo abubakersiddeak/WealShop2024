@@ -29,7 +29,7 @@ export default function LoginPage() {
         alert(data.error || "Login failed");
         return;
       }
-      console.log("login success");
+
       router.push("/dashboard");
     } catch (error) {
       alert("Something went wrong: " + error.message);

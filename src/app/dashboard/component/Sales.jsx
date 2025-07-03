@@ -96,6 +96,10 @@ export default function Sales() {
     setSelectedCustomer(null);
     setCustomerError(null);
   };
+  const totalSalesAmount = sales.reduce(
+    (sum, product) => sum + product.totalAmount,
+    0
+  );
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">নতুন বিক্রয়</h1>
@@ -379,6 +383,9 @@ export default function Sales() {
       </form>
       {/* বিক্রয় তালিকা */}
       <h2 className="text-xl font-semibold mt-8 mb-4">বিক্রয় তালিকা</h2>
+      <h3 className="text-green-700 text-xl">
+        মোট বিক্রয়ঃ {totalSalesAmount.toLocaleString("bn-BD")} টাকা
+      </h3>
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="">
@@ -408,7 +415,7 @@ export default function Sales() {
               </td>
               <td className="p-2 text-center">{sale.size}</td>
               <td className="p-2 text-center">{sale.quantity}</td>
-              <td className="p-2 text-center">{sale.salePrice}</td>
+              <td className="p-2 text-center">{sale.totalAmount}</td>
               <td className="p-2 text-center">
                 {new Date(sale.createdAt).toLocaleDateString("bn-BD")}
               </td>

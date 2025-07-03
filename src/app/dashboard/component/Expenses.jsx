@@ -103,6 +103,12 @@ export default function Expenses() {
       </Link>
 
       <div className="max-w-3xl mx-auto p-4">
+        {thisMonthExpenses.length > 0 && (
+          <div className="mt-6 text-lg font-bold">
+            এই মাসের মোট খরচ:{" "}
+            <span className="text-red-600">৳{thisMonthTotal}</span>
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4 ">
           {editingId ? "খরচ এডিট করুন" : "খরচ যোগ করুন"}
         </h1>
@@ -202,13 +208,6 @@ export default function Expenses() {
             </li>
           ))}
         </ul>
-
-        {thisMonthExpenses.length > 0 && (
-          <div className="mt-6 text-lg font-bold">
-            এই মাসের মোট খরচ:{" "}
-            <span className="text-red-600">৳{thisMonthTotal}</span>
-          </div>
-        )}
       </div>
     </div>
   );
