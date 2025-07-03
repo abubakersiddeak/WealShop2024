@@ -18,6 +18,7 @@ import ShowAllProduct from "../component/ShowAllProduct";
 import VisitorList from "../component/VisitorList";
 import Expenses from "./component/Expenses";
 import Link from "next/link";
+import Sales from "./component/Sales";
 
 export default function EcomarsDashboard() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function EcomarsDashboard() {
   const [openShowOrder, setOpenShowOrder] = useState(false);
   const [openAvailableProducts, setOpenAvailableProducts] = useState(false);
   const [openVisitor, serOpenVisitor] = useState(false);
+  const [saleproduct, setsaleproduct] = useState(false);
 
   // Fetch orders on component mount
   useEffect(() => {
@@ -163,7 +165,7 @@ export default function EcomarsDashboard() {
 
   // --- Main Dashboard View ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-800 text-gray-100 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen bg-pink-50 p-4 sm:p-8 font-sans">
       <div className="max-w-8xl mx-auto">
         {/* Header Section */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 gap-4">
@@ -285,7 +287,6 @@ export default function EcomarsDashboard() {
                 TK {totalProfit.toLocaleString()}
               </p>
             </div>
-            {/* Metric Card: New Orders */}
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-300">
@@ -297,6 +298,15 @@ export default function EcomarsDashboard() {
                 {totalNewOrders}
               </p>
             </div>
+            {/* Metric Card: New Orders */}
+            <button
+              onClick={() => {
+                setsaleproduct(true);
+              }}
+              className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:shadow-cyan-500/20 transition-shadow duration-300 text-3xl"
+            >
+              New Sale
+            </button>
 
             {/* Metric Card: Customers Acquired */}
             <Link
@@ -424,6 +434,26 @@ export default function EcomarsDashboard() {
           </div>
         </section>
       </div>
+      {saleproduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-screen h-screen">
+          {" "}
+          <div className="bg-pink-50 text-black p-6 rounded-lg w-full h-full relative overflow-y-auto">
+            {" "}
+            <button
+              onClick={() => setsaleproduct(false)}
+              className="absolute top-4 right-4 text-black text-2xl font-bold cursor-pointer hover:text-red-500"
+              aria-label="Close modal"
+            >
+              {" "}
+              ✕{" "}
+            </button>{" "}
+            <div className="mt-10">
+              {" "}
+              <Sales />{" "}
+            </div>{" "}
+          </div>{" "}
+        </div>
+      )}
     </div>
   );
 }
