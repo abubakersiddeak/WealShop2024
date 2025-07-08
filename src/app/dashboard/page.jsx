@@ -324,23 +324,17 @@ export default function EcomarsDashboard() {
               onClick={() => {
                 setshowextraprofict(true);
               }}
-              className="cursor-pointer bg-gradient-to-r bg-white text-red-600 md:text-3xl  p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="cursor-pointer bg-gradient-to-r bg-white text-green-600 md:text-3xl  p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl font-bold transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
-              Extra Profict
+              Extra Profit
             </button>
 
             {/* Metric Card: Expenses Link */}
             <Link
               href="/dashboard/expence"
-              className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 flex items-center justify-between"
+              className="bg-white p-6 rounded-2xl text-center text-red-500 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 text-2xl font-bold"
             >
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  Expenses
-                </h3>
-                <p className="text-4xl font-bold text-green-800">View</p>
-              </div>
-              <Users size={32} className="text-green-600" />
+              Expenses
             </Link>
           </div>
         </section>
@@ -348,70 +342,6 @@ export default function EcomarsDashboard() {
         {/* Recent Activity & Low Stock Notifications */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Recent Activity */}
-          <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-5 flex items-center gap-3">
-              <Activity size={24} className="text-sky-600" /> Recent Activity
-            </h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
-                <ShoppingBag
-                  size={20}
-                  className="text-emerald-500 flex-shrink-0 mt-1"
-                />
-                <div>
-                  <p className="text-gray-800 font-medium">
-                    New Order #ORD-20250528-001 by Alice Smith
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Product: Quantum Monitor X-Series, Qty: 1 -{" "}
-                    <span className="text-purple-500">2 minutes ago</span>
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
-                <ClipboardPlus
-                  size={20}
-                  className="text-yellow-500 flex-shrink-0 mt-1"
-                />
-                <div>
-                  <p className="text-gray-800 font-medium">
-                    Product "Hyper-drive Processor" updated
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Stock adjusted to 50 units -{" "}
-                    <span className="text-purple-500">1 hour ago</span>
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
-                <Users size={20} className="text-blue-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="text-gray-800 font-medium">
-                    New customer registration: John Doe
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Welcome to the platform! -{" "}
-                    <span className="text-purple-500">4 hours ago</span>
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
-                <PackageOpen
-                  size={20}
-                  className="text-red-500 flex-shrink-0 mt-1"
-                />
-                <div>
-                  <p className="text-gray-800 font-medium">
-                    Low Stock Alert: "Nano-Fiber Cables"
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Only 10 units remaining -{" "}
-                    <span className="text-purple-500">Yesterday</span>
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
 
           {/* Low Stock Products */}
           <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">

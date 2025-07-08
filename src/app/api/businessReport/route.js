@@ -76,6 +76,14 @@ export async function GET(req) {
       (acc, o) => acc + (o.amount || 0),
       0
     );
+    const totalOrderBuyPrice = orders.reduce((acc, order) => {
+      const orderBuyPrice = order.items.reduce((sum, item) => {
+        return sum + item.buyPrice * item.quantity;
+      }, 0);
+      return acc + orderBuyPrice;
+    }, 0);
+    const totalorderProfit = totalOrderAmount - totalOrderBuyPrice;
+
     const ordersByStatus = orders.reduce((acc, o) => {
       const status = o.status || "UNKNOWN";
       acc[status] = (acc[status] || 0) + 1;
@@ -104,6 +112,7 @@ export async function GET(req) {
       ordersByStatus,
       totalExpenses,
       expensesByCategory,
+      totalorderProfit,
     });
   } catch (error) {
     console.error("[API Error] Business report:", error);
